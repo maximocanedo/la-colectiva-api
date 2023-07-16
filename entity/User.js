@@ -5,9 +5,10 @@ class User {
 			username: null,
 			name: null,
 			surname: null,
+			bio: null,
 			birthdate: null,
-			sex: null,
-			active: null,
+			role: null,
+			status: null,
 			...data,
 		};
 		Object.assign(this, obj);

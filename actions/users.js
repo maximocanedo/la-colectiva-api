@@ -12,64 +12,65 @@ const getUserByUsername = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-	let dataNeeded = {
-		username: "",
-		name: "",
-		surname: "",
-		birthdate: "",
-		sex: "",
-		// Hash
-		hash: "",
-		salt: "",
-		lastModified: "",
-		// Primer inicio de sesión
-		token: "",
-		created: "",
-	};
-	let newUser = new User({
-		username: req.query.username,
-		name: req.query.name,
-		surname: req.query.surname,
-		birthdate: new Date(req.query.birthdate),
-		sex: req.query.sex,
-	});
-	let ul = new UserLogic();
-	let vs = await ul.AddUser(newUser);
-	let EtapaUsuario = vs.VerificationsResult && vs.InsertResult;
-	let EtapaClave = false;
-	let ObjetoClave = {};
-	let StatusCode = 500;
-	let LoginDetails = {};
-	let InicioSesion = false;
-	if (EtapaUsuario) {
-		/* Creamos una clave */
-		let newHash = new HashLogic();
-		let password_data = await newHash.CreatePassword(
+	try {
+		const newUser = createUserObject(req);
+		const userRecord = await addUser(newUser);
+		const { EtapaUsuario, StatusCode, LoginDetails, InicioSesion } =
+			await processUser(userRecord, req.query.password);
+		const hashRecord = await createHash(
 			newUser.username,
 			req.query.password
 		);
-		EtapaClave = password_data.SummaryResult;
-		ObjetoClave = password_data;
-		if (EtapaClave) {
-			/* Listo. Ahora iniciamos sesión */
-			console.log({ rawLogin });
-			let loginResult = await rawLogin(
-				newUser.username,
-				req.query.password
-			);
-			console.log({ loginResult });
-			StatusCode = loginResult.status;
-			LoginDetails = loginResult.json;
-			InicioSesion = StatusCode == 200;
-		}
+
+		res.status(StatusCode).json({
+			UserRecord: userRecord,
+			HashRecord: hashRecord,
+			LoginDetails,
+			InicioSesion,
+		});
+	} catch (error) {
+		res.status(500).json({ error: error.message });
 	}
-	res.status(StatusCode).json({
-		UserRecord: vs,
-		HashRecord: false,
-		...ObjetoClave,
-		LoginDetails,
-		InicioSesion,
+};
+
+const createUserObject = (req) => {
+	const { username, name, surname, birthdate, sex } = req.query;
+	return new User({
+		username,
+		name,
+		surname,
+		birthdate: new Date(birthdate),
+		sex,
 	});
+};
+
+const addUser = async (user) => {
+	const userLogic = new UserLogic();
+	return await userLogic.AddUser(user);
+};
+
+const processUser = async (userRecord, password) => {
+	if (!userRecord.VerificationsResult || !userRecord.InsertResult) {
+		return { EtapaUsuario: false, StatusCode: 500 };
+	}
+
+	const hashRecord = await createHash(userRecord.username, password);
+
+	if (!hashRecord.SummaryResult) {
+		return { EtapaUsuario: true, StatusCode: 500 };
+	}
+
+	const loginResult = await rawLogin(userRecord.username, password);
+	const StatusCode = loginResult.status;
+	const LoginDetails = loginResult.json;
+	const InicioSesion = StatusCode === 200;
+
+	return { EtapaUsuario: true, StatusCode, LoginDetails, InicioSesion };
+};
+
+const createHash = async (username, password) => {
+	const newHash = new HashLogic();
+	return await newHash.CreatePassword(username, password);
 };
 
 const viewMyUser = async (req, res) => {

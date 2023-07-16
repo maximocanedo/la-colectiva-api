@@ -10,6 +10,7 @@ class Connection {
 			Viajes: "Viajes",
 			BDSucursales: "BDSucursales",
 			Eclair: "Eclair",
+			Colectiva: "LaColectiva",
 		};
 	}
 	constructor(databaseName) {
@@ -43,7 +44,6 @@ class Connection {
 		try {
 			const connection = await odbc.connect(this.ConnectionString);
 			const result = await connection.query(query, parameters);
-			console.log({ e: 34, result });
 			return new Response({
 				ErrorFound: false,
 				AffectedRows: result.count,
