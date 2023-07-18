@@ -1,7 +1,6 @@
 "use strict";
 const User = require("./../entity/User");
 const UserData = require("./../data/UserData");
-const utilities = require("./../logic/utilities");
 
 const setFromRecordSet = (obj) => {
 	let newObj = new User();
@@ -10,7 +9,6 @@ const setFromRecordSet = (obj) => {
 	newObj.surname = obj[this.Columns.surname];
 	newObj.bio = obj[this.Columns.surname];
 	newObj.birthdate = obj[this.Columns.birthdate];
-	newObj.sex = obj[this.Columns.sex];
 	newObj.active = obj[this.Columns.active];
 	return newObj;
 };
@@ -19,9 +17,11 @@ const getByUsername = async (username) => {
 	let data = UserData.getByUsername(username);
 	if (data.ErrorFound == false) {
 		const result = data.ObjectReturned;
-		if (result.length > 0) {
+		if (result.count > 0) {
 			const res = result[0];
+			console.log("const res (23)", res);
 			const user = setFromRecordSet(res);
+			console.log("const user (26)", user);
 			return {
 				ErrorFound: false,
 				ObjectReturned: user,
@@ -38,60 +38,69 @@ const getByUsername = async (username) => {
 	return data;
 };
 
-const verifyUsernameAvailability = async (username) => {
-	const data = await getByUsername(username);
-	return {
-		res: data.Code === 404,
-		err: "El nombre de usuario ya existe",
-	};
+const verify = {
+	usernameAvailability: async (username) => {
+		const data = await getByUsername(username);
+		console.log(45, { data });
+		if (data.ObjectReturned != null && data.ObjectReturned.count == 0)
+			return {
+				res: true,
+				err: "El nombre de usuario no existe. ",
+			};
+		else
+			return {
+				res: false,
+				err: "El nombre de usuario está en uso. ",
+			};
+	},
+	username: (username) => {
+		const regex = /^[a-zA-Z0-9_-]{3,24}$/;
+		if (!regex.test(username)) {
+			return {
+				res: false,
+				err: "El nombre de usuario ingresado no cumple con las reglas.",
+			};
+		}
+		return {
+			res: true,
+			err: "",
+		};
+	},
+	name: (name) => {
+		const regex = /^[\p{L}\p{M}\s'-]{3,48}$/u;
+		if (!regex.test(name)) {
+			return {
+				res: false,
+				err: "El nombre ingresado no cumple con las reglas.",
+			};
+		}
+		return {
+			res: true,
+			err: "",
+		};
+	},
+	surname: (surname) => {
+		const regex = /^[\p{L}\p{M}\s'-]{3,48}$/u;
+		if (!regex.test(surname)) {
+			return {
+				res: false,
+				err: "El apellido ingresado no cumple con las reglas.",
+			};
+		}
+		return {
+			res: true,
+			err: "",
+		};
+	},
 };
 
-const verifyUsernameWriting = (username) => {
-	const regex = /^[a-zA-Z0-9_-]{3,24}$/;
-	return {
-		res: regex.test(username),
-		err: "El nombre de usuario no cumple con las reglas.",
-	};
-};
-
-const verifyName = (name) => {
-	const regex = /^[\p{L}\p{M}\s'-]{3,48}$/u;
-	return {
-		res: regex.test(name),
-		err: "El nombre ingresado no cumple con las reglas.",
-	};
-};
-
-const verifySurname = (surname) => {
-	const regex = /^[\p{L}\p{M}\s'-]{3,48}$/u;
-	return {
-		res: regex.test(surname),
-		err: "El apellido ingresado no cumple con las reglas.",
-	};
-};
-
-const verifySex = (sex) => {
-	return {
-		res: sex === "M" || sex === "F",
-		err: "El valor ingresado para 'Sexo' no es correcto.",
-	};
-};
-
+// Verifica los datos y añade un registro a la tabla Usuarios.
 const add = async (user) => {
-	const usernameAvailability = await verifyUsernameAvailability(
-		user.username
-	);
-	const usernameWriting = verifyUsernameWriting(user.username);
-	const nameCheck = verifyName(user.name);
-	const surnameCheck = verifySurname(user.surname);
-	const sexCheck = verifySex(user.sex);
-
 	const verifications = [
-		usernameAvailability,
-		usernameWriting,
-		nameCheck,
-		surnameCheck,
-		sexCheck,
+		await verify.usernameAvailability(user.username),
+		verify.username(user.username),
+		verify.name(user.name),
+		verify.surname(user.surname),
 	];
 
 	const errors = verifications
@@ -104,15 +113,19 @@ const add = async (user) => {
 
 	let insertResult = false;
 	if (allVerificationsPassed) {
-		const formattedDate = utilities.formatDateForSQL(user.birthdate);
-		const result = UserData.add(user);
-		console.log({ result });
+		const result = await UserData.add(user);
 		insertResult = !result.ErrorFound && result.AffectedRows == 1;
+		if (!insertResult) {
+			errors.push(result.Exception);
+		}
 	}
 
+	const finalResult = [allVerificationsPassed, insertResult].every(
+		(verification) => verification
+	);
+
 	return {
-		verificationsPassed: allVerificationsPassed,
-		insertResult,
+		result: finalResult,
 		errors,
 	};
 };

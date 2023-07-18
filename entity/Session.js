@@ -1,14 +1,14 @@
 "use strict";
-class Token {
+class Session {
 	constructor(obj) {
 		let _ = {
-			token: null,
-			active: null,
-			created: new Date(),
+			id: null,
+			user: null,
+			status: false,
 			...obj,
 			...this,
 		};
 		Object.assign(this, _);
 	}
 }
-module.exports = Token;
+module.exports = Session;

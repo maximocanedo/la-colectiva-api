@@ -1,5 +1,11 @@
 "use strict";
 class User {
+	static roles = [
+		"ADMIN", // Administrador. Puede cambiar permisos de los demás, bloquear cuentas, etc.
+		"MODERATOR", // Moderador. Puede subir horarios, rutas, fotos, muelles, etc.
+		"NORMAL", // Normal. Puede comentar, validar.
+		"BLOCKED", // Cuenta suspendida. No puede comentar ni validar.
+	];
 	constructor(data) {
 		let obj = {
 			username: null,
@@ -19,7 +25,6 @@ class User {
 			name: this.name,
 			surname: this.surname,
 			birthdate: this.birthdate,
-			sex: this.sex,
 			active: this.active,
 		};
 	}
@@ -38,10 +43,6 @@ class User {
 	Birthdate(val = null) {
 		if (val != null) this.birthdate = val;
 		return this.birthdate;
-	}
-	Sex(val = null) {
-		if (val != null) this.sex = val;
-		return this.sex;
 	}
 	Active(val = null) {
 		if (val != null) this.active = val;

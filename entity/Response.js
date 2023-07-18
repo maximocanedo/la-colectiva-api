@@ -7,6 +7,7 @@ class Response {
 			Details: "",
 			Exception: null,
 			Code: 200,
+			Rows: null,
 			AffectedRows: 0,
 			ObjectReturned: null,
 			...obj,

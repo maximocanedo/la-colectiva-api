@@ -4,9 +4,9 @@ class Hash {
 		let _ = {
 			user: null,
 			hash: null,
-			salt: null,
-			lastModified: new Date(),
-			active: false,
+			salt: [null, null],
+			created: null,
+			status: false,
 			...obj,
 			...this,
 		};
@@ -17,8 +17,8 @@ class Hash {
 			user: this.user,
 			hash: this.hash,
 			salt: this.salt,
-			lastModified: this.lastModified,
-			active: this.active,
+			created: this.created,
+			status: this.status,
 		};
 	}
 }

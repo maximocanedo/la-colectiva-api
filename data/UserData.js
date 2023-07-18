@@ -1,6 +1,8 @@
 "use strict";
 const Connection = require("./Connection");
 const User = require("./../entity/User");
+const utilities = require("./../logic/utilities");
+const { ConnectionError } = require("./../errors/errors");
 
 const Usuario = {
 	Columns: {
@@ -14,7 +16,7 @@ const Usuario = {
 	},
 	Table: "Usuarios",
 };
-const ALL_COLUMNS = `[${Usuario.Columns.username}], [${Usuario.Columns.name}], [${Usuario.Columns.surname}], [${Usuario.Columns.birthdate}], [${Usuario.Columns.sex}], [${Usuario.Columns.active}]`;
+const ALL_COLUMNS = `[${Usuario.Columns.username}], [${Usuario.Columns.name}], [${Usuario.Columns.surname}], [${Usuario.Columns.bio}], [${Usuario.Columns.birthdate}], [${Usuario.Columns.role}], [${Usuario.Columns.status}]`;
 
 const getByUsername = async (username) => {
 	const query = `SELECT ${ALL_COLUMNS} FROM [${Usuario.Table}] WHERE [${Usuario.Columns.username}] = ?`;
@@ -22,6 +24,7 @@ const getByUsername = async (username) => {
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.FetchData(query, parameters);
+		return response;
 	} catch (err) {
 		console.error(err);
 		return {
@@ -35,6 +38,7 @@ const getAll = async () => {
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.FetchData(query, parameters);
+		return response;
 	} catch (err) {
 		console.error(err);
 		return {
@@ -43,29 +47,29 @@ const getAll = async () => {
 	}
 };
 const add = async (user) => {
-	const query = `INSERT INTO [${Usuario.Table}] ([${Usuario.Columns.name}],[${Usuario.Columns.surname}],[${Usuario.Columns.bio}],[${Usuario.Columns.birthdate}],[${Usuario.Columns.role}],[${Usuario.Columns.status}],[${Usuario.Columns.username}]
-        SELECT ?, ?, ?, ?, ?, ?, ?`;
-	const parameters = [
+	let query = `INSERT INTO [${Usuario.Table}] (${ALL_COLUMNS}) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+	let parameters = [
+		user.username,
 		user.name,
 		user.surname,
 		user.bio,
-		user.birthdate,
+		utilities.formatDateForSQL(user.birthdate, true),
 		user.role,
-		user.status,
-		user.username,
+		true,
 	];
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
-		const response = await con.FetchData(query, parameters);
+		const response = await con.RunTransaction(query, parameters);
+		return response;
 	} catch (err) {
-		console.error(err);
 		return {
 			ErrorFound: true,
+			Exception: err,
 		};
 	}
 };
 const modify = async (user) => {
-	const query = `UPDATE [${Usuario.Table}] SET [${Usuario.Columns.name}] = ?, [${Usuario.Columns.surname}], = ?, [${Usuario.Columns.bio}] = ?, [${Usuario.Columns.birthdate}], = ?, [${Usuario.Columns.role}] = ?, [${Usuario.Columns.status}], = ? WHERE [${Usuario.Columns.username}] = ?`;
+	const query = `UPDATE [${Usuario.Table}] SET [${Usuario.Columns.name}] = ?, [${Usuario.Columns.surname}] = ?, [${Usuario.Columns.bio}] = ?, [${Usuario.Columns.birthdate}] = ?, [${Usuario.Columns.role}] = ?, [${Usuario.Columns.status}] = ? WHERE [${Usuario.Columns.username}] = ?`;
 	const parameters = [
 		user.name,
 		user.surname,
@@ -78,10 +82,12 @@ const modify = async (user) => {
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.FetchData(query, parameters);
+		return response;
 	} catch (err) {
 		console.error(err);
 		return {
 			ErrorFound: true,
+			Exception: err,
 		};
 	}
 };
@@ -91,6 +97,7 @@ const disable = async (user) => {
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.FetchData(query, parameters);
+		return response;
 	} catch (err) {
 		console.error(err);
 		return {
@@ -104,6 +111,7 @@ const enable = async (user) => {
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.FetchData(query, parameters);
+		return response;
 	} catch (err) {
 		console.error(err);
 		return {

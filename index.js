@@ -5,6 +5,7 @@ const app = express();
 app.use(express.json());
 
 /* Pre-respuesta */
+app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
 	res.set("Content-Type", "application/json; charset=utf-8");
 	next();
@@ -18,7 +19,7 @@ app.post(
 	actions.changePassword
 );
 app.get("/users/:username", actions.getUserByUsername);
-app.post("/users/add", actions.createUser);
+app.put("/users/", actions.createUser);
 
 /* Manejo de sesiones */
 app.post("/login", actions.login);

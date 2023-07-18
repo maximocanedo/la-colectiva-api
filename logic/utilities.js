@@ -1,9 +1,7 @@
 "use strict";
 const appendZeros = (number, quantity = 2) =>
 	number.toString().padStart(quantity, "0");
-const formatDateForSQL = () => {
-	const obj = new Date();
-
+const formatDateForSQL = (obj = new Date(), onlyDate = false) => {
 	const fullYear = obj.getFullYear();
 	const month = appendZeros(obj.getMonth() + 1);
 	const date = appendZeros(obj.getDate());
@@ -12,6 +10,7 @@ const formatDateForSQL = () => {
 	const seconds = appendZeros(obj.getSeconds());
 	const milliseconds = appendZeros(obj.getMilliseconds(), 3);
 
+	if (onlyDate) return `${fullYear}-${month}-${date}`;
 	return `${fullYear}-${month}-${date} ${hours}:${minutes}:${seconds}.${milliseconds}`;
 };
 module.exports = { appendZeros, formatDateForSQL };

@@ -5,81 +5,53 @@ const keys = require("./../keys");
 const utilities = require("./../logic/utilities");
 // Lógica
 const HashLogic = require("./../logic/HashLogic");
-const TokenLogic = require("./../logic/TokenLogic");
+const SessionLogic = require("../logic/SessionLogic");
 // Otras librerías
 const jwt = require("jsonwebtoken");
 
 const authenticateToken = async (req, res, next) => {
-	const tkn = new TokenLogic();
-	const token = req.headers["authorization"];
+	const token = req.headers.authorization;
 	if (!token) {
 		return res.status(401).json({ message: "Token no proporcionado" });
 	}
-	let g = await tkn.IsActive(token);
-	jwt.verify(token, keys.TOKEN_AUTHORIZATION_KEY, (err, user) => {
-		if (err || !g) {
-			return res.status(403).json({ message: "Token inválido" });
+	let decoded = SessionLogic.verifyToken(token);
+	if (decoded != null) {
+		let active = await SessionLogic.IsActive(token);
+		if (active) {
+			req.user = decoded.username;
+			next(req, res);
+			return;
 		}
-		req.user = user;
-		next();
-	});
+		return res.status(401).json({ message: "Token deshabilitado" });
+	}
 };
-const rawLogin = async (username, password) => {
-	let hsh = new HashLogic();
-	return await hsh.CheckPassword(
-		{
-			user: username,
-			password: password,
-		},
-		async (cr) => {
-			if (cr.errCode == 200) {
-				let date = utilities.formatDateForSQL();
-				const token = jwt.sign(
-					{ username, date },
-					keys.TOKEN_AUTHORIZATION_KEY,
-					{
-						expiresIn: "24h",
-					}
-				);
-				let tkn = new TokenLogic();
-				let rs = await tkn.Insert(token, 1, date);
-				console.log({ RSRESULT: rs.result });
-				if (rs.result) {
-					return {
-						status: 200,
-						json: { token },
-					};
-				} else {
-					return {
-						status: 500,
-						json: {
-							err: "rs.result ERROR",
-						},
-					};
-				}
-			} else {
-				return {
-					status: 404,
-					json: {
-						err: "Usuario o contraseña inválidos. ",
-					},
-				};
-			}
-		}
+
+const rawLogin = async (username, password) =>
+	await HashLogic.check(
+		{ user: username, password: password },
+		SessionLogic.register
 	);
-};
 const login = async (req, res) => {
 	const { username, password } = req.query;
-	let result = await rawLogin(username, password);
+	let result = await rawLogin(
+		username,
+		password,
+		(token) => {
+			req.headers.authorization = `Bearer ${token}`;
+			res.status(200);
+		},
+		(error) => {
+			res.status(error.status).json(error.json);
+		}
+	);
 	console.log({
 		LOGIN_RESULT: result,
 	});
-	res.status(result.status).json(result.json);
+	return;
 };
 const logout = async (req, res) => {
-	const token = req.headers["authorization"];
-	let e = new TokenLogic();
-	let z = await e.Deactivate(token);
+	const token = req.headers.authorization;
+	let z = await SessionLogic.Deactivate(token);
 	if (z.result) {
 		res.status(200).json({
 			result: z.result,
