@@ -4,7 +4,7 @@ class Hash {
 		let _ = {
 			user: null,
 			hash: null,
-			salt: [null, null],
+			salt: null,
 			created: null,
 			status: false,
 			...obj,

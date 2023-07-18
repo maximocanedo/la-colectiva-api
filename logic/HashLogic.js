@@ -5,51 +5,47 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const User = require("./../entity/User");
 
-const generateSalt = () => crypto.randomBytes(32).toString("hex");
-const generateSaltPair = () => {
-	return [generateSalt(), generateSalt()];
+const generateSalt = async () => {
+	const saltRounds = 10; // Número de rounds para generar el salt
+	const salt = await bcrypt.genSalt(saltRounds);
+	console.log("Salt generated: ", { salt });
+	return salt;
 };
 
-const securePassword = (password) => {
-	const saltRounds = 10;
-	const [saltPrefix, saltSuffix] = generateSaltPair();
-	const saltedPassword = saltPrefix + password + saltSuffix;
-	return new Promise((resolve, reject) => {
-		bcrypt.hash(saltedPassword, saltRounds, function (err, hash) {
-			if (err) {
-				console.log({ err });
-				reject(err);
-			}
-			console.log({ hash, salt: [saltPrefix, saltSuffix] });
-			resolve({ hash, salt: [saltPrefix, saltSuffix] });
-		});
-	});
+const generateHash = async (password, salt) => {
+	console.log(32, { password, salt });
+	const hash = await bcrypt.hash(password, salt);
+	console.log("Hash generated: ", { hash, password, salt });
+	return hash;
 };
 
-const verifyPassword = (password, hash, salts) => {
-	const [saltPrefix, saltSuffix] = salts;
-	const saltedPassword = saltPrefix + password + saltSuffix;
+const securePassword = async (plainPassword) => {
+	// Generar el salt
+	const salt = await generateSalt();
 
-	return new Promise((resolve, reject) => {
-		bcrypt.compare(saltedPassword, hash, function (err, result) {
-			if (err) {
-				console.log({ err });
-				reject(err);
-			}
-			resolve(result);
-		});
-	});
+	// Generar el hash usando la contraseña y el salt
+	const hashedPassword = await generateHash(plainPassword, salt);
+	console.log({ hashedPassword, salt });
+	return { hash: hashedPassword, salt };
 };
 
-const check = async ({ user, password } = obj, next) => {
+async function validatePassword(enteredPassword, hashedPassword) {
+	const isValid = await bcrypt.compare(enteredPassword, hashedPassword);
+	return isValid;
+}
+
+const verifyPassword = async (enteredPassword, hashedPassword) => {
+	return await validatePassword(enteredPassword, hashedPassword);
+};
+
+const check = async ({ user, password } = obj, next, token_ok, token_err) => {
 	let hash, salt;
 	const userObj = new User();
 	userObj.username = user;
-	const result = HashData.getLast(userObj);
+	const result = await HashData.getLast(userObj);
 	if (!result.ErrorFound) {
 		const record = result.ObjectReturned;
-		console.log("checkrecord", { record });
-		if (record.length > 0) {
+		if (typeof record != "undefined" && record.length > 0) {
 			const finalRow = record[0];
 			hash = finalRow[HashData.Columns.hash];
 			salt = [
@@ -58,29 +54,52 @@ const check = async ({ user, password } = obj, next) => {
 			];
 			try {
 				const isMatch = await verifyPassword(password, hash, salt);
-
+				console.log("Acá llega", { isMatch });
 				if (isMatch) {
-					return await next({
-						errCode: 200,
-						msg: "Inicio de sesión exitoso.",
-					});
+					console.log("OK 200!", { isMatch });
+					let e = await next(
+						{
+							errCode: 200,
+							msg: "Inicio de sesión exitoso.",
+							username: user,
+						},
+						token_ok,
+						token_err
+					);
+					return;
 				} else {
-					return await next({
-						errCode: 403,
-						msg: "Credenciales inválidas",
-					});
+					console.log("NO 403!", { isMatch });
+					return await next(
+						{
+							errCode: 403,
+							msg: "Credenciales inválidas",
+						},
+						token_ok,
+						token_err
+					);
 				}
 			} catch (err) {
-				return await next({
-					errCode: 401,
-					msg: "Error al comparar las contraseñas",
-				});
+				console.error(err);
+				console.log("NO 401!");
+				return await next(
+					{
+						errCode: 401,
+						msg: "Error al comparar las contraseñas",
+					},
+					token_ok,
+					token_err
+				);
 			}
 		} else {
-			return await next({
-				errCode: 404,
-				msg: "Credenciales inválidas",
-			});
+			console.log("NO 404!");
+			return await next(
+				{
+					errCode: 404,
+					msg: "Credenciales inválidas",
+				},
+				token_ok,
+				token_err
+			);
 		}
 	}
 };
@@ -124,7 +143,9 @@ const createPassword = async (username, password) => {
 	VerificationsResult.res = checkPassword(password);
 
 	try {
+		console.log("Hasta acá llega. ", { password });
 		const { hash, salt } = await securePassword(password);
+		console.log({ hash, salt });
 		// Cancelamos todos los hashes previos (De haber)
 		let _unabling = await disableAll(username);
 		CleaningResult.res = _unabling.result;

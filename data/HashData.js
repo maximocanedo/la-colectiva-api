@@ -32,12 +32,7 @@ const revokeAll = async (user) => {
 };
 const add = async (hash) => {
 	const query = `EXEC Hashes__Add @USUARIO = ?, @HASH = ?, @SALT0 = ?, @SALT1 = ?`;
-	const parameters = [
-		hash.user.username,
-		hash.hash,
-		hash.salt[0],
-		hash.salt[1],
-	];
+	const parameters = [hash.user.username, hash.hash, hash.salt, hash.salt];
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.RunTransaction(query, parameters);
@@ -51,11 +46,12 @@ const add = async (hash) => {
 	}
 };
 const getLast = async (user) => {
-	const query = `SELECT TOP(1) * FROM [${hsh.Table}] WHERE [${hsh.Columns.user}] = ? AND [${hsh.Columns.status}] = 1`;
+	const query = `SELECT * FROM [${hsh.Table}] WHERE [${hsh.Columns.user}] = ? AND [${hsh.Columns.status}] = 1 ORDER BY [${hsh.Columns.created}] DESC`;
 	const parameters = [user.username];
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.FetchData(query, parameters);
+		console.log("getLastHash response: ", { response });
 		return response;
 	} catch (err) {
 		console.error(err);

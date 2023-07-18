@@ -12,12 +12,28 @@ const sn = {
 };
 
 const insert = async (user) => {
+	// user = user.username (string)
 	const query = `EXEC Sesiones__Iniciar ?`;
-	const parameters = [user.username];
+	const parameters = [user];
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.FetchData(query, parameters);
-		return response;
+		if (response.Message.count >= 1) {
+			const r2 = await con.FetchData(
+				`SELECT * FROM [${sn.Table}] WHERE [${sn.Columns.user}] = ? ORDER BY [${sn.Columns.id}] DESC`,
+				[user]
+			);
+			return {
+				response,
+				count: response.Message.count,
+				sid: sn.Columns.id,
+				error: null,
+			};
+		}
+		return {
+			response,
+			error: "No se pudo agregar la sesión. ",
+		};
 	} catch (err) {
 		console.error(err);
 		return {

@@ -18,7 +18,7 @@ class Connection {
 		this.DataBaseName = databaseName;
 		this.Response = new Response();
 		this.ConnectionString = `Driver={SQL Server};Server=${this.Server};Database=${this.DataBaseName};Trusted_Connection=yes;Charset=UTF-8;`;
-		console.log({ server: this.Server, da: this.DataBaseName });
+		//console.log({ server: this.Server, da: this.DataBaseName });
 	}
 
 	async FetchData(query, parameters = null) {
@@ -26,9 +26,9 @@ class Connection {
 			console.log({ query, parameters });
 			const connection = await odbc.connect(this.ConnectionString);
 			const result = await connection.query(query, [...parameters]);
-			console.log({ connection, result });
+			console.log("Result fetch: ", { result });
 			return new Response({
-				Message: result.length,
+				Message: result,
 				ErrorFound: false,
 				ObjectReturned: result,
 			});
@@ -46,7 +46,7 @@ class Connection {
 	async RunTransaction(query, parameters = null) {
 		try {
 			const connection = await odbc.connect(this.ConnectionString);
-			const result = await connection.query(query, parameters);
+			const result = await connection.query(query, [...parameters]);
 			return new Response({
 				ErrorFound: false,
 				AffectedRows: result.count,

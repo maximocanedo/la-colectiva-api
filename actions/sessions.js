@@ -3,6 +3,7 @@
 const keys = require("./../keys");
 // Utilidades
 const utilities = require("./../logic/utilities");
+const { RequestSet, ValidationTemplate } = require("./../logic/RequestSet");
 // Lógica
 const HashLogic = require("./../logic/HashLogic");
 const SessionLogic = require("../logic/SessionLogic");
@@ -26,28 +27,40 @@ const authenticateToken = async (req, res, next) => {
 	}
 };
 
-const rawLogin = async (username, password) =>
+const rawLogin = async (username, password, token_ok, token_err) =>
 	await HashLogic.check(
 		{ user: username, password: password },
-		SessionLogic.register
+		SessionLogic.register,
+		token_ok,
+		token_err
 	);
-const login = async (req, res) => {
-	const { username, password } = req.query;
+const login__Validated = async (req, res) => {
+	const { username, password } = req.body;
 	let result = await rawLogin(
 		username,
 		password,
 		(token) => {
 			req.headers.authorization = `Bearer ${token}`;
-			res.status(200);
+			res.status(200).json({
+				message: "Inicio de sesión exitoso",
+			});
 		},
 		(error) => {
 			res.status(error.status).json(error.json);
 		}
 	);
-	console.log({
-		LOGIN_RESULT: result,
-	});
 	return;
+};
+const login = async (req, res) => {
+	const parametersAccepted = new RequestSet(
+		[ValidationTemplate.username, ValidationTemplate.password],
+		{ req, res },
+		req.body
+	);
+	parametersAccepted.validate(login__Validated, (req, res, errors) => {
+		res.status(400).json(errors);
+		return;
+	});
 };
 const logout = async (req, res) => {
 	const token = req.headers.authorization;

@@ -2,6 +2,8 @@
 const Response = require("../entity/Response");
 const Connection = require("../data/Connection");
 const Session = require("../entity/Session");
+const jwt = require("jsonwebtoken");
+const keys = require("./../keys");
 const SessionData = require("../data/SessionData");
 
 const Insert = async (username) => {
@@ -63,19 +65,20 @@ const Deactivate = async (id) => {
 	}
 };
 
-const register = async (cr, success, error) => {
+const register = async (cr, success = (obj) => {}, onError = (obj) => {}) => {
+	console.log("ep", { cr });
 	if (cr.errCode == 200) {
+		console.log("post 200 ", { cr });
 		// Generamos código de sesión:
-		let sessionInsertResult = SessionData.Insert(username);
-		if (!sessionInsertResult.ErrorFound) {
-			let sirOr = sessionInsertResult.ObjectReturned;
-			const rows = sirOr.statement.fetchAllSync();
-			if (rows.length >= 1) {
-				const { NuevoID, FilasAfectadas } = rows[0];
+		let rows = await SessionData.insert(cr.username);
+		console.log({ rows });
+		if (rows.error == null) {
+			if (rows.count >= 1) {
+				const NuevoID = rows.sid;
 
 				// Generar token con NuevoID y username.
 				const token = jwt.sign(
-					{ username, sessionId: NuevoID },
+					{ username: cr.username, sessionId: NuevoID },
 					keys.TOKEN_AUTHORIZATION_KEY,
 					{ expiresIn: "8h" }
 				);
@@ -84,7 +87,7 @@ const register = async (cr, success, error) => {
 				// Guardar token en el cliente.
 				//req.headers.authorization = `Bearer ${token}`;
 			}
-			error({
+			onError({
 				status: 500,
 				json: {
 					err: "Hubo un error al intentar guardar tu sesión. ",
@@ -92,14 +95,15 @@ const register = async (cr, success, error) => {
 			});
 			return;
 		}
-		error({
+		onError({
 			status: 500,
 			json: {
 				err: "Hubo un error al intentar procesar la sesión. ",
 			},
 		});
+		return;
 	} else {
-		error({
+		onError({
 			status: 403,
 			json: {
 				err: "Usuario o contraseña inválidos. ",

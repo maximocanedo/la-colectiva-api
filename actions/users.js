@@ -27,11 +27,15 @@ const createUser__Validated = async (req, res) => {
 		const userRecord = await UserLogic.add(newUser);
 		const { StatusCode, LoginDetails, InicioSesion } = await processUser(
 			userRecord,
-			req.query.password
+			req.body.password
 		);
+		console.log({
+			userGiven: newUser.username,
+			passwordGiven: req.body.password,
+		});
 		const hashRecord = await createHash(
 			newUser.username,
-			req.query.password
+			req.body.password
 		);
 		res.status(StatusCode).json({
 			user: userRecord,
