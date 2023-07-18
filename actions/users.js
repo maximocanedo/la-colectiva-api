@@ -58,7 +58,7 @@ const createUser = async (req, res) => {
 		req.body
 	);
 	parametersAccepted.validate(createUser__Validated, (req, res, errors) => {
-		res.status(400).json({ errors, body: req.body });
+		res.status(400).json(errors);
 	});
 };
 

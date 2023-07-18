@@ -27,7 +27,7 @@ class RequestSet {
 			if (ok) {
 				onSuccess(req, res);
 			} else {
-				onError(req, res, { errors, ok, parameters: this.parameters });
+				onError(req, res, { errors });
 			}
 		};
 	}
