@@ -17,11 +17,9 @@ const hsh = {
 const revokeAll = async (user) => {
 	const query = `UPDATE [${hsh.Table}] SET [${hsh.Columns.status}] = 0 WHERE [${hsh.Columns.user}] = ?`;
 	const parameters = [user.username];
-	console.log("revokeall", { query, parameters });
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.RunTransaction(query, parameters);
-		console.log({ response, query, parameters });
 		return response;
 	} catch (err) {
 		console.error(err);
@@ -36,7 +34,6 @@ const add = async (hash) => {
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.RunTransaction(query, parameters);
-		console.log({ response, query, parameters });
 		return response;
 	} catch (err) {
 		console.error(err);
@@ -51,7 +48,6 @@ const getLast = async (user) => {
 	try {
 		const con = new Connection(Connection.Database.Colectiva);
 		const response = await con.FetchData(query, parameters);
-		console.log("getLastHash response: ", { response });
 		return response;
 	} catch (err) {
 		console.error(err);

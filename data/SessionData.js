@@ -20,13 +20,13 @@ const insert = async (user) => {
 		const response = await con.FetchData(query, parameters);
 		if (response.Message.count >= 1) {
 			const r2 = await con.FetchData(
-				`SELECT * FROM [${sn.Table}] WHERE [${sn.Columns.user}] = ? ORDER BY [${sn.Columns.id}] DESC`,
+				`SELECT TOP(1) * FROM [${sn.Table}] WHERE [${sn.Columns.user}] = ? ORDER BY [${sn.Columns.id}] DESC`,
 				[user]
 			);
 			return {
 				response,
 				count: response.Message.count,
-				sid: sn.Columns.id,
+				sid: r2.Message[0][sn.Columns.id],
 				error: null,
 			};
 		}
@@ -84,4 +84,4 @@ const disable = async (id) => {
 	}
 };
 
-module.exports = { insert, getStatus, getAll, disable };
+module.exports = { insert, getStatus, getAll, disable, sn };

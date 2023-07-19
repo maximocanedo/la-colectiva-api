@@ -29,10 +29,6 @@ const createUser__Validated = async (req, res) => {
 			userRecord,
 			req.body.password
 		);
-		console.log({
-			userGiven: newUser.username,
-			passwordGiven: req.body.password,
-		});
 		const hashRecord = await createHash(
 			newUser.username,
 			req.body.password
@@ -69,7 +65,6 @@ const createUser = async (req, res) => {
 const createUserObject = (req, res) => {
 	const { username, name, surname, bio, role, birthdate, password } =
 		req.body;
-	console.log({ body: req.body });
 	const mustHave = [username, name, surname, role, birthdate, password];
 	const optional = [bio];
 	const verificationsPassed = mustHave.every(

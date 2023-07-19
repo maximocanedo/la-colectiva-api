@@ -10,14 +10,11 @@ const Insert = async (username) => {
 	let user = new User();
 	user.username = username;
 	let result = SessionData.insert(user);
-	console.log({ result });
 	if (!result.ErrorFound) {
-		console.log(101);
 		return {
 			result,
 		};
 	} else {
-		console.log(105);
 		return {
 			result: null,
 		};
@@ -29,7 +26,6 @@ const verifyToken = (token) => {
 		const decoded = jwt.verify(token, keys.TOKEN_AUTHORIZATION_KEY);
 		return decoded;
 	} catch (err) {
-		console.log("Error al intentar decodificar el token. ", err);
 		return null;
 	}
 };
@@ -39,11 +35,10 @@ const IsActive = async (token) => {
 	if (decoded != null) {
 		let result = await SessionData.getStatus(decoded.sessionId);
 		if (!result.ErrorFound) {
-			let data = result.ObjectReturned;
-			let st = data.statement;
-			const rows = st.fetchAllSync();
-			if (rows >= 1) {
-				return rows[0].Activo;
+			let data = result.Message;
+			const rows = data;
+			if (rows[0] != null) {
+				return rows[0][SessionData.sn.Columns.id];
 			}
 		}
 		return false;
@@ -53,7 +48,6 @@ const IsActive = async (token) => {
 
 const Deactivate = async (id) => {
 	let result = SessionData.disable(id);
-	console.log({ result });
 	if (!result.ErrorFound && result.AffectedRows == 1) {
 		return {
 			result: true,
@@ -66,12 +60,9 @@ const Deactivate = async (id) => {
 };
 
 const register = async (cr, success = (obj) => {}, onError = (obj) => {}) => {
-	console.log("ep", { cr });
 	if (cr.errCode == 200) {
-		console.log("post 200 ", { cr });
 		// Generamos código de sesión:
 		let rows = await SessionData.insert(cr.username);
-		console.log({ rows });
 		if (rows.error == null) {
 			if (rows.count >= 1) {
 				const NuevoID = rows.sid;

@@ -26,7 +26,7 @@ const getByUsername = async (username) => {
 		const response = await con.FetchData(query, parameters);
 		return response;
 	} catch (err) {
-		console.error(err);
+		console.error("userError", err);
 		return {
 			ErrorFound: true,
 		};

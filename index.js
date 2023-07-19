@@ -26,9 +26,16 @@ app.post("/login", actions.login);
 app.post("/logout", actions.authenticateToken, actions.logout);
 
 /* Probar conexión */
-app.get("/protected", actions.authenticateToken, (req, res) => {
-	console.log({ username: req.user.username });
-	res.json({ message: "Acceso permitido", username: req.user });
+app.get("/prote", actions.authenticateToken, (req, res) => {
+	res.status(200).json({ message: "Acceso permitido", username: req.user });
+});
+app.get("/protected", (req, res) => {
+	actions.authenticateToken(req, res, (req, res) => {
+		res.status(200).json({
+			message: "Acceso permitido",
+			username: req.user,
+		});
+	});
 });
 
 /* Puesta en marcha del servidor */

@@ -11,19 +11,24 @@ const SessionLogic = require("../logic/SessionLogic");
 const jwt = require("jsonwebtoken");
 
 const authenticateToken = async (req, res, next) => {
-	const token = req.headers.authorization;
-	if (!token) {
-		return res.status(401).json({ message: "Token no proporcionado" });
-	}
-	let decoded = SessionLogic.verifyToken(token);
-	if (decoded != null) {
-		let active = await SessionLogic.IsActive(token);
-		if (active) {
-			req.user = decoded.username;
-			next(req, res);
-			return;
+	try {
+		const tokenWithBearer = req.headers.authorization;
+		const token = tokenWithBearer.split(" ")[1];
+		if (!token) {
+			return res.status(401).json({ message: "Token no proporcionado" });
 		}
-		return res.status(401).json({ message: "Token deshabilitado" });
+		let decoded = SessionLogic.verifyToken(token);
+		if (decoded != null) {
+			let active = await SessionLogic.IsActive(token);
+			if (active) {
+				req.user = decoded.username;
+				console.warn({ user: decoded.username });
+				return await next(req, res);
+			}
+			return res.status(401).json({ message: "Token deshabilitado" });
+		}
+	} catch (e) {
+		console.error({ error: e });
 	}
 };
 
@@ -43,6 +48,7 @@ const login__Validated = async (req, res) => {
 			req.headers.authorization = `Bearer ${token}`;
 			res.status(200).json({
 				message: "Inicio de sesión exitoso",
+				token,
 			});
 		},
 		(error) => {

@@ -19,9 +19,7 @@ const getByUsername = async (username) => {
 		const result = data.ObjectReturned;
 		if (result.count > 0) {
 			const res = result[0];
-			console.log("const res (23)", res);
 			const user = setFromRecordSet(res);
-			console.log("const user (26)", user);
 			return {
 				ErrorFound: false,
 				ObjectReturned: user,
@@ -41,7 +39,6 @@ const getByUsername = async (username) => {
 const verify = {
 	usernameAvailability: async (username) => {
 		const data = await getByUsername(username);
-		console.log(45, { data });
 		if (data.ObjectReturned != null && data.ObjectReturned.count == 0)
 			return {
 				res: true,
