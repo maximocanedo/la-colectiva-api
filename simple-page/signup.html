@@ -1,0 +1,23 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear cuenta</title>
+    <script src="./signup.js"></script>
+</head>
+<body>
+    <form action="#">
+        <input type="text" id="username" placeholder="Nombre de usuario" /><br>
+        <input type="text" id="name" placeholder="Nombre completo" /><br>
+        <input type="number" min="18" id="age" placeholder="Edad" /><br>
+        <input type="mail" id="mail" placeholder="Correo electrónico" /><br>
+        <input type="date" id="birth" placeholder="Fecha de nacimiento" /><br>
+        <input type="password" id="password" placeholder="Contraseña" /><br />
+        <br>
+        <button onclick="signup()" type="button">Crear cuenta</button>
+        <br>
+        <br>
+        <span id="status"></span>
+    </form>
+</body>
+</html>
