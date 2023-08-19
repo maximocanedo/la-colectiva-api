@@ -52,11 +52,60 @@ const authenticate = async (req, res, next) => {
 		});
 	}
 };
-const filterAdminsOnly = async (req, res, next) => {
+const adminsCanAccess = async (req, res, next) => {
 	try {
 		const user = req.user;
-		if (user.role == 3) {
+		if (user.role >= 3) {
 			next();
+			return;
+		}
+		res.status(403).json({
+			message: "Action not allowed",
+		});
+	} catch (err) {
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+};
+const moderatorsCanAccess = async (req, res, next) => {
+	try {
+		const user = req.user;
+		if (user.role >= 2) {
+			next();
+			return;
+		}
+		res.status(403).json({
+			message: "Action not allowed",
+		});
+	} catch (err) {
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+};
+const normalUsersCanAccess = async (req, res, next) => {
+	try {
+		const user = req.user;
+		if (user.role >= 1) {
+			next();
+			return;
+		}
+		res.status(403).json({
+			message: "Action not allowed",
+		});
+	} catch (err) {
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+};
+const everybodyCanAccess = async (req, res, next) => {
+	try {
+		const user = req.user;
+		if (user.role >= 0) {
+			next();
+			return;
 		}
 		res.status(403).json({
 			message: "Action not allowed",
@@ -107,7 +156,52 @@ router.post("/change-password", authenticate, async (req, res) => {
 		res.status(500).json({ message: "Server error" });
 	}
 });
-//router.post("/update-role", authenticate, filterAdminsOnly, async(req, res));
+router.get(
+	"/test/only-admin-can-enter-here",
+	authenticate,
+	adminsCanAccess,
+	async (req, res) => {
+		res.status(200).json({
+			message: "You're a fuckin admin yeah",
+		});
+	}
+);
+router.post(
+	"/:username/update/role/:role",
+	authenticate,
+	adminsCanAccess,
+	async (req, res) => {
+		try {
+			const user = await User.findOne({ username: req.params.username });
+			if (!user) {
+				res.status(404).json({
+					message: "Username not found. ",
+				});
+			}
+			const roles = {
+				admin: 3,
+				moderator: 2,
+				normal: 1,
+				limited: 0,
+			};
+			const role_received = req.params.role;
+			if (!role_received || !(role_received in roles)) {
+				res.status(400).json({
+					message: "Invalid value for role",
+				});
+			}
+			user.role = roles[role_received];
+			user.save();
+			res.status(200).json({
+				message: "Role updated successfully. ",
+			});
+		} catch (err) {
+			res.status(500).json({
+				message: "Internal error. ",
+			});
+		}
+	}
+);
 router.get("/:username", async (req, res) => {
 	try {
 		const username = req.params.username;

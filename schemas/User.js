@@ -26,7 +26,7 @@ const schemaCommonProperties = {
 const UserStatics = {
 	roles: {
 		// El usuario está bloqueado y está limitado a las funciones básicas (lectura)
-		BLOCKED: 0,
+		LIMITED: 0,
 		// El usuario puede ver horarios, comentar objetos, dar likes, etc.
 		NORMAL: 1,
 		// El usuario puede agregar horarios, lugares, objetos, etc.
@@ -75,8 +75,6 @@ const userSchema = mongoose.Schema({
 	password: {
 		type: String,
 		required: true,
-		minlength: 6,
-		maxlength: 32,
 	},
 	active: {
 		type: Boolean,
