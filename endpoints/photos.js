@@ -9,6 +9,7 @@ const Photo = require("../schemas/Photo");
 const pre = require("./pre");
 const path = require("path");
 const fs = require("fs");
+const { Comment, CommentSchema } = require("./../schemas/CommentSchema");
 router.use(express.json());
 router.use(cookieParser());
 
@@ -222,5 +223,61 @@ router.get("/protected", pre.authenticate, (req, res) => {
 		user: req.user,
 	});
 });
+
+// COMENTARIOS
+router.get("/:id/comments", async (req, res) => {
+	try {
+		const photoId = req.params.id;
+		const page = req.query.p || 0;
+		const itemsPerPage = req.query.itemsPerPage || 10;
+		let result = await Photo.listComments({
+			photoId,
+			page,
+			itemsPerPage,
+		});
+		res.status(result.status).json(result);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+}); // Get all comments.
+router.post(
+	"/:id/comments",
+	pre.authenticate,
+	pre.normalUsersCanAccess,
+	async (req, res) => {
+		try {
+			const photoId = req.params.id;
+			const pic = await Photo.findById(photoId);
+			if (!pic) {
+				res.status(404).json({
+					message: "Photo not found",
+				});
+				return;
+			}
+			const content = req.body.content;
+			const username = req.user.username;
+			const userId = req.user._id;
+			const comment = new Comment({
+				userId,
+				username,
+				content,
+			});
+			pic.comments.push(comment);
+			await pic.save();
+			res.status(201).json({
+				message: "Comment added",
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Post a new comment.
+router.delete("/:id/comments/:comment_id", async (req, res) => {}); // Delete a comment.
 
 module.exports = router;
