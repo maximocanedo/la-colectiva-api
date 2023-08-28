@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Comment = require("./Comment");
 const { ObjectId } = require("mongodb");
+const ValidationSchema = require("./Validation");
 
 const photoSchema = mongoose.Schema({
 	filename: {
@@ -33,6 +34,7 @@ const photoSchema = mongoose.Schema({
 			ref: "Comment",
 		},
 	],
+	validations: [ValidationSchema],
 });
 
 photoSchema.statics.comment = async function (photoId, content, userId) {
@@ -57,7 +59,6 @@ photoSchema.statics.comment = async function (photoId, content, userId) {
 		throw error;
 	}
 };
-
 photoSchema.statics.listComments = async function ({
 	photoId,
 	page,
@@ -107,6 +108,53 @@ photoSchema.statics.listComments = async function ({
 			status: 500,
 			error: err,
 			msg: "Could not fetch the comments.",
+		};
+	}
+};
+photoSchema.statics.validate = async function (photoId, userId, validates) {
+	try {
+		const photo = await this.findById(photoId);
+		if (!photo) {
+			return {
+				success: false,
+				status: 404,
+				message: "Photo not found",
+			};
+		}
+
+		// Buscar si el usuario ya tiene una validación en esta foto
+		const existingValidation = photo.validations.find((validation) => {
+			console.log({
+				validationUID: validation.userId.toString(),
+				userId: userId.toString(),
+				equals: validation.userId.toString() === userId.toString(),
+			});
+			return validation.userId.toString() === userId.toString();
+		});
+
+		if (existingValidation) {
+			// Si ya existe una validación, actualizar su estado
+			existingValidation.validation = validates;
+		} else {
+			// Si no existe, crear una nueva validación
+			photo.validations.push({
+				userId: userId,
+				validation: validates,
+			});
+		}
+
+		await photo.save();
+
+		return {
+			success: true,
+			status: 200,
+			message: "Validation saved",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			status: 500,
+			message: "Could not save validation",
 		};
 	}
 };

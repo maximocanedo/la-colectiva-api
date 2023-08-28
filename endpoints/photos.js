@@ -90,8 +90,12 @@ router.get("/:id", async (req, res) => {
 				message: "Image not found",
 			});
 		}
-
-		let fullRoute = path.join(__dirname, "../data/photos/", pic.filename);
+		const totalValidations = pic.validations.filter(
+			(validation) => validation.validation === true
+		).length;
+		const totalInvalidations = pic.validations.filter(
+			(validation) => validation.validation === false
+		).length;
 
 		// Envía la imagen como respuesta
 		res.status(200).json({
@@ -99,6 +103,8 @@ router.get("/:id", async (req, res) => {
 			username: pic.username,
 			description: pic.description,
 			uploadDate: pic.uploadDate,
+			validations: totalValidations,
+			invalidations: totalInvalidations,
 		});
 	} catch (err) {
 		console.error(err);
@@ -318,5 +324,67 @@ router.delete(
 		}
 	}
 ); // Eliminar comentario
+
+// Validaciones
+router.post(
+	"/:photoId/validate",
+	pre.authenticate,
+	pre.normalUsersCanAccess,
+	async (req, res) => {
+		try {
+			const { photoId } = req.params;
+			const userId = req.user._id;
+			const validates = true;
+
+			const result = await Photo.validate(photoId, userId, validates);
+
+			if (!result.success) {
+				console.error(result.message);
+				return res.status(result.status).json({
+					message: result.message,
+				});
+			}
+
+			res.status(result.status).json({
+				message: result.message,
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Validar
+router.post(
+	"/:photoId/invalidate",
+	pre.authenticate,
+	pre.normalUsersCanAccess,
+	async (req, res) => {
+		try {
+			const { photoId } = req.params;
+			const userId = req.user._id;
+			const validates = false;
+
+			const result = await Photo.validate(photoId, userId, validates);
+
+			if (!result.success) {
+				console.error(result.message);
+				return res.status(result.status).json({
+					message: result.message,
+				});
+			}
+
+			res.status(result.status).json({
+				message: result.message,
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Invalidar
 
 module.exports = router;
