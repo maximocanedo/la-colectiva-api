@@ -9,7 +9,7 @@ const Photo = require("../schemas/Photo");
 const pre = require("./pre");
 const path = require("path");
 const fs = require("fs");
-const { Comment, CommentSchema } = require("./../schemas/CommentSchema");
+const Comment = require("../schemas/Comment");
 router.use(express.json());
 router.use(cookieParser());
 
@@ -35,6 +35,7 @@ const storage = multer.diskStorage({
 	},
 });
 
+// Acciones principales
 const upload = multer({ storage: storage });
 router.post(
 	"/upload",
@@ -58,14 +59,14 @@ router.post(
 			const otrosDatos = req.body; // Aquí estarán otros datos del formulario si los tienes
 			const { filename } = archivo;
 			const { description } = otrosDatos;
-			const username = req.user.username;
+			const userId = req.user._id;
 			let pic = new Photo({
 				filename,
-				username,
+				userId,
 				description,
 			});
 
-			let pics = pic.save();
+			let pics = await pic.save();
 			res.status(201).json({
 				id: pics._id,
 				message: "The file was successfully saved. ",
@@ -77,7 +78,7 @@ router.post(
 			});
 		}
 	}
-);
+); // Subir una imagen
 router.get("/:id", async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -105,7 +106,7 @@ router.get("/:id", async (req, res) => {
 			message: "Internal error",
 		});
 	}
-});
+}); // Ver detalles de imagen
 router.get("/:id/view", async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -127,7 +128,7 @@ router.get("/:id/view", async (req, res) => {
 			message: "Internal error",
 		});
 	}
-});
+}); // Ver imagen
 router.patch(
 	"/:id",
 	pre.authenticate,
@@ -173,7 +174,7 @@ router.patch(
 			});
 		}
 	}
-);
+); // Editar pie de imagen
 router.delete("/:id", pre.authenticate, async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -216,15 +217,15 @@ router.delete("/:id", pre.authenticate, async (req, res) => {
 			message: "Internal error. ",
 		});
 	}
-});
+}); // Eliminar imagen
 router.get("/protected", pre.authenticate, (req, res) => {
 	res.status(200).json({
 		message: "Successfully authenticated",
 		user: req.user,
 	});
-});
+}); // Prueba de autenticidad
 
-// COMENTARIOS
+// Acciones con comentarios
 router.get("/:id/comments", async (req, res) => {
 	try {
 		const photoId = req.params.id;
@@ -242,7 +243,7 @@ router.get("/:id/comments", async (req, res) => {
 			message: "Internal error",
 		});
 	}
-}); // Get all comments.
+}); // Ver comentarios de la imagen
 router.post(
 	"/:id/comments",
 	pre.authenticate,
@@ -250,23 +251,18 @@ router.post(
 	async (req, res) => {
 		try {
 			const photoId = req.params.id;
-			const pic = await Photo.findById(photoId);
-			if (!pic) {
-				res.status(404).json({
-					message: "Photo not found",
-				});
-				return;
-			}
 			const content = req.body.content;
-			const username = req.user.username;
 			const userId = req.user._id;
-			const comment = new Comment({
-				userId,
-				username,
-				content,
-			});
-			pic.comments.push(comment);
-			await pic.save();
+
+			const result = await Photo.comment(photoId, content, userId);
+
+			if (result.error) {
+				console.error(result.error);
+				return res.status(500).json({
+					message: result.msg,
+				});
+			}
+
 			res.status(201).json({
 				message: "Comment added",
 			});
@@ -277,7 +273,50 @@ router.post(
 			});
 		}
 	}
-); // Post a new comment.
-router.delete("/:id/comments/:comment_id", async (req, res) => {}); // Delete a comment.
+); // Publicar comentario
+router.delete(
+	"/:photoId/comments/:commentId",
+	pre.authenticate,
+	pre.normalUsersCanAccess,
+	async (req, res) => {
+		try {
+			const { photoId, commentId } = req.params;
+			const photo = await Photo.findById(photoId);
+			if (!photo) {
+				return res.status(404).json({
+					message: "Photo not found",
+				});
+			}
+			const comment = await Comment.findById(commentId);
+			if (!comment) {
+				return res.status(404).json({
+					message: "Comment not found",
+				});
+			}
+			if (comment.userId == req.user._id || req.user.role >= 2) {
+				// Eliminar el comentario de la colección Comment
+				await Comment.delete(commentId);
+
+				// Eliminar la referencia del comentario en el arreglo comments de la foto
+				const commentIndex = photo.comments.indexOf(commentId);
+				if (commentIndex !== -1) {
+					photo.comments.splice(commentIndex, 1);
+					await photo.save();
+				}
+				return res.status(200).json({
+					message: "Comment deleted",
+				});
+			} else
+				return res.status(403).json({
+					message: "Unauthorized. ",
+				});
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Eliminar comentario
 
 module.exports = router;
