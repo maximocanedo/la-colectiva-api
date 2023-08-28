@@ -1,6 +1,12 @@
 # Credenciales
 credentials.json
 
+# Media
+data/
+data/*
+data/photos/
+
+
 # Logs
 logs
 *.log
