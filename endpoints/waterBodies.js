@@ -1,0 +1,326 @@
+"use strict";
+require("dotenv").config();
+const express = require("express");
+const multer = require("multer");
+const router = express.Router();
+const cookieParser = require("cookie-parser");
+const User = require("../schemas/User");
+const Photo = require("../schemas/Photo");
+const WaterBody = require("../schemas/WaterBody");
+const pre = require("./pre");
+const path = require("path");
+const fs = require("fs");
+const Comment = require("../schemas/Comment");
+router.use(express.json());
+router.use(cookieParser());
+
+router.post(
+	"/",
+	pre.authenticate,
+	pre.moderatorsCanAccess,
+	async (req, res) => {
+		const requiredProps = ["name", "type"];
+		const missingProps = requiredProps.filter(
+			(prop) => !(prop in req.body)
+		);
+		if (missingProps.length > 0) {
+			return res.status(400).json({
+				message: `Missing required properties: ${missingProps.join(
+					", "
+				)}`,
+			});
+		}
+		try {
+			const { name, type } = req.body;
+			const userId = req.user._id;
+			let reg = await WaterBody.create({
+				userId,
+				name,
+				type,
+			});
+			res.status(201).json({
+				id: reg._id,
+				message: "The file was successfully saved. ",
+			});
+		} catch (err) {
+			console.log(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Crear un registro
+router.get("/:id", async (req, res) => {
+	try {
+		const id = req.params.id;
+		// Utiliza findOne para buscar un registro con ID y active: true
+		let resource = await WaterBody.findOne({ _id: id, active: true });
+
+		if (!resource) {
+			return res.status(404).json({
+				message: "Resource not found",
+			});
+		}
+		const totalValidations = resource.validations.filter(
+			(validation) => validation.validation === true
+		).length;
+		const totalInvalidations = resource.validations.filter(
+			(validation) => validation.validation === false
+		).length;
+
+		// Envía la imagen como respuesta
+		res.status(200).json({
+			userId: resource.userId,
+			name: resource.name,
+			type: resource.type,
+			uploadDate: resource.uploadDate,
+			validations: totalValidations,
+			invalidations: totalInvalidations,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+}); // Ver recurso
+router.patch(
+	"/:id",
+	pre.authenticate,
+	pre.moderatorsCanAccess,
+	async (req, res) => {
+		try {
+			const id = req.params.id;
+			const username = req.user.username;
+			const pic = await Photo.findOne({ _id: id, active: 1 });
+			if (!pic) {
+				res.status(404).json({
+					message: "There's no image with that ID. ",
+				});
+				return;
+			}
+			console.log({
+				picsusername: pic.username,
+				username,
+			});
+			if (pic.username != username) {
+				res.status(403).json({
+					message:
+						"You can't edit info about an image that other user uploaded. ",
+				});
+				return;
+			}
+			if (!req.body.description) {
+				res.status(400).json({
+					message: "You have to provide a new description. ",
+				});
+				return;
+			}
+			const description = req.body.description;
+			pic.description = description;
+			await pic.save();
+			res.status(200).json({
+				message: "Description updated. ",
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error. ",
+			});
+		}
+	}
+); // PENDIENTE !!!!
+router.delete("/:id", pre.authenticate, async (req, res) => {
+	try {
+		const id = req.params.id;
+		const resource = await WaterBody.findById(id);
+		const username = req.user.username;
+		const isAdmin = req.user.role >= 3;
+		if (!resource) {
+			res.status(404).json({
+				message: "There's no photo with the provided ID. ",
+			});
+			return;
+		}
+		if (resource.username != username && !isAdmin) {
+			res.status(403).json({
+				message: "No image was deleted. ",
+			});
+			return;
+		}
+		resource.active = false;
+		const status = await resource.save();
+		res.status(200).json({
+			message: "File was deleted and data was disabled. ",
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error. ",
+		});
+	}
+}); // Eliminar imagen
+router.get("/protected", pre.authenticate, (req, res) => {
+	res.status(200).json({
+		message: "Successfully authenticated",
+		user: req.user,
+	});
+}); // Prueba de autenticidad
+
+// Acciones con comentarios
+router.get("/:id/comments", async (req, res) => {
+	try {
+		const wbId = req.params.id;
+		const page = req.query.p || 0;
+		const itemsPerPage = req.query.itemsPerPage || 10;
+		let result = await WaterBody.listComments({
+			wbId,
+			page,
+			itemsPerPage,
+		});
+		res.status(result.status).json(result);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+}); // Ver comentarios del recurso
+router.post(
+	"/:id/comments",
+	pre.authenticate,
+	pre.normalUsersCanAccess,
+	async (req, res) => {
+		try {
+			const wbId = req.params.id;
+			const content = req.body.content;
+			const userId = req.user._id;
+
+			const result = await WaterBody.comment(wbId, content, userId);
+
+			if (result.error) {
+				console.error(result.error);
+				return res.status(500).json({
+					message: result.msg,
+				});
+			}
+
+			res.status(201).json({
+				message: "Comment added",
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Publicar comentario
+router.delete(
+	"/:wbId/comments/:commentId",
+	pre.authenticate,
+	pre.normalUsersCanAccess,
+	async (req, res) => {
+		try {
+			const { wbId, commentId } = req.params;
+			const resource = await WaterBody.findById(wbId);
+			if (!resource) {
+				return res.status(404).json({
+					message: "Resource not found",
+				});
+			}
+			const comment = await Comment.findById(commentId);
+			if (!comment) {
+				return res.status(404).json({
+					message: "Comment not found",
+				});
+			}
+			if (comment.userId == req.user._id || req.user.role >= 2) {
+				// Eliminar el comentario de la colección Comment
+				await Comment.delete(commentId);
+
+				// Eliminar la referencia del comentario en el arreglo comments de la foto
+				const commentIndex = resource.comments.indexOf(commentId);
+				if (commentIndex !== -1) {
+					resource.comments.splice(commentIndex, 1);
+					await resource.save();
+				}
+				return res.status(200).json({
+					message: "Comment deleted",
+				});
+			} else
+				return res.status(403).json({
+					message: "Unauthorized. ",
+				});
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Eliminar comentario
+
+// Validaciones
+router.post(
+	"/:wbId/validate",
+	pre.authenticate,
+	pre.normalUsersCanAccess,
+	async (req, res) => {
+		try {
+			const { wbId } = req.params;
+			const userId = req.user._id;
+			const validates = true;
+
+			const result = await WaterBody.validate(wbId, userId, validates);
+
+			if (!result.success) {
+				console.error(result.message);
+				return res.status(result.status).json({
+					message: result.message,
+				});
+			}
+
+			res.status(result.status).json({
+				message: result.message,
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Validar
+router.post(
+	"/:wbId/invalidate",
+	pre.authenticate,
+	pre.normalUsersCanAccess,
+	async (req, res) => {
+		try {
+			const { wbId } = req.params;
+			const userId = req.user._id;
+			const validates = false;
+
+			const result = await WaterBody.validate(wbId, userId, validates);
+
+			if (!result.success) {
+				console.error(result.message);
+				return res.status(result.status).json({
+					message: result.message,
+				});
+			}
+
+			res.status(result.status).json({
+				message: result.message,
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Invalidar
+
+module.exports = router;

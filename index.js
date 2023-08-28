@@ -25,5 +25,6 @@ connectToDB((err) => {
 app.use("/users", routes.users);
 app.use("/photos", routes.photos);
 app.use("/comments", routes.comments);
+app.use("/waterBodies", routes.waterBodies);
 // Servir contenido estático de la carpeta 'simple-page'
 app.use("/test", express.static(path.join(__dirname, "simple-page")));
