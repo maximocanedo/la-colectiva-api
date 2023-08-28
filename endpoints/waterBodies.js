@@ -1,19 +1,16 @@
 "use strict";
 require("dotenv").config();
 const express = require("express");
-const multer = require("multer");
 const router = express.Router();
 const cookieParser = require("cookie-parser");
-const User = require("../schemas/User");
-const Photo = require("../schemas/Photo");
 const WaterBody = require("../schemas/WaterBody");
 const pre = require("./pre");
-const path = require("path");
-const fs = require("fs");
 const Comment = require("../schemas/Comment");
+
 router.use(express.json());
 router.use(cookieParser());
 
+/* Acciones básicas */
 router.post(
 	"/",
 	pre.authenticate,
@@ -89,38 +86,40 @@ router.patch(
 	pre.authenticate,
 	pre.moderatorsCanAccess,
 	async (req, res) => {
+		const requiredProps = ["name", "type"];
+		const missingProps = requiredProps.filter(
+			(prop) => !(prop in req.body)
+		);
+		if (missingProps.length > 0) {
+			return res.status(400).json({
+				message: `Missing required properties: ${missingProps.join(
+					", "
+				)}`,
+			});
+		}
 		try {
 			const id = req.params.id;
-			const username = req.user.username;
-			const pic = await Photo.findOne({ _id: id, active: 1 });
-			if (!pic) {
+			const userId = req.user._id;
+			const reg = await WaterBody.findOne({ _id: id, active: 1 });
+			if (!reg) {
 				res.status(404).json({
-					message: "There's no image with that ID. ",
+					message: "There's no resource with that ID. ",
 				});
 				return;
 			}
-			console.log({
-				picsusername: pic.username,
-				username,
-			});
-			if (pic.username != username) {
+			if (reg.userId.toString() != userId.toString()) {
 				res.status(403).json({
 					message:
-						"You can't edit info about an image that other user uploaded. ",
+						"You can't edit info about a resource that other user uploaded. ",
 				});
 				return;
 			}
-			if (!req.body.description) {
-				res.status(400).json({
-					message: "You have to provide a new description. ",
-				});
-				return;
-			}
-			const description = req.body.description;
-			pic.description = description;
-			await pic.save();
+			const { name, type } = req.body;
+			reg.name = name;
+			reg.type = type;
+			await reg.save();
 			res.status(200).json({
-				message: "Description updated. ",
+				message: "Resource updated. ",
 			});
 		} catch (err) {
 			console.error(err);
@@ -129,7 +128,7 @@ router.patch(
 			});
 		}
 	}
-); // PENDIENTE !!!!
+); // Editar recurso
 router.delete("/:id", pre.authenticate, async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -151,7 +150,7 @@ router.delete("/:id", pre.authenticate, async (req, res) => {
 		resource.active = false;
 		const status = await resource.save();
 		res.status(200).json({
-			message: "File was deleted and data was disabled. ",
+			message: "Data was disabled. ",
 		});
 	} catch (err) {
 		console.error(err);
@@ -159,15 +158,9 @@ router.delete("/:id", pre.authenticate, async (req, res) => {
 			message: "Internal error. ",
 		});
 	}
-}); // Eliminar imagen
-router.get("/protected", pre.authenticate, (req, res) => {
-	res.status(200).json({
-		message: "Successfully authenticated",
-		user: req.user,
-	});
-}); // Prueba de autenticidad
+}); // Eliminar registro
 
-// Acciones con comentarios
+/* Comentarios */
 router.get("/:id/comments", async (req, res) => {
 	try {
 		const wbId = req.params.id;
@@ -261,7 +254,7 @@ router.delete(
 	}
 ); // Eliminar comentario
 
-// Validaciones
+/* Validaciones */
 router.post(
 	"/:wbId/validate",
 	pre.authenticate,
