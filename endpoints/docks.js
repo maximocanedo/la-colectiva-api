@@ -468,6 +468,15 @@ router.post(
 	"/:id/photos/",
 	pre.auth,
 	pre.allow.moderator,
+	async (req, res, next) => {
+		const { id } = req.params;
+		const dock = await Dock.findById(id);
+		if (!dock) {
+			return res.status(404).json({
+				message: "Resource not found",
+			});
+		} else next();
+	},
 	pre.uploadPhoto,
 	async (req, res) => {
 		try {
@@ -503,7 +512,31 @@ router.delete(
 	"/:id/photos/:photoId",
 	pre.auth,
 	pre.allow.moderator,
-	async (req, res) => {}
+	async (req, res) => {
+		try {
+			const { id, photoId } = req.params;
+			const dock = Dock.findOne(id);
+			if (!dock)
+				return res.status(404).json({
+					message: "Resource not found",
+				});
+			await Dock.updateOne({ _id: id }, { $pull: { pictures: photoId } });
+			// Eliminar foto en sí.
+			let status = await Photo.deletePhotoById(photoId);
+			if (status.success)
+				return res.status(200).json({
+					message: "Photo removed from resource",
+				});
+			res.status(200).json({
+				message: "Photo unlinked from resource, but still exists. ",
+			});
+		} catch (err) {
+			console.log(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
 ); // Eliminar foto
 
 module.exports = router;

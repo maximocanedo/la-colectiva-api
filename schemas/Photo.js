@@ -1,6 +1,8 @@
+const fs = require("fs").promises; // Importar fs.promises para trabajar con promesas
+const path = require("path");
 const mongoose = require("mongoose");
-const Comment = require("./Comment");
 const { ObjectId } = require("mongodb");
+const Comment = require("./Comment");
 const ValidationSchema = require("./Validation");
 
 const photoSchema = mongoose.Schema({
@@ -198,4 +200,40 @@ photoSchema.statics.validate = async function (photoId, userId, validates) {
 	}
 };
 
+photoSchema.statics.deletePhotoById = async function (id) {
+	try {
+		const photo = await this.findById(id);
+
+		if (!photo) {
+			return {
+				success: false,
+				status: 404,
+				message: "Photo not found",
+			};
+		}
+
+		// Eliminar el archivo del sistema
+		const filePath = path.join(
+			__dirname,
+			"../data/photos/",
+			photo.filename
+		);
+		await fs.unlink(filePath);
+
+		// Eliminar el registro en la base de datos
+		await this.deleteOne({ _id: id });
+
+		return {
+			success: true,
+			status: 200,
+			message: "Photo deleted successfully",
+		};
+	} catch (error) {
+		return {
+			success: false,
+			status: 500,
+			message: "Could not delete photo",
+		};
+	}
+};
 module.exports = mongoose.model("Photo", photoSchema);

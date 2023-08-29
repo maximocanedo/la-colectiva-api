@@ -141,14 +141,8 @@ const storage = multer.diskStorage({
 		// Generamos un nombre único para el archivo
 		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
 		const fileExtension = file.originalname.split(".").pop();
-		const fileNameWithoutExtension = file.originalname
-			.split(".")
-			.slice(0, -1)
-			.join("-")
-			.toLowerCase()
-			.split(" ")
-			.join("-");
-		const finalFileName = `${fileNameWithoutExtension}-${uniqueSuffix}.${fileExtension}`;
+		const user = req.user._id;
+		const finalFileName = `${user}-${uniqueSuffix}.${fileExtension}`;
 		cb(null, finalFileName);
 	},
 	fileFilter: (req, file, cb) => {
