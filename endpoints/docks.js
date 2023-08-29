@@ -11,187 +11,195 @@ const { ObjectId } = require("mongodb");
 router.use(express.json());
 router.use(cookieParser());
 
-/* Listados */
-// TODO: Paginar listas, crear un método estático que pagine.
-router.get("/explore", async (req, res) => {
-	try {
-		const { coordinates, radio, prefer, q } = req.body;
-		const page = req.query.p || 0;
-		const itemsPerPage = req.query.itemsPerPage || 10;
-		let preferObj = {
-			status: prefer,
-			name: { $regex: q || "", $options: "i" },
-		};
-		if (prefer == -1) {
-			preferObj = {
-				status: { $gt: -1 },
-				name: { $regex: q || "", $options: "i" },
-			};
-		}
-		const query = {
-			$and: [
-				{
-					coordinates: {
-						$near: {
-							$geometry: {
-								type: "Point",
-								coordinates: [...coordinates], // [longitud, latitud]
-							},
-							$maxDistance: radio,
-						},
-					},
-				},
-				preferObj,
-			],
-		};
-		let result = await Dock.listData(query, {
-			page,
-			itemsPerPage,
-		});
-
-		res.status(result.status).json(result.items);
-	} catch (err) {
-		console.error(err);
-		return res.status(500).json({
-			message: "Internal error",
-		});
-	}
-});
-router.get("/", async (req, res) => {
-	try {
-		const { prefer, q } = req.body;
-		const page = req.query.p || 0;
-		const itemsPerPage = req.query.itemsPerPage || 10;
-		let preferObj = {
-			status: prefer,
-		};
-		if (prefer == -1) {
-			preferObj = {
-				status: { $gt: -1 },
-			};
-		}
-		const query = {
-			$and: [
-				preferObj,
-				{
+const docks = {
+	actions: {
+		explore: async (req, res) => {
+			try {
+				const { coordinates, radio, prefer, q } = req.body;
+				const page = req.query.p || 0;
+				const itemsPerPage = req.query.itemsPerPage || 10;
+				let preferObj = {
+					status: prefer,
 					name: { $regex: q || "", $options: "i" },
-				},
-			],
-		};
-		let result = await Dock.listData(query, { page, itemsPerPage });
+				};
+				if (prefer == -1) {
+					preferObj = {
+						status: { $gt: -1 },
+						name: { $regex: q || "", $options: "i" },
+					};
+				}
+				const query = {
+					$and: [
+						{
+							coordinates: {
+								$near: {
+									$geometry: {
+										type: "Point",
+										coordinates: [...coordinates], // [longitud, latitud]
+									},
+									$maxDistance: radio,
+								},
+							},
+						},
+						preferObj,
+					],
+				};
+				let result = await Dock.listData(query, {
+					page,
+					itemsPerPage,
+				});
 
-		return res.status(result.status).json(result.items);
-	} catch (err) {
-		console.error(err);
-		return res.status(500).json({
-			message: "Internal error",
-		});
-	}
-});
+				res.status(result.status).json(result.items);
+			} catch (err) {
+				console.error(err);
+				return res.status(500).json({
+					message: "Internal error",
+				});
+			}
+		},
+		list: async (req, res) => {
+			try {
+				const { prefer, q } = req.body;
+				const page = req.query.p || 0;
+				const itemsPerPage = req.query.itemsPerPage || 10;
+				let preferObj = {
+					status: prefer,
+				};
+				if (prefer == -1) {
+					preferObj = {
+						status: { $gt: -1 },
+					};
+				}
+				const query = {
+					$and: [
+						preferObj,
+						{
+							name: { $regex: q || "", $options: "i" },
+						},
+					],
+				};
+				let result = await Dock.listData(query, { page, itemsPerPage });
+
+				return res.status(result.status).json(result.items);
+			} catch (err) {
+				console.error(err);
+				return res.status(500).json({
+					message: "Internal error",
+				});
+			}
+		},
+		create: async (req, res) => {
+			const requiredProps = [
+				"name",
+				"address",
+				"region",
+				"notes",
+				"status",
+				"latitude",
+				"longitude",
+			];
+			const missingProps = requiredProps.filter(
+				(prop) => !(prop in req.body)
+			);
+			if (missingProps.length > 0) {
+				return res.status(400).json({
+					message: `Missing required properties: ${missingProps.join(
+						", "
+					)}`,
+				});
+			}
+			try {
+				const {
+					name,
+					address,
+					region,
+					notes,
+					status,
+					latitude,
+					longitude,
+				} = req.body;
+				const user = req.user._id;
+				let reg = await Dock.create({
+					user,
+					name,
+					address,
+					region,
+					notes,
+					status,
+					coordinates: [latitude, longitude],
+				});
+				res.status(201).json({
+					id: reg._id,
+					message: "The file was successfully saved. ",
+				});
+			} catch (err) {
+				console.log(err);
+				res.status(500).json({
+					message: "Internal error",
+				});
+			}
+		},
+		read: async (req, res) => {
+			try {
+				const id = req.params.id;
+				// Utiliza findOne para buscar un registro con ID y active: true
+				let resource = await Dock.findOne({ _id: id, active: true })
+					.populate("user", "name _id")
+					.populate("region", "name type");
+
+				if (!resource) {
+					return res.status(404).json({
+						message: "Resource not found",
+					});
+				}
+				const totalValidations = resource.validations.filter(
+					(validation) => validation.validation === true
+				).length;
+				const totalInvalidations = resource.validations.filter(
+					(validation) => validation.validation === false
+				).length;
+
+				res.status(200).json({
+					user: {
+						name: resource.user.name,
+						_id: resource.user._id,
+					},
+					name: resource.name,
+					address: resource.address,
+					region: {
+						_id: resource.region._id,
+						name: resource.region.name,
+						type: resource.region.type,
+					},
+					notes: resource.notes,
+					status: resource.status,
+					uploadDate: resource.uploadDate,
+					coordinates: resource.coordinates,
+					validations: totalValidations,
+					invalidations: totalInvalidations,
+				});
+			} catch (err) {
+				console.error(err);
+				res.status(500).json({
+					message: "Internal error",
+				});
+			}
+		},
+	},
+};
+
+/* Listados */
+router.get("/explore", docks.actions.explore);
+router.get("/", docks.actions.list);
 
 /* Acciones básicas */
 router.post(
 	"/",
 	pre.authenticate,
 	pre.moderatorsCanAccess,
-	async (req, res) => {
-		const requiredProps = [
-			"name",
-			"address",
-			"region",
-			"notes",
-			"status",
-			"latitude",
-			"longitude",
-		];
-		const missingProps = requiredProps.filter(
-			(prop) => !(prop in req.body)
-		);
-		if (missingProps.length > 0) {
-			return res.status(400).json({
-				message: `Missing required properties: ${missingProps.join(
-					", "
-				)}`,
-			});
-		}
-		try {
-			const {
-				name,
-				address,
-				region,
-				notes,
-				status,
-				latitude,
-				longitude,
-			} = req.body;
-			const user = req.user._id;
-			let reg = await Dock.create({
-				user,
-				name,
-				address,
-				region,
-				notes,
-				status,
-				coordinates: [latitude, longitude],
-			});
-			res.status(201).json({
-				id: reg._id,
-				message: "The file was successfully saved. ",
-			});
-		} catch (err) {
-			console.log(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
+	docks.actions.create
 ); // Crear un registro
-router.get("/:id", async (req, res) => {
-	try {
-		const id = req.params.id;
-		// Utiliza findOne para buscar un registro con ID y active: true
-		let resource = await Dock.findOne({ _id: id, active: true })
-			.populate("user", "name _id")
-			.populate("region", "name type");
-
-		if (!resource) {
-			return res.status(404).json({
-				message: "Resource not found",
-			});
-		}
-		const totalValidations = resource.validations.filter(
-			(validation) => validation.validation === true
-		).length;
-		const totalInvalidations = resource.validations.filter(
-			(validation) => validation.validation === false
-		).length;
-
-		res.status(200).json({
-			user: {
-				name: resource.user.name,
-				_id: resource.user._id,
-			},
-			name: resource.name,
-			address: resource.address,
-			region: {
-				_id: resource.region._id,
-				name: resource.region.name,
-				type: resource.region.type,
-			},
-			notes: resource.notes,
-			status: resource.status,
-			uploadDate: resource.uploadDate,
-			coordinates: [resource.latitude, resource.longitude],
-			validations: totalValidations,
-			invalidations: totalInvalidations,
-		});
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
-	}
-}); // Ver recurso
+router.get("/:id", docks.actions.read); // Ver recurso
 router.patch(
 	"/:id",
 	pre.authenticate,
