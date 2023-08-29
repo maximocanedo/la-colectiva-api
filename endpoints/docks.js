@@ -185,6 +185,102 @@ const docks = {
 				});
 			}
 		},
+		update: async (req, res) => {
+			const requiredProps = [
+				"name",
+				"address",
+				"region",
+				"notes",
+				"status",
+				"latitude",
+				"longitude",
+			];
+			const missingProps = requiredProps.filter(
+				(prop) => !(prop in req.body)
+			);
+			if (missingProps.length > 0) {
+				return res.status(400).json({
+					message: `Missing required properties: ${missingProps.join(
+						", "
+					)}`,
+				});
+			}
+			try {
+				const id = req.params.id;
+				const userId = req.user._id;
+				const reg = await Dock.findOne({ _id: id, active: 1 });
+				if (!reg) {
+					res.status(404).json({
+						message: "There's no resource with that ID. ",
+					});
+					return;
+				}
+				if (
+					reg.user.toString() != userId.toString() ||
+					req.user.role >= 2
+				) {
+					res.status(403).json({
+						message:
+							"You can't edit info about a resource that other user uploaded. ",
+					});
+					return;
+				}
+				const {
+					name,
+					address,
+					region,
+					notes,
+					status,
+					latitude,
+					longitude,
+				} = req.body;
+				reg.name = name;
+				reg.address = address;
+				reg.region = new ObjectId(region);
+				reg.notes = notes;
+				reg.status = status;
+				reg.coordinates = [latitude, longitude];
+				await reg.save();
+				res.status(200).json({
+					message: "Resource updated. ",
+				});
+			} catch (err) {
+				console.error(err);
+				res.status(500).json({
+					message: "Internal error. ",
+				});
+			}
+		},
+		delete: async (req, res) => {
+			try {
+				const id = req.params.id;
+				const resource = await Dock.findById(id);
+				const username = req.user.username;
+				const isAdmin = req.user.role >= 3;
+				if (!resource) {
+					res.status(404).json({
+						message: "There's no resource with the provided ID. ",
+					});
+					return;
+				}
+				if (resource.user != req.user._id && !isAdmin) {
+					res.status(403).json({
+						message: "No resource was deleted. ",
+					});
+					return;
+				}
+				resource.active = false;
+				const status = await resource.save();
+				res.status(200).json({
+					message: "Data was disabled. ",
+				});
+			} catch (err) {
+				console.error(err);
+				res.status(500).json({
+					message: "Internal error. ",
+				});
+			}
+		},
 	},
 };
 
@@ -204,103 +300,9 @@ router.patch(
 	"/:id",
 	pre.authenticate,
 	pre.moderatorsCanAccess,
-	async (req, res) => {
-		const requiredProps = [
-			"name",
-			"address",
-			"region",
-			"notes",
-			"status",
-			"latitude",
-			"longitude",
-		];
-		const missingProps = requiredProps.filter(
-			(prop) => !(prop in req.body)
-		);
-		if (missingProps.length > 0) {
-			return res.status(400).json({
-				message: `Missing required properties: ${missingProps.join(
-					", "
-				)}`,
-			});
-		}
-		try {
-			const id = req.params.id;
-			const userId = req.user._id;
-			const reg = await Dock.findOne({ _id: id, active: 1 });
-			if (!reg) {
-				res.status(404).json({
-					message: "There's no resource with that ID. ",
-				});
-				return;
-			}
-			if (
-				reg.user.toString() != userId.toString() ||
-				req.user.role >= 2
-			) {
-				res.status(403).json({
-					message:
-						"You can't edit info about a resource that other user uploaded. ",
-				});
-				return;
-			}
-			const {
-				name,
-				address,
-				region,
-				notes,
-				status,
-				latitude,
-				longitude,
-			} = req.body;
-			reg.name = name;
-			reg.address = address;
-			reg.region = new ObjectId(region);
-			reg.notes = notes;
-			reg.status = status;
-			reg.coordinates = [latitude, longitude];
-			await reg.save();
-			res.status(200).json({
-				message: "Resource updated. ",
-			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error. ",
-			});
-		}
-	}
+	docks.actions.update
 ); // Editar recurso
-router.delete("/:id", pre.authenticate, async (req, res) => {
-	try {
-		const id = req.params.id;
-		const resource = await Dock.findById(id);
-		const username = req.user.username;
-		const isAdmin = req.user.role >= 3;
-		if (!resource) {
-			res.status(404).json({
-				message: "There's no resource with the provided ID. ",
-			});
-			return;
-		}
-		if (resource.user != req.user._id && !isAdmin) {
-			res.status(403).json({
-				message: "No resource was deleted. ",
-			});
-			return;
-		}
-		resource.active = false;
-		const status = await resource.save();
-		res.status(200).json({
-			message: "Data was disabled. ",
-		});
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({
-			message: "Internal error. ",
-		});
-	}
-}); // Eliminar registro
+router.delete("/:id", pre.authenticate, docks.actions.delete); // Eliminar registro
 
 /* Comentarios */
 router.get("/:id/comments", async (req, res) => {
@@ -370,7 +372,7 @@ router.delete(
 					message: "Comment not found",
 				});
 			}
-			if (comment.userId == req.user._id || req.user.role >= 2) {
+			if (comment.user == req.user._id || req.user.role >= 2) {
 				// Eliminar el comentario de la colección Comment
 				await Comment.delete(commentId);
 
@@ -457,5 +459,20 @@ router.post(
 		}
 	}
 ); // Invalidar
+
+/* Imágenes */
+router.get("/:id/photos/", async (req, res) => {});
+router.post(
+	"/:id/photos/",
+	pre.authenticate,
+	pre.moderatorsCanAccess,
+	async (req, res) => {}
+);
+router.delete(
+	"/:id/photos/",
+	pre.authenticate,
+	pre.moderatorsCanAccess,
+	async (req, res) => {}
+);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
 
 const CommentSchema = mongoose.Schema({
-	userId: {
+	user: {
 		type: ObjectId,
 		required: true,
 		ref: "User",
@@ -28,7 +28,7 @@ const CommentSchema = mongoose.Schema({
 CommentSchema.statics.add = async function (userId, content) {
 	try {
 		const newComment = await this.create({
-			userId: userId,
+			user: userId,
 			content: content,
 		});
 		return newComment;

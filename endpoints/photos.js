@@ -55,20 +55,18 @@ router.post(
 			});
 		}
 		try {
-			const archivo = req.file; // Aquí está la información del archivo subido
-			const otrosDatos = req.body; // Aquí estarán otros datos del formulario si los tienes
-			const { filename } = archivo;
-			const { description } = otrosDatos;
+			const archivo = req.file;
+			const { description } = req.body;
 			const userId = req.user._id;
-			let pic = new Photo({
-				filename,
-				userId,
-				description,
-			});
 
-			let pics = await pic.save();
+			const photoId = await Photo.saveUploaded(
+				archivo,
+				userId,
+				description
+			);
+
 			res.status(201).json({
-				id: pics._id,
+				id: photoId,
 				message: "The file was successfully saved. ",
 			});
 		} catch (err) {
@@ -78,41 +76,26 @@ router.post(
 			});
 		}
 	}
-); // Subir una imagen
+);
+
 router.get("/:id", async (req, res) => {
 	try {
 		const id = req.params.id;
-		// Utiliza findOne para buscar una foto con ID y active: true
-		let pic = await Photo.findOne({ _id: id, active: true });
-
-		if (!pic) {
+		const photoDetails = await Photo.getPhotoDetailsById(id);
+		if (!photoDetails) {
 			return res.status(404).json({
 				message: "Image not found",
 			});
 		}
-		const totalValidations = pic.validations.filter(
-			(validation) => validation.validation === true
-		).length;
-		const totalInvalidations = pic.validations.filter(
-			(validation) => validation.validation === false
-		).length;
-
-		// Envía la imagen como respuesta
-		res.status(200).json({
-			url: `/photos/${id}/view`,
-			username: pic.username,
-			description: pic.description,
-			uploadDate: pic.uploadDate,
-			validations: totalValidations,
-			invalidations: totalInvalidations,
-		});
+		res.status(200).json(photoDetails);
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({
 			message: "Internal error",
 		});
 	}
-}); // Ver detalles de imagen
+});
+
 router.get("/:id/view", async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -150,11 +133,7 @@ router.patch(
 				});
 				return;
 			}
-			console.log({
-				picsusername: pic.username,
-				username,
-			});
-			if (pic.username != username) {
+			if (pic.user != req.user._id) {
 				res.status(403).json({
 					message:
 						"You can't edit info about an image that other user uploaded. ",
@@ -193,7 +172,7 @@ router.delete("/:id", pre.authenticate, async (req, res) => {
 			});
 			return;
 		}
-		if (pic.username != username && !isAdmin) {
+		if (pic.user != req.user._id && !isAdmin) {
 			res.status(403).json({
 				message: "No image was deleted. ",
 			});
@@ -299,7 +278,7 @@ router.delete(
 					message: "Comment not found",
 				});
 			}
-			if (comment.userId == req.user._id || req.user.role >= 2) {
+			if (comment.user == req.user._id || req.user.role >= 2) {
 				// Eliminar el comentario de la colección Comment
 				await Comment.delete(commentId);
 

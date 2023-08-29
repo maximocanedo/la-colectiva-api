@@ -114,6 +114,14 @@ const everybodyCanAccess = async (req, res, next) => {
 		});
 	}
 };
+
+const allow = {
+	admin: adminsCanAccess,
+	moderator: moderatorsCanAccess,
+	normal: normalUsersCanAccess,
+	all: everybodyCanAccess,
+};
+const auth = authenticate;
 module.exports = {
 	encrypt,
 	decrypt,
@@ -122,4 +130,6 @@ module.exports = {
 	moderatorsCanAccess,
 	normalUsersCanAccess,
 	everybodyCanAccess,
+	allow,
+	auth,
 };

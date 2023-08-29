@@ -8,7 +8,7 @@ const photoSchema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	userId: {
+	user: {
 		type: ObjectId,
 		required: true,
 		ref: "User",
@@ -37,11 +37,54 @@ const photoSchema = mongoose.Schema({
 	validations: [ValidationSchema],
 });
 
+// Definimos el método estático
+photoSchema.statics.saveUploaded = async function (file, user, description) {
+	try {
+		let pic = new this({
+			filename: file.filename,
+			user,
+			description,
+		});
+
+		let pics = await pic.save();
+		return pics._id;
+	} catch (err) {
+		console.log(err);
+		throw new Error("Error saving photo");
+	}
+};
+// En tu modelo Photo, agrega un método estático para obtener detalles de una imagen por su ID
+photoSchema.statics.getPhotoDetailsById = async function (id) {
+	try {
+		const pic = await this.findOne({ _id: id, active: true });
+		if (!pic) {
+			return null;
+		}
+		const totalValidations = pic.validations.filter(
+			(validation) => validation.validation === true
+		).length;
+		const totalInvalidations = pic.validations.filter(
+			(validation) => validation.validation === false
+		).length;
+		return {
+			url: `/photos/${id}/view`,
+			user: pic.user, // Supongo que username es una propiedad en tu esquema
+			description: pic.description,
+			uploadDate: pic.uploadDate,
+			validations: totalValidations,
+			invalidations: totalInvalidations,
+		};
+	} catch (err) {
+		console.error(err);
+		throw new Error("Error fetching photo details");
+	}
+};
+
 photoSchema.statics.comment = async function (photoId, content, userId) {
 	try {
 		// Crear el comentario y guardarlo
 		const newComment = await Comment.create({
-			userId: userId,
+			user: userId,
 			content: content,
 		});
 
@@ -70,7 +113,7 @@ photoSchema.statics.listComments = async function ({
 			.populate({
 				path: "comments",
 				populate: {
-					path: "userId",
+					path: "user",
 					model: "User",
 					select: "name", // Cambia "name" a "fullName" si ese es el campo de nombre completo en tu modelo de usuario
 				},
@@ -124,12 +167,7 @@ photoSchema.statics.validate = async function (photoId, userId, validates) {
 
 		// Buscar si el usuario ya tiene una validación en esta foto
 		const existingValidation = photo.validations.find((validation) => {
-			console.log({
-				validationUID: validation.userId.toString(),
-				userId: userId.toString(),
-				equals: validation.userId.toString() === userId.toString(),
-			});
-			return validation.userId.toString() === userId.toString();
+			return validation.user.toString() === user.toString();
 		});
 
 		if (existingValidation) {
@@ -138,7 +176,7 @@ photoSchema.statics.validate = async function (photoId, userId, validates) {
 		} else {
 			// Si no existe, crear una nueva validación
 			photo.validations.push({
-				userId: userId,
+				user: userId,
 				validation: validates,
 			});
 		}

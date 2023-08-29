@@ -31,7 +31,7 @@ router.post(
 			const { name, type } = req.body;
 			const userId = req.user._id;
 			let reg = await WaterBody.create({
-				userId,
+				user: userId,
 				name,
 				type,
 			});
@@ -67,7 +67,7 @@ router.get("/:id", async (req, res) => {
 
 		// Envía la imagen como respuesta
 		res.status(200).json({
-			userId: resource.userId,
+			userId: resource.user,
 			name: resource.name,
 			type: resource.type,
 			uploadDate: resource.uploadDate,
@@ -107,7 +107,7 @@ router.patch(
 				});
 				return;
 			}
-			if (reg.userId.toString() != userId.toString()) {
+			if (reg.user.toString() != userId.toString()) {
 				res.status(403).json({
 					message:
 						"You can't edit info about a resource that other user uploaded. ",
@@ -133,7 +133,7 @@ router.delete("/:id", pre.authenticate, async (req, res) => {
 	try {
 		const id = req.params.id;
 		const resource = await WaterBody.findById(id);
-		const username = req.user.username;
+		const username = req.user._id;
 		const isAdmin = req.user.role >= 3;
 		if (!resource) {
 			res.status(404).json({
@@ -141,7 +141,7 @@ router.delete("/:id", pre.authenticate, async (req, res) => {
 			});
 			return;
 		}
-		if (resource.username != username && !isAdmin) {
+		if (resource.user != username && !isAdmin) {
 			res.status(403).json({
 				message: "No image was deleted. ",
 			});
@@ -228,7 +228,7 @@ router.delete(
 					message: "Comment not found",
 				});
 			}
-			if (comment.userId == req.user._id || req.user.role >= 2) {
+			if (comment.user == req.user._id || req.user.role >= 2) {
 				// Eliminar el comentario de la colección Comment
 				await Comment.delete(commentId);
 

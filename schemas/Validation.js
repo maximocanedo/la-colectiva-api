@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
 
 const ValidationSchema = mongoose.Schema({
-	userId: {
+	user: {
 		type: ObjectId,
 		required: true,
 		ref: "User",

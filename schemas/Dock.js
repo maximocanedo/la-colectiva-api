@@ -61,6 +61,12 @@ const dockSchema = mongoose.Schema({
 		type: [Number], // Array de números
 		required: true,
 	},
+	pictures: [
+		{
+			type: ObjectId,
+			ref: "Photo",
+		},
+	],
 });
 
 dockSchema.statics.listData = async function (query, { page, itemsPerPage }) {
@@ -98,12 +104,11 @@ dockSchema.statics.listData = async function (query, { page, itemsPerPage }) {
 		};
 	}
 };
-
 dockSchema.statics.comment = async function (resId, content, userId) {
 	try {
 		// Crear el comentario y guardarlo
 		const newComment = await Comment.create({
-			userId: userId,
+			user: userId,
 			content: content,
 		});
 		await this.updateOne(
@@ -130,7 +135,7 @@ dockSchema.statics.listComments = async function ({
 			.populate({
 				path: "comments",
 				populate: {
-					path: "userId",
+					path: "user",
 					model: "User",
 					select: "name",
 				},
@@ -179,12 +184,7 @@ dockSchema.statics.validate = async function (resId, userId, validates) {
 
 		// Buscar si el usuario ya tiene una validación en este registro
 		const existingValidation = resource.validations.find((validation) => {
-			console.log({
-				validationUID: validation.userId.toString(),
-				userId: userId.toString(),
-				equals: validation.userId.toString() === userId.toString(),
-			});
-			return validation.userId.toString() === userId.toString();
+			return validation.user.toString() === userId.toString();
 		});
 
 		if (existingValidation) {
@@ -193,7 +193,7 @@ dockSchema.statics.validate = async function (resId, userId, validates) {
 		} else {
 			// Si no existe, crear una nueva validación
 			resource.validations.push({
-				userId: userId,
+				user: userId,
 				validation: validates,
 			});
 		}
@@ -213,5 +213,26 @@ dockSchema.statics.validate = async function (resId, userId, validates) {
 		};
 	}
 };
-
+dockSchema.statics.linkPhoto = async function (resId, picId) {
+	try {
+		// Crear el comentario y guardarlo
+		const actualPhoto = await Photo.findOne({ _id: picId });
+		if (!actualPhoto)
+			return {
+				status: 404,
+			};
+		const added = await this.updateOne(
+			{ _id: resId },
+			{ $push: { pictures: actualPhoto._id } }
+		);
+		return {
+			status: 201,
+		};
+	} catch (error) {
+		console.log(error);
+		return {
+			status: 500,
+		};
+	}
+};
 module.exports = mongoose.model("Dock", dockSchema);
