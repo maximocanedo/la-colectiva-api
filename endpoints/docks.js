@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const cookieParser = require("cookie-parser");
 const Dock = require("../schemas/Dock");
+const Photo = require("../schemas/Photo");
 const pre = require("./pre");
 const Comment = require("../schemas/Comment");
 const { ObjectId } = require("mongodb");
@@ -88,57 +89,6 @@ const docks = {
 				});
 			}
 		},
-		create: async (req, res) => {
-			const requiredProps = [
-				"name",
-				"address",
-				"region",
-				"notes",
-				"status",
-				"latitude",
-				"longitude",
-			];
-			const missingProps = requiredProps.filter(
-				(prop) => !(prop in req.body)
-			);
-			if (missingProps.length > 0) {
-				return res.status(400).json({
-					message: `Missing required properties: ${missingProps.join(
-						", "
-					)}`,
-				});
-			}
-			try {
-				const {
-					name,
-					address,
-					region,
-					notes,
-					status,
-					latitude,
-					longitude,
-				} = req.body;
-				const user = req.user._id;
-				let reg = await Dock.create({
-					user,
-					name,
-					address,
-					region,
-					notes,
-					status,
-					coordinates: [latitude, longitude],
-				});
-				res.status(201).json({
-					id: reg._id,
-					message: "The file was successfully saved. ",
-				});
-			} catch (err) {
-				console.log(err);
-				res.status(500).json({
-					message: "Internal error",
-				});
-			}
-		},
 		read: async (req, res) => {
 			try {
 				const id = req.params.id;
@@ -185,72 +135,6 @@ const docks = {
 				});
 			}
 		},
-		update: async (req, res) => {
-			const requiredProps = [
-				"name",
-				"address",
-				"region",
-				"notes",
-				"status",
-				"latitude",
-				"longitude",
-			];
-			const missingProps = requiredProps.filter(
-				(prop) => !(prop in req.body)
-			);
-			if (missingProps.length > 0) {
-				return res.status(400).json({
-					message: `Missing required properties: ${missingProps.join(
-						", "
-					)}`,
-				});
-			}
-			try {
-				const id = req.params.id;
-				const userId = req.user._id;
-				const reg = await Dock.findOne({ _id: id, active: 1 });
-				if (!reg) {
-					res.status(404).json({
-						message: "There's no resource with that ID. ",
-					});
-					return;
-				}
-				if (
-					reg.user.toString() != userId.toString() ||
-					req.user.role >= 2
-				) {
-					res.status(403).json({
-						message:
-							"You can't edit info about a resource that other user uploaded. ",
-					});
-					return;
-				}
-				const {
-					name,
-					address,
-					region,
-					notes,
-					status,
-					latitude,
-					longitude,
-				} = req.body;
-				reg.name = name;
-				reg.address = address;
-				reg.region = new ObjectId(region);
-				reg.notes = notes;
-				reg.status = status;
-				reg.coordinates = [latitude, longitude];
-				await reg.save();
-				res.status(200).json({
-					message: "Resource updated. ",
-				});
-			} catch (err) {
-				console.error(err);
-				res.status(500).json({
-					message: "Internal error. ",
-				});
-			}
-		},
 		delete: async (req, res) => {
 			try {
 				const id = req.params.id;
@@ -291,18 +175,113 @@ router.get("/", docks.actions.list);
 /* Acciones básicas */
 router.post(
 	"/",
-	pre.authenticate,
-	pre.moderatorsCanAccess,
-	docks.actions.create
+	pre.auth,
+	pre.allow.moderator,
+	pre.verifyInput([
+		"name",
+		"address",
+		"region",
+		"notes",
+		"status",
+		"latitude",
+		"longitude",
+	]),
+	async (req, res) => {
+		try {
+			const {
+				name,
+				address,
+				region,
+				notes,
+				status,
+				latitude,
+				longitude,
+			} = req.body;
+			const user = req.user._id;
+			let reg = await Dock.create({
+				user,
+				name,
+				address,
+				region,
+				notes,
+				status,
+				coordinates: [latitude, longitude],
+			});
+			res.status(201).json({
+				id: reg._id,
+				message: "The file was successfully saved. ",
+			});
+		} catch (err) {
+			console.log(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
 ); // Crear un registro
 router.get("/:id", docks.actions.read); // Ver recurso
 router.patch(
 	"/:id",
-	pre.authenticate,
-	pre.moderatorsCanAccess,
-	docks.actions.update
+	pre.auth,
+	pre.allow.moderator,
+	pre.verifyInput([
+		"name",
+		"address",
+		"region",
+		"notes",
+		"status",
+		"latitude",
+		"longitude",
+	]),
+	async (req, res) => {
+		try {
+			const id = req.params.id;
+			const userId = req.user._id;
+			const reg = await Dock.findOne({ _id: id, active: 1 });
+			if (!reg) {
+				res.status(404).json({
+					message: "There's no resource with that ID. ",
+				});
+				return;
+			}
+			if (
+				reg.user.toString() != userId.toString() ||
+				req.user.role >= 2
+			) {
+				res.status(403).json({
+					message:
+						"You can't edit info about a resource that other user uploaded. ",
+				});
+				return;
+			}
+			const {
+				name,
+				address,
+				region,
+				notes,
+				status,
+				latitude,
+				longitude,
+			} = req.body;
+			reg.name = name;
+			reg.address = address;
+			reg.region = new ObjectId(region);
+			reg.notes = notes;
+			reg.status = status;
+			reg.coordinates = [latitude, longitude];
+			await reg.save();
+			res.status(200).json({
+				message: "Resource updated. ",
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error. ",
+			});
+		}
+	}
 ); // Editar recurso
-router.delete("/:id", pre.authenticate, docks.actions.delete); // Eliminar registro
+router.delete("/:id", pre.auth, docks.actions.delete); // Eliminar registro
 
 /* Comentarios */
 router.get("/:id/comments", async (req, res) => {
@@ -323,40 +302,35 @@ router.get("/:id/comments", async (req, res) => {
 		});
 	}
 }); // Ver comentarios del recurso
-router.post(
-	"/:id/comments",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
-	async (req, res) => {
-		try {
-			const resId = req.params.id;
-			const content = req.body.content;
-			const userId = req.user._id;
+router.post("/:id/comments", pre.auth, pre.allow.normal, async (req, res) => {
+	try {
+		const resId = req.params.id;
+		const content = req.body.content;
+		const userId = req.user._id;
 
-			const result = await Dock.comment(resId, content, userId);
+		const result = await Dock.comment(resId, content, userId);
 
-			if (result.error) {
-				console.error(result.error);
-				return res.status(500).json({
-					message: result.msg,
-				});
-			}
-
-			res.status(201).json({
-				message: "Comment added",
-			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
+		if (result.error) {
+			console.error(result.error);
+			return res.status(500).json({
+				message: result.msg,
 			});
 		}
+
+		res.status(201).json({
+			message: "Comment added",
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
 	}
-); // Publicar comentario
+}); // Publicar comentario
 router.delete(
 	"/:resId/comments/:commentId",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
 	async (req, res) => {
 		try {
 			const { resId, commentId } = req.params;
@@ -401,8 +375,8 @@ router.delete(
 /* Validaciones */
 router.post(
 	"/:resId/validate",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
 	async (req, res) => {
 		try {
 			const { resId } = req.params;
@@ -431,8 +405,8 @@ router.post(
 ); // Validar
 router.post(
 	"/:resId/invalidate",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
 	async (req, res) => {
 		try {
 			const { resId } = req.params;
@@ -461,18 +435,75 @@ router.post(
 ); // Invalidar
 
 /* Imágenes */
-router.get("/:id/photos/", async (req, res) => {});
+router.get("/:id/photos/", async (req, res) => {
+	try {
+		const id = req.params.id;
+		const resource = await Dock.findById(id)
+			.select("pictures")
+			.populate({
+				path: "pictures",
+				model: "Photo",
+				select: "_id user description uploadDate",
+				populate: {
+					path: "user",
+					model: "User",
+					select: "_id name",
+				},
+			})
+			.exec();
+		if (!resource) {
+			return res.status(404).json({
+				message: "Resource not found",
+			});
+		}
+		res.status(200).json(resource);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+}); // Listar fotos
 router.post(
 	"/:id/photos/",
-	pre.authenticate,
-	pre.moderatorsCanAccess,
-	async (req, res) => {}
-);
+	pre.auth,
+	pre.allow.moderator,
+	pre.uploadPhoto,
+	async (req, res) => {
+		try {
+			const archivo = req.file;
+			const { description } = req.body;
+			const userId = req.user._id;
+			const { id } = req.params;
+			const dock = await Dock.findById(id);
+			if (!dock) {
+				return res.status(404).json({
+					message: "Resource not found",
+				});
+			}
+			const photoId = await Photo.saveUploaded(
+				archivo,
+				userId,
+				description
+			);
+			await Dock.updateOne({ _id: id }, { $push: { pictures: photoId } });
+			res.status(201).json({
+				id: photoId,
+				message: "The file was successfully saved. ",
+			});
+		} catch (err) {
+			console.log(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+	}
+); // Subir imagen
 router.delete(
-	"/:id/photos/",
-	pre.authenticate,
-	pre.moderatorsCanAccess,
+	"/:id/photos/:photoId",
+	pre.auth,
+	pre.allow.moderator,
 	async (req, res) => {}
-);
+); // Eliminar foto
 
 module.exports = router;

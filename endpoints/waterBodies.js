@@ -13,20 +13,10 @@ router.use(cookieParser());
 /* Acciones básicas */
 router.post(
 	"/",
-	pre.authenticate,
-	pre.moderatorsCanAccess,
+	pre.auth,
+	pre.allow.moderator,
+	pre.verifyInput(["name", "type"]),
 	async (req, res) => {
-		const requiredProps = ["name", "type"];
-		const missingProps = requiredProps.filter(
-			(prop) => !(prop in req.body)
-		);
-		if (missingProps.length > 0) {
-			return res.status(400).json({
-				message: `Missing required properties: ${missingProps.join(
-					", "
-				)}`,
-			});
-		}
 		try {
 			const { name, type } = req.body;
 			const userId = req.user._id;
@@ -83,20 +73,10 @@ router.get("/:id", async (req, res) => {
 }); // Ver recurso
 router.patch(
 	"/:id",
-	pre.authenticate,
-	pre.moderatorsCanAccess,
+	pre.auth,
+	pre.allow.moderator,
+	pre.verifyInput(["name", "type"]),
 	async (req, res) => {
-		const requiredProps = ["name", "type"];
-		const missingProps = requiredProps.filter(
-			(prop) => !(prop in req.body)
-		);
-		if (missingProps.length > 0) {
-			return res.status(400).json({
-				message: `Missing required properties: ${missingProps.join(
-					", "
-				)}`,
-			});
-		}
 		try {
 			const id = req.params.id;
 			const userId = req.user._id;
@@ -129,7 +109,7 @@ router.patch(
 		}
 	}
 ); // Editar recurso
-router.delete("/:id", pre.authenticate, async (req, res) => {
+router.delete("/:id", pre.auth, async (req, res) => {
 	try {
 		const id = req.params.id;
 		const resource = await WaterBody.findById(id);
@@ -178,11 +158,12 @@ router.get("/:id/comments", async (req, res) => {
 			message: "Internal error",
 		});
 	}
-}); // Ver comentarios del recurso
+}); // Ver comentarios
 router.post(
 	"/:id/comments",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
+	pre.verifyInput(["content"]),
 	async (req, res) => {
 		try {
 			const wbId = req.params.id;
@@ -211,8 +192,8 @@ router.post(
 ); // Publicar comentario
 router.delete(
 	"/:wbId/comments/:commentId",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
 	async (req, res) => {
 		try {
 			const { wbId, commentId } = req.params;
@@ -255,40 +236,35 @@ router.delete(
 ); // Eliminar comentario
 
 /* Validaciones */
-router.post(
-	"/:wbId/validate",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
-	async (req, res) => {
-		try {
-			const { wbId } = req.params;
-			const userId = req.user._id;
-			const validates = true;
+router.post("/:wbId/validate", pre.auth, pre.allow.normal, async (req, res) => {
+	try {
+		const { wbId } = req.params;
+		const userId = req.user._id;
+		const validates = true;
 
-			const result = await WaterBody.validate(wbId, userId, validates);
+		const result = await WaterBody.validate(wbId, userId, validates);
 
-			if (!result.success) {
-				console.error(result.message);
-				return res.status(result.status).json({
-					message: result.message,
-				});
-			}
-
-			res.status(result.status).json({
+		if (!result.success) {
+			console.error(result.message);
+			return res.status(result.status).json({
 				message: result.message,
 			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
 		}
+
+		res.status(result.status).json({
+			message: result.message,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
 	}
-); // Validar
+}); // Validar
 router.post(
 	"/:wbId/invalidate",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
 	async (req, res) => {
 		try {
 			const { wbId } = req.params;

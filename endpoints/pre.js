@@ -1,6 +1,13 @@
 "use strict";
 const crypto = require("crypto");
 require("dotenv").config();
+const express = require("express");
+const router = express.Router();
+const cookieParser = require("cookie-parser");
+const Photo = require("../schemas/Photo");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 const User = require("../schemas/User");
 
 const encrypt = (text) => {
@@ -114,6 +121,69 @@ const everybodyCanAccess = async (req, res, next) => {
 		});
 	}
 };
+const verifyInput = (requiredProps) => (req, res, next) => {
+	const missingProps = requiredProps.filter((prop) => !(prop in req.body));
+	if (missingProps.length > 0) {
+		return res.status(400).json({
+			message: `Missing required properties: ${missingProps.join(", ")}`,
+		});
+	}
+	next(); // Si todo está bien, pasa al siguiente middleware o al controlador
+};
+const imageFileTypes = ["image/jpeg", "image/png", "image/gif"]; // Tipos de archivos de imagen permitidos
+
+const storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		const destinationPath = path.join(__dirname, "../data/photos/");
+		cb(null, destinationPath);
+	},
+	filename: (req, file, cb) => {
+		// Generamos un nombre único para el archivo
+		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+		const fileExtension = file.originalname.split(".").pop();
+		const fileNameWithoutExtension = file.originalname
+			.split(".")
+			.slice(0, -1)
+			.join("-")
+			.toLowerCase()
+			.split(" ")
+			.join("-");
+		const finalFileName = `${fileNameWithoutExtension}-${uniqueSuffix}.${fileExtension}`;
+		cb(null, finalFileName);
+	},
+	fileFilter: (req, file, cb) => {
+		if (imageFileTypes.includes(file.mimetype)) {
+			// Acepta el archivo si su tipo de MIME está en la lista permitida
+			cb(null, true);
+		} else {
+			// Rechaza el archivo si su tipo de MIME no está en la lista permitida
+			cb(new Error("Invalid file type"));
+		}
+	},
+});
+const upload = multer({
+	storage: storage,
+	limits: {
+		fileSize: 5 * 1024 * 1024, // 5 MB en bytes
+	},
+});
+const uploadPhoto = async (req, res, next) => {
+	upload.single("file")(req, res, function (err) {
+		if (err instanceof multer.MulterError) {
+			// Error de Multer (tamaño excedido, etc.)
+			return res.status(400).json({
+				message: "Bad Request: " + err.message,
+			});
+		} else if (err) {
+			// Error en el filtro de archivos (tipo de archivo no permitido)
+			return res.status(400).json({
+				message: "Bad Request: Invalid file type",
+			});
+		}
+		// Si no hubo errores, pasa al siguiente middleware o al controlador
+		next();
+	});
+};
 
 const allow = {
 	admin: adminsCanAccess,
@@ -123,6 +193,8 @@ const allow = {
 };
 const auth = authenticate;
 module.exports = {
+	verifyInput,
+	uploadPhoto,
 	encrypt,
 	decrypt,
 	authenticate,

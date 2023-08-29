@@ -46,8 +46,8 @@ CommentSchema.statics.delete = async function (commentId) {
 				message: "Comment not found",
 			};
 		}
-
-		await comment.remove();
+		comment.active = false;
+		await comment.save();
 
 		return {
 			success: true,
@@ -55,6 +55,7 @@ CommentSchema.statics.delete = async function (commentId) {
 			message: "Comment deleted",
 		};
 	} catch (error) {
+		console.log(error);
 		return {
 			success: false,
 			status: 500,

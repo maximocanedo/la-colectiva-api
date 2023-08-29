@@ -1,70 +1,33 @@
 "use strict";
 require("dotenv").config();
 const express = require("express");
-const multer = require("multer");
 const router = express.Router();
 const cookieParser = require("cookie-parser");
-const User = require("../schemas/User");
 const Photo = require("../schemas/Photo");
 const pre = require("./pre");
 const path = require("path");
 const fs = require("fs");
 const Comment = require("../schemas/Comment");
+const multer = require("multer");
 router.use(express.json());
 router.use(cookieParser());
 
-// Configuración de multer para guardar los archivos en una carpeta
-const storage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		const destinationPath = path.join(__dirname, "../data/photos/");
-		cb(null, destinationPath);
-	},
-	filename: (req, file, cb) => {
-		// Generamos un nombre único para el archivo
-		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-		const fileExtension = file.originalname.split(".").pop(); // Obtener la extensión del archivo
-		const fileNameWithoutExtension = file.originalname
-			.split(".")
-			.slice(0, -1)
-			.join("-")
-			.toLowerCase()
-			.split(" ")
-			.join("-");
-		const finalFileName = `${fileNameWithoutExtension}-${uniqueSuffix}.${fileExtension}`;
-		cb(null, finalFileName);
-	},
-});
-
-// Acciones principales
-const upload = multer({ storage: storage });
 router.post(
 	"/upload",
-	pre.authenticate,
-	pre.moderatorsCanAccess,
-	upload.single("file"),
+	pre.auth,
+	pre.allow.moderator,
+	pre.uploadPhoto,
 	async (req, res) => {
-		const requiredProps = ["description"];
-		const missingProps = requiredProps.filter(
-			(prop) => !(prop in req.body)
-		);
-		if (missingProps.length > 0) {
-			return res.status(400).json({
-				message: `Missing required properties: ${missingProps.join(
-					", "
-				)}`,
-			});
-		}
 		try {
 			const archivo = req.file;
+			console.log({ file: req.file });
 			const { description } = req.body;
 			const userId = req.user._id;
-
 			const photoId = await Photo.saveUploaded(
 				archivo,
 				userId,
 				description
 			);
-
 			res.status(201).json({
 				id: photoId,
 				message: "The file was successfully saved. ",
@@ -76,8 +39,7 @@ router.post(
 			});
 		}
 	}
-);
-
+); // Subir imagen
 router.get("/:id", async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -94,8 +56,7 @@ router.get("/:id", async (req, res) => {
 			message: "Internal error",
 		});
 	}
-});
-
+}); // Ver detalles de imagen
 router.get("/:id/view", async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -120,8 +81,9 @@ router.get("/:id/view", async (req, res) => {
 }); // Ver imagen
 router.patch(
 	"/:id",
-	pre.authenticate,
-	pre.moderatorsCanAccess,
+	pre.auth,
+	pre.allow.moderator,
+	pre.verifyInput(["description"]),
 	async (req, res) => {
 		try {
 			const id = req.params.id;
@@ -160,7 +122,7 @@ router.patch(
 		}
 	}
 ); // Editar pie de imagen
-router.delete("/:id", pre.authenticate, async (req, res) => {
+router.delete("/:id", pre.auth, async (req, res) => {
 	try {
 		const id = req.params.id;
 		const pic = await Photo.findById(id);
@@ -203,12 +165,6 @@ router.delete("/:id", pre.authenticate, async (req, res) => {
 		});
 	}
 }); // Eliminar imagen
-router.get("/protected", pre.authenticate, (req, res) => {
-	res.status(200).json({
-		message: "Successfully authenticated",
-		user: req.user,
-	});
-}); // Prueba de autenticidad
 
 // Acciones con comentarios
 router.get("/:id/comments", async (req, res) => {
@@ -231,8 +187,9 @@ router.get("/:id/comments", async (req, res) => {
 }); // Ver comentarios de la imagen
 router.post(
 	"/:id/comments",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
+	pre.verifyInput(["content"]),
 	async (req, res) => {
 		try {
 			const photoId = req.params.id;
@@ -261,8 +218,8 @@ router.post(
 ); // Publicar comentario
 router.delete(
 	"/:photoId/comments/:commentId",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
 	async (req, res) => {
 		try {
 			const { photoId, commentId } = req.params;
@@ -307,8 +264,8 @@ router.delete(
 // Validaciones
 router.post(
 	"/:photoId/validate",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
 	async (req, res) => {
 		try {
 			const { photoId } = req.params;
@@ -337,8 +294,8 @@ router.post(
 ); // Validar
 router.post(
 	"/:photoId/invalidate",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
 	async (req, res) => {
 		try {
 			const { photoId } = req.params;

@@ -13,27 +13,14 @@ router.use(cookieParser());
 
 router.post(
 	"/",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
+	pre.auth,
+	pre.allow.normal,
+	pre.verifyInput(["content"]),
 	async (req, res) => {
 		try {
-			// Verificar si todas las propiedades requeridas están presentes en req.body
-			const requiredProps = ["content"];
-			const missingProps = requiredProps.filter(
-				(prop) => !(prop in req.body)
-			);
-			if (missingProps.length > 0) {
-				return res.status(400).json({
-					message: `Missing required properties: ${missingProps.join(
-						", "
-					)}`,
-				});
-			}
 			const { content } = req.body;
-
 			// Utilizar el método add para crear el comentario
 			const newComment = await Comment.add(req.user._id, content);
-
 			res.status(201).json({
 				message: "Comment created",
 				newComment,
@@ -48,7 +35,10 @@ router.post(
 router.get("/:comment_id", async (req, res) => {
 	try {
 		let { comment_id } = req.params;
-		let comment = await Comment.findOne({ _id: comment_id, active: true });
+		let comment = await Comment.findOne({
+			_id: comment_id,
+			active: true,
+		}).populate({ path: "user", model: "User", select: "name _id" });
 		if (!comment) {
 			return res.status(404).json({
 				message: "Comment not found. ",
@@ -61,29 +51,25 @@ router.get("/:comment_id", async (req, res) => {
 		});
 	}
 }); // Ver contenido de un comentario
-router.delete(
-	"/:comment_id",
-	pre.authenticate,
-	pre.normalUsersCanAccess,
-	async (req, res) => {
-		try {
-			const commentId = req.params.commentId;
-			const result = await Comment.delete(commentId);
-			if (!result.success) {
-				console.error(result.message);
-				return res.status(result.status).json({
-					message: result.message,
-				});
-			}
-			res.status(result.status).json({
+router.delete("/:comment_id", pre.auth, pre.allow.normal, async (req, res) => {
+	try {
+		const { comment_id } = req.params;
+		const result = await Comment.delete(comment_id);
+		if (!result.success) {
+			console.error(result.message);
+			return res.status(result.status).json({
 				message: result.message,
 			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
 		}
+		res.status(result.status).json({
+			message: result.message,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
 	}
-); // Eliminar permanentemente un comentario
+}); // Eliminar permanentemente un comentario
+
 module.exports = router;

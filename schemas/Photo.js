@@ -39,6 +39,7 @@ const photoSchema = mongoose.Schema({
 
 // Definimos el método estático
 photoSchema.statics.saveUploaded = async function (file, user, description) {
+	console.log({ file, user, description });
 	try {
 		let pic = new this({
 			filename: file.filename,
