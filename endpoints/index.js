@@ -9,6 +9,8 @@ const paths = require("./paths");
 const availabilities = require("./availabilities");
 const schedules = require("./schedules");
 
+const query = require("./query");
+
 module.exports = {
 	users,
 	photos,
@@ -20,4 +22,5 @@ module.exports = {
 	paths,
 	availabilities,
 	schedules,
+	query,
 };
