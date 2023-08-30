@@ -5,6 +5,9 @@ const waterBodies = require("./waterBodies");
 const docks = require("./docks");
 const enterprises = require("./enterprises");
 const boats = require("./boats");
+const paths = require("./paths");
+const availabilities = require("./availabilities");
+const schedules = require("./schedules");
 
 module.exports = {
 	users,
@@ -14,4 +17,7 @@ module.exports = {
 	docks,
 	enterprises,
 	boats,
+	paths,
+	availabilities,
+	schedules,
 };

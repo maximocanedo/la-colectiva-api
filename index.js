@@ -29,6 +29,9 @@ app.use("/waterBodies", routes.waterBodies);
 app.use("/docks", routes.docks);
 app.use("/enterprises", routes.enterprises);
 app.use("/boats", routes.boats);
+app.use("/paths", routes.paths);
+app.use("/availabilities", routes.availabilities);
+app.use("/schedules", routes.schedules);
 
 // Servir contenido estático de la carpeta 'simple-page'
 app.use("/test", express.static(path.join(__dirname, "simple-page")));
