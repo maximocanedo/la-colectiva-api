@@ -1,22 +1,23 @@
-[
+const departure = new ObjectId("64ee579d54394a493a991c89");
+const arrival = new ObjectId("656257413cf87c69b28b9132");
+const time = new ISODate(
+    "1990-01-01T09:44:00.000+00:00"
+);
+const conditions = ["WEDNESDAY"];
+
+const magic = [
   {
     $match: {
       $or: [
         {
-          dock: ObjectId(
-              "64ee579d54394a493a991c89"
-          ),
+          dock: departure,
         },
         {
-          dock: ObjectId(
-              "656257413cf87c69b28b9132"
-          ),
+          dock: arrival,
         },
       ],
       time: {
-        $gt: new ISODate(
-            "1990-01-01T09:44:00.000+00:00"
-        ),
+        $gt: time,
       }, // Horarios futuros
     },
   },
@@ -28,12 +29,13 @@
       },
     },
   },
+
   {
     $match: {
       "schedules.dock": {
         $all: [
-          ObjectId("64ee579d54394a493a991c89"),
-          ObjectId("656257413cf87c69b28b9132"),
+          departure,
+          arrival,
         ],
       },
     },
@@ -51,9 +53,7 @@
                 isDeparture: {
                   $eq: [
                     "$$schedule.dock",
-                    ObjectId(
-                        "64ee579d54394a493a991c89"
-                    ),
+                    departure,
                   ],
                 },
               },
@@ -149,36 +149,6 @@
     },
   },
   {
-    $addFields: {
-      schedules: {
-        $map: {
-          input: "$schedules",
-          as: "schedule",
-          in: {
-            $mergeObjects: [
-              "$$schedule",
-              {
-                arrivalTimeDiff: {
-                  $cond: {
-                    if: { $eq: ["$$schedule.isDeparture", false] },
-                    then: {
-                      $max: [
-                        { $subtract: [new Date(), "$$schedule.time"] },
-                        0 // Establecer un mínimo de cero
-                      ]
-                    },
-                    else: null
-                  }
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
-
-  },
-  {
     $unwind: "$schedules"
   },
   {
@@ -223,11 +193,26 @@
     $sort: {
       "timeDifference": 1 // Ordenar la diferencia de tiempo de llegada después de la salida de menor a mayor
     }
-  }
+  },
+  {
+    $lookup: {
+      from: "availabilities",
+      localField: "_id",
+      foreignField: "path",
+      as: "availability"
+    }
+  },
 
-
-
-
+  // Etapa para descomponer el array de condiciones y filtrar por ellos
+  {
+    $unwind: "$availability"
+  },
+  {
+    $match: {
+      "availability.condition": { $in: conditions },
+      "availability.available": true
+    }
+  },
 
 
 ]

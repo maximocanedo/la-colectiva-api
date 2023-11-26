@@ -28,6 +28,7 @@
       },
     },
   },
+
   {
     $match: {
       "schedules.dock": {
@@ -149,36 +150,6 @@
     },
   },
   {
-    $addFields: {
-      schedules: {
-        $map: {
-          input: "$schedules",
-          as: "schedule",
-          in: {
-            $mergeObjects: [
-              "$$schedule",
-              {
-                arrivalTimeDiff: {
-                  $cond: {
-                    if: { $eq: ["$$schedule.isDeparture", false] },
-                    then: {
-                      $max: [
-                        { $subtract: [new Date(), "$$schedule.time"] },
-                        0 // Establecer un mínimo de cero
-                      ]
-                    },
-                    else: null
-                  }
-                }
-              }
-            ]
-          }
-        }
-      }
-    }
-
-  },
-  {
     $unwind: "$schedules"
   },
   {
@@ -223,8 +194,25 @@
     $sort: {
       "timeDifference": 1 // Ordenar la diferencia de tiempo de llegada después de la salida de menor a mayor
     }
-  }
+  },
+  {
+    $lookup: {
+      from: "availabilities",
+      localField: "_id",
+      foreignField: "path",
+      as: "availability"
+    }
+  },
 
+  // Etapa para descomponer el array de condiciones y filtrar por ellos
+  {
+    $unwind: "$availability"
+  },
+  {
+    $match: {
+      "availability.condition": { $in: ["MONDAY"] }
+    }
+  }
 
 
 
