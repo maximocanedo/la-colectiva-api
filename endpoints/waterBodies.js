@@ -11,6 +11,49 @@ router.use(express.json());
 router.use(cookieParser());
 
 /* Acciones básicas */
+router.get(
+	"/",
+	async (req, res) => {
+		try {
+			// Utiliza find para buscar registros con active: true
+			let resources = await WaterBody.find({ active: true });
+
+			if (resources.length === 0) {
+				return res.status(404).json({
+					message: "Resources not found",
+				});
+			}
+
+			let resourcesData = resources.map((resource) => {
+				const totalValidations = resource.validations.filter(
+					(validation) => validation.validation === true
+				).length;
+				const totalInvalidations = resource.validations.filter(
+					(validation) => validation.validation === false
+				).length;
+				const {user, name, type, uploadDate, _id} = resource;
+				return {
+					user,
+					name,
+					type,
+					uploadDate,
+					_id,
+					validations: totalValidations,
+					invalidations: totalInvalidations,
+				};
+			});
+
+			// Envía el array de resultados como respuesta
+			res.status(200).json(resourcesData);
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({
+				message: "Internal error",
+			});
+		}
+
+	}
+)
 router.post(
 	"/",
 	pre.auth,
