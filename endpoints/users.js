@@ -106,6 +106,26 @@ router.get("/:username", async (req, res) => {
 		return;
 	}
 }); // Ver usuario
+router.head("/:username", async (req, res) => {
+	try {
+		const username = req.params.username;
+		const user = await User.findOne(
+			{ username, active: true },
+			{ _id: 1 }
+		);
+		if (!user) {
+			res.status(404).end();
+			return;
+		}
+		res.status(200).end();
+		return;
+	} catch (e) {
+		console.error(e);
+		res.status(500).end();
+		return;
+	}
+});
+
 router.delete("/:username", pre.auth, pre.allow.admin, async (req, res) => {
 	try {
 		const username = req.params.username;
@@ -153,7 +173,7 @@ router.post(
 			res.status(500).json({ message: "Server error" });
 		}
 	}
-); // Iniciar sesión
+);
 router.post("/logout", async (req, res) => {
 	try {
 		res.clearCookie("userSession");
@@ -191,7 +211,7 @@ router.post(
 			res.status(500).json({ message: "Server error" });
 		}
 	}
-); // Crear usuario
+);
 router.options("/", async (req, res) => {
 	res.status(200).json({
 		methods: [
