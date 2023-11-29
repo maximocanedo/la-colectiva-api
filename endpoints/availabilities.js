@@ -7,6 +7,7 @@ const User = require("../schemas/User");
 const pre = require("./pre");
 const Path = require("./../schemas/Path");
 const Availability = require("../schemas/Availability");
+const Boat = require("../schemas/Boat");
 router.use(express.json());
 router.use(cookieParser());
 
@@ -96,6 +97,27 @@ router.delete("/:av_id", pre.auth, pre.allow.moderator, async (req, res) => {
 }); // Eliminar un comentario
 
 /* Validaciones */
+router.get("/:resId/votes", pre.auth, async (req, res) => {
+	try {
+		const { resId } = req.params;
+		const userId = req.user._id;
+		const validates = true;
+
+		const result = await Availability.getValidations(resId, userId);
+
+		if (!result.success) {
+			console.error(result.message);
+			return res.status(result.status).json(result);
+		}
+
+		res.status(result.status).json(result);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+});
 router.post(
 	"/:resId/validate",
 	pre.auth,

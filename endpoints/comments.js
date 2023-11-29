@@ -51,6 +51,30 @@ router.get("/:comment_id", async (req, res) => {
 		});
 	}
 }); // Ver contenido de un comentario
+router.put("/:comment_id", async (req, res) => {
+	try {
+		let { comment_id } = req.params;
+		let { content } = req.body; // Suponiendo que el cuerpo de la solicitud tiene el nuevo contenido del comentario
+
+		let comment = await Comment.findOne({ _id: comment_id, active: true });
+
+		if (!comment) {
+			return res.status(404);
+		}
+
+		comment.content = content;
+		comment.__v += 1; // Incrementar manualmente el campo __v
+
+		let updatedComment = await comment.save();
+
+		res.status(200).json(updatedComment);
+	} catch (err) {
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+});
+
 router.delete("/:comment_id", pre.auth, pre.allow.normal, async (req, res) => {
 	try {
 		const { comment_id } = req.params;

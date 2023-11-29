@@ -6,9 +6,13 @@ const cookieParser = require("cookie-parser");
 const Enterprise = require("../schemas/Enterprise");
 const pre = require("./pre");
 const Comment = require("../schemas/Comment");
+const Path = require("../schemas/Path");
+const { handleComments } = require("../schemas/CommentUtils");
 
 router.use(express.json());
 router.use(cookieParser());
+
+handleComments(router, Enterprise);
 
 /* Acciones básicas */
 
@@ -48,6 +52,107 @@ router.post(
 		}
 	}
 ); // Crear un registro
+router.get("/", async (req, res) => {
+	try {
+		// Utiliza find para buscar todos los registros con active: true
+		let resources = await Enterprise.find({ active: true });
+
+		if (!resources || resources.length === 0) {
+			return res.status(404).json({
+				message: "Resources not found",
+			});
+		}
+
+		const responseData = resources.map((resource) => {
+			const totalValidations = resource.validations.filter(
+				(validation) => validation.validation === true
+			).length;
+			const totalInvalidations = resource.validations.filter(
+				(validation) => validation.validation === false
+			).length;
+
+			const {
+				_id,
+				cuit,
+				name,
+				user,
+				description,
+				foundationDate,
+				phones,
+				active,
+			} = resource;
+
+			return {
+				_id,
+				user,
+				cuit,
+				name,
+				description,
+				foundationDate,
+				phones,
+				active,
+				validations: totalValidations,
+				invalidations: totalInvalidations,
+			};
+		});
+
+		// Envía los registros como respuesta
+		res.status(200).json(responseData);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+});
+
+router.get("/:id", async (req, res) => {
+	try {
+		const id = req.params.id;
+		// Utiliza findOne para buscar un registro con ID y active: true
+		let resource = await Enterprise.findOne({ _id: id, active: true });
+
+		if (!resource) {
+			return res.status(404).json({
+				message: "Resource not found",
+			});
+		}
+		const totalValidations = resource.validations.filter(
+			(validation) => validation.validation === true
+		).length;
+		const totalInvalidations = resource.validations.filter(
+			(validation) => validation.validation === false
+		).length;
+
+		const {
+			cuit,
+			name,
+			user,
+			description,
+			foundationDate,
+			phones,
+			active,
+		} = resource;
+		// Envía la imagen como respuesta
+		res.status(200).json({
+			user,
+			cuit,
+			name,
+			description,
+			foundationDate,
+			phones,
+			active,
+			validations: totalValidations,
+			invalidations: totalInvalidations,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+});
+
 router.get("/:id", async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -173,17 +278,23 @@ router.delete("/:id", pre.auth, async (req, res) => {
 	}
 }); // Eliminar registro
 
-/* Comentarios */
-router.get("/:id/comments", async (req, res) => {
+
+
+
+/* Validaciones */
+router.get("/:resId/votes", pre.auth, async (req, res) => {
 	try {
-		const resId = req.params.id;
-		const page = req.query.p || 0;
-		const itemsPerPage = req.query.itemsPerPage || 10;
-		let result = await Enterprise.listComments({
-			resId,
-			page,
-			itemsPerPage,
-		});
+		const { resId } = req.params;
+		const userId = req.user._id;
+		const validates = true;
+
+		const result = await Enterprise.getValidations(resId, userId);
+
+		if (!result.success) {
+			console.error(result.message);
+			return res.status(result.status).json(result);
+		}
+
 		res.status(result.status).json(result);
 	} catch (err) {
 		console.error(err);
@@ -191,85 +302,8 @@ router.get("/:id/comments", async (req, res) => {
 			message: "Internal error",
 		});
 	}
-}); // Ver comentarios
-router.post(
-	"/:id/comments",
-	pre.auth,
-	pre.allow.normal,
-	pre.verifyInput(["content"]),
-	async (req, res) => {
-		try {
-			const resId = req.params.id;
-			const content = req.body.content;
-			const userId = req.user._id;
+});
 
-			const result = await Enterprise.comment(resId, content, userId);
-
-			if (result.error) {
-				console.error(result.error);
-				return res.status(500).json({
-					message: result.msg,
-				});
-			}
-
-			res.status(201).json({
-				comment: result.newComment,
-				message: "Comment added",
-			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
-); // Publicar comentario
-router.delete(
-	"/:resId/comments/:commentId",
-	pre.auth,
-	pre.allow.normal,
-	async (req, res) => {
-		try {
-			const { resId, commentId } = req.params;
-			const resource = await Enterprise.findById(resId);
-			if (!resource) {
-				return res.status(404).json({
-					message: "Resource not found",
-				});
-			}
-			const comment = await Comment.findById(commentId);
-			if (!comment) {
-				return res.status(404).json({
-					message: "Comment not found",
-				});
-			}
-			if (comment.user == req.user._id || req.user.role >= 2) {
-				// Eliminar el comentario de la colección Comment
-				await Comment.delete(commentId);
-
-				// Eliminar la referencia del comentario en el arreglo comments de la foto
-				const commentIndex = resource.comments.indexOf(commentId);
-				if (commentIndex !== -1) {
-					resource.comments.splice(commentIndex, 1);
-					await resource.save();
-				}
-				return res.status(200).json({
-					message: "Comment deleted",
-				});
-			} else
-				return res.status(403).json({
-					message: "Unauthorized. ",
-				});
-		} catch (err) {
-			console.error(err);
-			return res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
-); // Eliminar comentario
-
-/* Validaciones */
 router.post(
 	"/:resId/validate",
 	pre.auth,

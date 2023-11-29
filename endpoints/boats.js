@@ -8,9 +8,13 @@ const Photo = require("../schemas/Photo");
 const pre = require("./pre");
 const Comment = require("../schemas/Comment");
 const { ObjectId } = require("mongodb");
+const Dock = require("../schemas/Dock");
+const {handleComments} = require("../schemas/CommentUtils");
 
 router.use(express.json());
 router.use(cookieParser());
+
+handleComments(router, Boat);
 
 /* Acciones básicas */
 router.post(
@@ -157,17 +161,23 @@ router.delete("/:id", pre.auth, async (req, res) => {
 	}
 }); // Eliminar registro
 
-/* Comentarios */
-router.get("/:id/comments", async (req, res) => {
+
+
+/* Validaciones */
+
+router.get("/:resId/votes", pre.auth, async (req, res) => {
 	try {
-		const resId = req.params.id;
-		const page = req.query.p || 0;
-		const itemsPerPage = req.query.itemsPerPage || 10;
-		let result = await Boat.listComments({
-			resId,
-			page,
-			itemsPerPage,
-		});
+		const { resId } = req.params;
+		const userId = req.user._id;
+		const validates = true;
+
+		const result = await Boat.getValidations(resId, userId);
+
+		if (!result.success) {
+			console.error(result.message);
+			return res.status(result.status).json(result);
+		}
+
 		res.status(result.status).json(result);
 	} catch (err) {
 		console.error(err);
@@ -175,78 +185,7 @@ router.get("/:id/comments", async (req, res) => {
 			message: "Internal error",
 		});
 	}
-}); // Ver comentarios del recurso
-router.post("/:id/comments", pre.auth, pre.allow.normal, async (req, res) => {
-	try {
-		const resId = req.params.id;
-		const content = req.body.content;
-		const userId = req.user._id;
-
-		const result = await Boat.comment(resId, content, userId);
-
-		if (result.error) {
-			console.error(result.error);
-			return res.status(500).json({
-				message: result.msg,
-			});
-		}
-
-		res.status(201).json({
-			message: "Comment added",
-		});
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
-	}
-}); // Publicar comentario
-router.delete(
-	"/:resId/comments/:commentId",
-	pre.auth,
-	pre.allow.normal,
-	async (req, res) => {
-		try {
-			const { resId, commentId } = req.params;
-			const resource = await Boat.findById(resId);
-			if (!resource) {
-				return res.status(404).json({
-					message: "Resource not found",
-				});
-			}
-			const comment = await Comment.findById(commentId);
-			if (!comment) {
-				return res.status(404).json({
-					message: "Comment not found",
-				});
-			}
-			if (comment.user == req.user._id || req.user.role >= 2) {
-				// Eliminar el comentario de la colección Comment
-				await Comment.delete(commentId);
-
-				// Eliminar la referencia del comentario en el arreglo comments de la foto
-				const commentIndex = resource.comments.indexOf(commentId);
-				if (commentIndex !== -1) {
-					resource.comments.splice(commentIndex, 1);
-					await resource.save();
-				}
-				return res.status(200).json({
-					message: "Comment deleted",
-				});
-			} else
-				return res.status(403).json({
-					message: "Unauthorized. ",
-				});
-		} catch (err) {
-			console.error(err);
-			return res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
-); // Eliminar comentario
-
-/* Validaciones */
+});
 router.post(
 	"/:resId/validate",
 	pre.auth,

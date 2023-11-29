@@ -21,73 +21,238 @@ let data = {
 	},
 	conditions: ["MONDAY", "HOLIDAY"],
 };
+/*const departure = new ObjectId("64ee579d54394a493a991c89");
+const arrival = new ObjectId("656257413cf87c69b28b9132");
+const time = new ISODate(
+	"1990-01-01T09:44:00.000+00:00"
+);
+const conditions = ["WEDNESDAY"];*/
+
+const algo = (departure, arrival, time, conditions) => ([
+	{
+		$match: {
+			$or: [
+				{
+					dock: departure,
+				},
+				{
+					dock: arrival,
+				},
+			],
+			time: {
+				$gt: time,
+			}, // Horarios futuros
+		},
+	},
+	{
+		$group: {
+			_id: "$path",
+			schedules: {
+				$push: "$$ROOT",
+			},
+		},
+	},
+
+	{
+		$match: {
+			"schedules.dock": {
+				$all: [
+					departure,
+					arrival,
+				],
+			},
+		},
+	},
+	{
+		$addFields: {
+			sortedSchedules: {
+				$map: {
+					input: "$schedules",
+					as: "schedule",
+					in: {
+						$mergeObjects: [
+							"$$schedule",
+							{
+								isDeparture: {
+									$eq: [
+										"$$schedule.dock",
+										departure,
+									],
+								},
+							},
+						],
+					},
+				},
+			},
+		},
+	},
+	{
+		$unwind: "$sortedSchedules",
+	},
+	{
+		$sort: {
+			_id: 1,
+			"sortedSchedules.isDeparture": -1,
+			"sortedSchedules.time": -1,
+		},
+	},
+	{
+		$group: {
+			_id: "$_id",
+			schedules: {
+				$push: "$sortedSchedules",
+			},
+		},
+	},
+	{
+		$addFields: {
+			filteredSchedules: {
+				$filter: {
+					input: "$schedules",
+					as: "schedule",
+					cond: {
+						$ne: [
+							"$$schedule.sortedSchedules",
+							null,
+						],
+					},
+				},
+			},
+		},
+	},
+	{
+		$project: {
+			_id: 1,
+			schedules: "$filteredSchedules",
+		},
+	},
+	{
+		$addFields: {
+			validSchedules: {
+				$filter: {
+					input: "$schedules",
+					as: "schedule",
+					cond: {
+						$or: [
+							{
+								$eq: [
+									"$$schedule.isDeparture",
+									true,
+								],
+							},
+							{
+								$gte: [
+									"$$schedule.time",
+									{
+										$max: {
+											$filter: {
+												input: "$schedules",
+												as: "inner",
+												cond: {
+													$eq: [
+														"$$inner.isDeparture",
+														false,
+													],
+												},
+											},
+										},
+									},
+								],
+							},
+						],
+					},
+				},
+			},
+		},
+	},
+	{
+		$project: {
+			_id: 1,
+			schedules: "$validSchedules",
+		},
+	},
+	{
+		$unwind: "$schedules"
+	},
+	{
+		$sort: {
+			_id: 1,
+			"sortedSchedules.isDeparture": -1,
+			"sortedSchedules.time": -1,
+			"schedules.arrivalTimeDiff": 1 // Orden ascendente por la diferencia de tiempo de llegada
+		}
+	},
+	{
+		$group: {
+			_id: "$_id",
+			schedules: {
+				$push: "$schedules"
+			}
+		}
+	},
+	{
+		$project: {
+			_id: 1,
+			schedules: 1,
+		}
+	},
+	{
+		$addFields: {
+			"departureTime": { $arrayElemAt: ["$schedules.time", 0] }, // Accede al tiempo de salida
+			"arrivalTime": { $arrayElemAt: ["$schedules.time", 1] } // Accede al tiempo de llegada
+		}
+	},
+	{
+		$addFields: {
+			"timeDifference": { $subtract: ["$arrivalTime", "$departureTime"] }
+		}
+	},
+	{
+		$match: {
+			"timeDifference": { $gte: 0 } // Filtra cuando la llegada sea después o igual a la salida
+		}
+	},
+	{
+		$sort: {
+			"timeDifference": 1 // Ordenar la diferencia de tiempo de llegada después de la salida de menor a mayor
+		}
+	},
+	{
+		$lookup: {
+			from: "availabilities",
+			localField: "_id",
+			foreignField: "path",
+			as: "availability"
+		}
+	},
+
+	// Etapa para descomponer el array de condiciones y filtrar por ellos
+	{
+		$unwind: "$availability"
+	},
+	{
+		$match: {
+			"availability.condition": { $in: conditions },
+			"availability.available": true
+		}
+	},
+
+
+]);
 
 router.get(
 	"/next",
-	pre.verifyInput(["dock", "time", "conditions"]),
 	async (req, res) => {
 		try {
-			const { dock, time, conditions } = req.body;
-			const horaBusqueda = new Date(1990, 0, 1, time.hour, time.min);
-			const addZero = (x) => (parseInt(x) < 10 ? `0${x}` : `${x}`);
-			let h = addZero(time.hour);
-			let m = addZero(time.min);
-			const stringHora = horaBusqueda.toISOString();
-			const result = await Schedule.aggregate([
-				{
-					$match: {
-						time: {
-							$gt: new Date(`Mon, 01 Jan 1990 ${h}:${m}:00 GMT`),
-						},
-						dock: new ObjectId(dock),
-					},
-				},
-				{
-					$lookup: {
-						from: "paths",
-						localField: "path",
-						foreignField: "_id",
-						as: "pathInfo",
-						pipeline: [
-							{
-								$project: {
-									_id: 1,
-									title: 1,
-									boat: 1,
-								},
-							},
-						],
-					},
-				},
-				{
-					$unwind: "$pathInfo",
-				},
-				{
-					$lookup: {
-						from: "availabilities",
-						localField: "pathInfo._id",
-						foreignField: "path",
-						as: "availabilityInfo",
-						pipeline: [
-							{
-								$project: {
-									_id: 1,
-									condition: 1,
-									available: 1,
-								},
-							},
-						],
-					},
-				},
-				{
-					$match: {
-						"availabilityInfo.condition": {
-							$in: conditions,
-						},
-						"availabilityInfo.available": true,
-					},
-				},
-			]);
+			const { departure, arrival, time, conditions } = req.query;
+
+			const stringHora = new Date("1990-01-01T" + time + ":00.000+00:00");
+			const result = await Schedule.aggregate(algo(
+				new ObjectId(departure),
+				new ObjectId(arrival),
+				stringHora,
+				[ "MONDAY" ]
+			));
 
 			if (!result) {
 				return res.status(404).json({
