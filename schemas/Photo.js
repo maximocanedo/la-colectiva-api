@@ -157,6 +157,102 @@ photoSchema.statics.listComments = async function ({
 		};
 	}
 };
+photoSchema.statics.getValidations = async function (wbId, userId) {
+	try {
+		const aggregationResult = await this.aggregate([
+			{ $match: { _id: new mongoose.Types.ObjectId(wbId) } },
+			{
+				$project: {
+					validations: {
+						$filter: {
+							input: "$validations",
+							as: "validation",
+							cond: {
+								$ne: ["$$validation.validation", null],
+							},
+						},
+					},
+				},
+			},
+			{
+				$project: {
+					inFavorCount: {
+						$size: {
+							$filter: {
+								input: "$validations",
+								as: "validation",
+								cond: { $eq: ["$$validation.validation", true] },
+							},
+						},
+					},
+					againstCount: {
+						$size: {
+							$filter: {
+								input: "$validations",
+								as: "validation",
+								cond: { $eq: ["$$validation.validation", false] },
+							},
+						},
+					},
+					userVote: {
+						$cond: {
+							if: {
+								$ne: [
+									{
+										$indexOfArray: [
+											"$validations.user",
+											new mongoose.Types.ObjectId(userId),
+										],
+									},
+									-1,
+								],
+							},
+							then: {
+								$cond: {
+									if: {
+										$eq: [
+											"$validations.validation",
+											true,
+										],
+									},
+									then: true,
+									else: false,
+								},
+							},
+							else: null,
+						},
+					},
+				},
+			},
+		]);
+
+		if (aggregationResult.length === 0) {
+			return {
+				success: false,
+				status: 404,
+				message: "Resource not found",
+			};
+		}
+
+		const { inFavorCount, againstCount, userVote } = aggregationResult[0];
+
+		return {
+			success: true,
+			status: 200,
+			message: "Validations retrieved",
+			inFavorCount,
+			againstCount,
+			userVote,
+		};
+	} catch (error) {
+		console.log(error);
+		return {
+			success: false,
+			status: 500,
+			message: "Could not retrieve validations",
+		};
+	}
+};
 photoSchema.statics.validate = async function (photoId, userId, validates) {
 	try {
 		const photo = await this.findById(photoId);
