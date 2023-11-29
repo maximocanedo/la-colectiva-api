@@ -7,17 +7,18 @@
 </head>
 <body onload="fillRegion()">
 <form action="#" name="cm" onsubmit="return false;">
+    <input type="text" name="latlon" placeholder="Latitud y longitud" /><br>
     <select name="status" id="status">
         <option value="0">Muelle privado</option>
-        <option value="1">Muelle público</option>
+        <option value="1" selected>Muelle público</option>
         <option value="2">Muelle de un negocio</option>
-    </select>
+    </select><br>
     <input type="text" name="name" placeholder="Nombre del muelle" /><br>
     <input type="number" name="address" placeholder="Altura" /><br>
     <select name="region" id="region"></select><br>
     <textarea name="notes" id="notes" cols="30" rows="10"></textarea><br>
-    <input type="number" name="lat" placeholder="Latitud" />
-    <input type="number" name="lon" placeholder="Longitud" />
+    <input type="number" name="lat" readonly placeholder="Latitud" />
+    <input type="number" name="lon" readonly placeholder="Longitud" /><br>
     <button type="button" id="env">Enviar</button>
 </form>
 </body>

@@ -1,5 +1,11 @@
 "use strict";
-
+const sp = () => {
+    // -34.384840, -58.567240
+    const val = document.cm.latlon.value;
+    let v = val.split(", ");
+    document.cm.lat.value = v[0];
+    document.cm.lon.value = v[1];
+};
 const getJSON = () => ({
     "name": document.cm.name.value,
     "address": document.cm.address.value,
@@ -7,10 +13,11 @@ const getJSON = () => ({
     "notes": document.cm.notes.value,
     "status": parseInt(document.cm.status.value),
     "latitude": document.cm.lat.value,
-    "longitude": document.cm.lon.value
+    "longitude": document.cm.lon.value,
 });
 
 const fillRegion = async () => {
+    document.cm.latlon.addEventListener("change", () => sp());
     document.querySelector("#env").addEventListener('click', async (e) => {
         await submit();
     });
