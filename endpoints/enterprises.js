@@ -105,50 +105,47 @@ router.get("/", async (req, res) => {
 		});
 	}
 });
-
-router.get("/:id", async (req, res) => {
+router.patch("/:id", pre.auth, pre.allow.admin, async (req, res) => {
 	try {
-		const id = req.params.id;
-		// Utiliza findOne para buscar un registro con ID y active: true
-		let resource = await Enterprise.findOne({ _id: id, active: true });
+		const { id } = req.params; // Obtiene el ID del registro a actualizar
+		const { name, cuit, description, foundationDate } = req.body; // Obtiene los campos a actualizar
 
-		if (!resource) {
-			return res.status(404).json({
-				message: "Resource not found",
+		// Verifica si al menos uno de los campos está presente en la solicitud
+		if (!name && !cuit && !description && !foundationDate) {
+			return res.status(400).json({
+				message: "Se requiere al menos un campo para actualizar.",
 			});
 		}
-		const totalValidations = resource.validations.filter(
-			(validation) => validation.validation === true
-		).length;
-		const totalInvalidations = resource.validations.filter(
-			(validation) => validation.validation === false
-		).length;
 
-		const {
-			cuit,
-			name,
-			user,
-			description,
-			foundationDate,
-			phones,
-			active,
-		} = resource;
-		// Envía la imagen como respuesta
+		const updatedFields = {}; // Almacena los campos actualizados dinámicamente
+
+		// Actualiza solo los campos que se proporcionan en la solicitud
+		if (name) updatedFields.name = name;
+		if (cuit) updatedFields.cuit = cuit;
+		if (description) updatedFields.description = description;
+		if (foundationDate) updatedFields.foundationDate = foundationDate;
+
+		// Busca y actualiza el registro en la base de datos
+		const updatedEnterprise = await Enterprise.findByIdAndUpdate(
+			id,
+			{ $set: updatedFields },
+			{ new: true }
+		);
+
+		if (!updatedEnterprise) {
+			return res.status(404).json({
+				message: "Registro no encontrado.",
+			});
+		}
+
 		res.status(200).json({
-			user,
-			cuit,
-			name,
-			description,
-			foundationDate,
-			phones,
-			active,
-			validations: totalValidations,
-			invalidations: totalInvalidations,
+			message: "Registro actualizado correctamente.",
+			updatedEnterprise,
 		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({
-			message: "Internal error",
+			message: "Error interno del servidor.",
 		});
 	}
 });
@@ -172,6 +169,7 @@ router.get("/:id", async (req, res) => {
 		).length;
 
 		const {
+			_id,
 			cuit,
 			name,
 			user,
@@ -182,6 +180,7 @@ router.get("/:id", async (req, res) => {
 		} = resource;
 		// Envía la imagen como respuesta
 		res.status(200).json({
+			_id,
 			user,
 			cuit,
 			name,
@@ -198,7 +197,76 @@ router.get("/:id", async (req, res) => {
 			message: "Internal error",
 		});
 	}
-}); // Ver recurso
+});
+router.get("/:id/phones", async (req, res) => {
+	try {
+		const id = req.params.id;
+		// Utiliza findOne para buscar un registro con ID y active: true
+		const resource = await Enterprise.findOne({ _id: id, active: true });
+
+		if (!resource) {
+			return res.status(404).json({
+				message: "Resource not found",
+			});
+		}
+
+		const phones = resource.phones;
+		return res.status(200).json({ phones });
+
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+});
+
+router.post("/:id/phones", async (req, res) => {
+	try {
+		const id = req.params.id;
+		const { phone } = req.body;
+		// Utiliza findOne para buscar un registro con ID y active: true
+		let resource = await Enterprise.findOne({ _id: id, active: true });
+
+		if (!resource) {
+			return res.status(404).json({
+				message: "Resource not found",
+			});
+		}
+		const result = await resource.addPhone(phone);
+		return res.status(result.status).json({msg: result.msg});
+
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+});
+router.delete("/:id/phones", async (req, res) => {
+	try {
+		const id = req.params.id;
+		const { phone } = req.body;
+		// Utiliza findOne para buscar un registro con ID y active: true
+		let resource = await Enterprise.findOne({ _id: id, active: true });
+
+		if (!resource) {
+			return res.status(404).json({
+				message: "Resource not found",
+			});
+		}
+		const result = await resource.deletePhone(phone);
+		return res.status(result.status).json({msg: result.msg});
+
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({
+			message: "Internal error",
+		});
+	}
+});
+
+
 router.patch(
 	"/:id",
 	pre.auth,

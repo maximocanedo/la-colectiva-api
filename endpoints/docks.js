@@ -20,7 +20,8 @@ const docks = {
 	actions: {
 		explore: async (req, res) => {
 			try {
-				const { coordinates, radio, prefer, q } = req.body;
+				const { lat, lng, radio, prefer, q } = req.query;
+				let coordinates = [lat, lng];
 				const page = req.query.p || 0;
 				const itemsPerPage = req.query.itemsPerPage || 10;
 				let preferObj = {

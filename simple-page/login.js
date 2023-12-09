@@ -1,7 +1,7 @@
 "use strict";
 
 const login = async () => {
-	const apiUrl = "/users/login";
+	const apiUrl = "http://localhost:3000/users/login";
 
 	const usernameInput = document.querySelector("#username-input").value;
 	const passwordInput = document.querySelector("#password-input").value;

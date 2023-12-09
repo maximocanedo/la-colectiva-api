@@ -1,6 +1,8 @@
 "use strict";
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
+const moment = require('moment-timezone');
+const localDate = moment.tz(Date.now(), "America/Argentina/Buenos_Aires");
 
 const CommentSchema = mongoose.Schema({
 	user: {
@@ -17,7 +19,7 @@ const CommentSchema = mongoose.Schema({
 	uploadDate: {
 		type: Date,
 		required: true,
-		default: Date.now(),
+		default: () => moment.tz(Date.now(), "America/Argentina/Buenos_Aires").toDate(),
 	},
 	active: {
 		type: Boolean,
@@ -30,6 +32,7 @@ CommentSchema.statics.add = async function (userId, content) {
 		const newComment = await this.create({
 			user: userId,
 			content: content,
+			uploadDate: moment.tz(Date.now(), "America/Argentina/Buenos_Aires")
 		});
 		return newComment;
 	} catch (error) {

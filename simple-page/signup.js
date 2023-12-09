@@ -1,7 +1,7 @@
 "use strict";
 
 const signup = async () => {
-	const apiUrl = "/users/signup";
+	const apiUrl = "http://localhost:3000/users/signup";
 
 	const usernameInput = document.querySelector("#username").value;
 	const nameInput = document.querySelector("#name").value;

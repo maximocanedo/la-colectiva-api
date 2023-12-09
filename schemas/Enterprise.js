@@ -124,6 +124,43 @@ enterpriseSchema.statics.listComments = async function ({
 		};
 	}
 };
+enterpriseSchema.methods.addPhone = async function (phoneNumber) {
+	try {
+		this.phones.push(phoneNumber);
+		await this.save();
+		return {
+			phones: this.phones,
+			status: 200,
+			msg: "Phone number added successfully.",
+		};
+	} catch (error) {
+		return {
+			phones: [],
+			status: 500,
+			error: error,
+			msg: "Failed to add phone number.",
+		};
+	}
+};
+
+enterpriseSchema.methods.deletePhone = async function (phoneNumber) {
+	try {
+		this.phones = this.phones.filter((phone) => phone !== phoneNumber);
+		await this.save();
+		return {
+			phones: this.phones,
+			status: 200,
+			msg: "Phone number deleted successfully.",
+		};
+	} catch (error) {
+		return {
+			phones: this.phones,
+			status: 500,
+			error: error,
+			msg: "Failed to delete phone number.",
+		};
+	}
+};
 
 enterpriseSchema.statics.getValidations = async function (wbId, userId) {
 	try {

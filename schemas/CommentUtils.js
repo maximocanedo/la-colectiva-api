@@ -20,7 +20,7 @@ async function listCommentsForModel(Model, { resId, page, itemsPerPage }) {
                 populate: {
                     path: "user",
                     model: "User",
-                    select: "name", // Cambia "name" a "fullName" si ese es el campo de nombre completo en tu modelo de usuario
+                    select: "name username", // Cambia "name" a "fullName" si ese es el campo de nombre completo en tu modelo de usuario
                 },
                 options: {
                     sort: { uploadDate: 1 },

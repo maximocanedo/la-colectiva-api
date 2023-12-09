@@ -3,6 +3,8 @@ const Comment = require("./Comment");
 const { ObjectId } = require("mongodb");
 const ValidationSchema = require("./Validation");
 const rp = ["path", "dock", "time"];
+const moment = require('moment-timezone');
+const localDate = moment.tz(Date.now(), "America/Argentina/Buenos_Aires");
 const scheduleSchema = mongoose.Schema({
 	path: {
 		type: ObjectId,
@@ -26,7 +28,7 @@ const scheduleSchema = mongoose.Schema({
 	uploadDate: {
 		type: Date,
 		required: true,
-		default: Date.now(),
+		default: moment.tz(Date.now(), "America/Argentina/Buenos_Aires"),
 	},
 	active: {
 		type: Boolean,
