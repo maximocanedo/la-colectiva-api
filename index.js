@@ -21,7 +21,7 @@ let db;
 // DB Connection
 connectToDB((err) => {
 	if (!err) {
-		app.listen(3000, () => {
+		app.listen(5050, () => {
 			console.log("App listening...");
 		});
 	}
