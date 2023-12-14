@@ -1,12 +1,20 @@
 "use strict";
+const https = require("https");
 const express = require("express");
+const fs = require("fs");
 const path = require("path");
 const { ObjectId } = require("mongodb");
 const { connectToDB, getDB } = require("./db");
 const routes = require("./endpoints/index.js");
 const cors = require("cors");
 
-// Initialize
+// Cargar los certificados SSL
+const options = {
+	key: fs.readFileSync("/etc/letsencrypt/live/colectiva.com.ar/privkey.pem"),
+	cert: fs.readFileSync("/etc/letsencrypt/live/colectiva.com.ar/cert.pem"),
+};
+
+// Inicializar la aplicación
 const app = express();
 
 app.use(express.json());
@@ -18,10 +26,11 @@ app.use(cors({
 
 let db;
 
-// DB Connection
+// Conexión a la base de datos
 connectToDB((err) => {
 	if (!err) {
-		app.listen(5050, () => {
+		// Crear el servidor HTTPS
+		https.createServer(options, app).listen(5050, () => {
 			console.log("App listening...");
 		});
 	}
