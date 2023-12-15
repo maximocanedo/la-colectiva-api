@@ -20,7 +20,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-	origin: ['http://localhost', 'http://colectiva.com.ar', 'http://149.50.132.47'],
+	origin: ['http://localhost', 'https://colectiva.com.ar', 'https://149.50.132.47', 'http://colectiva.com.ar', 'http://149.50.132.47'],
 	credentials: true
 }));
 
