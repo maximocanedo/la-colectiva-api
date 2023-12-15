@@ -126,6 +126,40 @@ router.head("/:username", async (req, res) => {
 	}
 });
 
+router.put(
+	"/:username",
+	pre.auth,
+	async (req, res) => {
+		try {
+			const username = req.params.username;
+			const { name, bio, birth } = req.body; // Datos a actualizar
+
+			let user = await User.findOne({ username });
+
+			if (!user) {
+				return res.status(404).json({
+					message: "User not found.",
+				});
+			}
+
+			// Actualizar los campos especificados si existen
+			if (name) user.name = name;
+			if (bio) user.bio = bio;
+			if (birth) user.birth = birth;
+
+			const updatedUser = await user.save();
+
+			res.status(200).json({
+				message: "User updated successfully.",
+				user: updatedUser,
+			});
+		} catch (err) {
+			console.error(err);
+			res.status(500).json({ message: "Server error" });
+		}
+	}
+);
+
 router.delete("/:username", pre.auth, pre.allow.admin, async (req, res) => {
 	try {
 		const username = req.params.username;
