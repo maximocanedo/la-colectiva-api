@@ -36,6 +36,13 @@ connectToDB((err) => {
 	}
 });
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Credentials', true);
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, HEAD, PATCH, DELETE, OPTIONS');
+    next();
+});
+
 // Routes
 app.use("/users", routes.users);
 app.use("/photos", routes.photos);
