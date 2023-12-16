@@ -197,7 +197,7 @@ router.post(
 				// Set cookie to store session
 				const uid = user._id.toString();
 				const encrypted_uid = pre.encrypt(uid);
-				res.cookie("userSession", encrypted_uid, { httpOnly: true });
+				res.cookie("userSession", encrypted_uid, { httpOnly: true, sameSite: 'None', secure: true });
 				return res.status(200).json({ message: "Login successful" });
 			} else {
 				return res.status(401).json({ message: "Invalid credentials" });
