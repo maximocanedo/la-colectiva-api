@@ -49,7 +49,7 @@ const userSchema = mongoose.Schema({
 	username: {
 		type: String,
 		required: true,
-		match: /^[a-zA-Z0-9_]{3,16}$/,
+		match: /^[a-zA-Z0-9_.]{3,24}$/,
 		unique: true,
 	},
 	name: {
@@ -57,6 +57,12 @@ const userSchema = mongoose.Schema({
 		required: true,
 		maxlength: 24,
 		minlength: 3,
+	},
+	email: {
+		type: String,
+		required: false,
+		match: /^.+@.+\..+$/,
+		unique: true,
 	},
 	bio: {
 		type: String,

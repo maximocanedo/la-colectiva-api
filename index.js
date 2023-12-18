@@ -7,9 +7,16 @@ const { ObjectId } = require("mongodb");
 const { connectToDB, getDB } = require("./db");
 const routes = require("./endpoints/index.js");
 const cors = require("cors");
+const pre = require("./endpoints/pre");
+const users = require("./actions/users");
+
+
+const useSSL = false;
 
 // Cargar los certificados SSL
-const options = {
+let options = {};
+
+if(useSSL) options = {
 	key: fs.readFileSync("/etc/letsencrypt/live/colectiva.com.ar/privkey.pem"),
 	cert: fs.readFileSync("/etc/letsencrypt/live/colectiva.com.ar/cert.pem"),
 };
@@ -30,8 +37,10 @@ let db;
 connectToDB((err) => {
 	if (!err) {
 		// Crear el servidor HTTPS
-		https.createServer(options, app).listen(5050, () => {
+		if(useSSL) https.createServer(options, app).listen(5050, () => {
 			console.log("App listening...");
+		}); else app.listen(80, () => {
+			console.log("App listening on local server...");
 		});
 	}
 });
@@ -44,6 +53,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.post("/auth", pre.verifyInput(["username", "password"]), users.login);
+app.delete("/auth", users.logout);
 app.use("/users", routes.users);
 app.use("/photos", routes.photos);
 app.use("/comments", routes.comments);
