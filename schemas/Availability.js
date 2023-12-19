@@ -78,7 +78,9 @@ AvailabilitySchema.statics.getValidations = async function (wbId, userId) {
 							$filter: {
 								input: "$validations",
 								as: "validation",
-								cond: { $eq: ["$$validation.validation", true] },
+								cond: {
+									$eq: ["$$validation.validation", true],
+								},
 							},
 						},
 					},
@@ -87,7 +89,9 @@ AvailabilitySchema.statics.getValidations = async function (wbId, userId) {
 							$filter: {
 								input: "$validations",
 								as: "validation",
-								cond: { $eq: ["$$validation.validation", false] },
+								cond: {
+									$eq: ["$$validation.validation", false],
+								},
 							},
 						},
 					},
@@ -107,10 +111,7 @@ AvailabilitySchema.statics.getValidations = async function (wbId, userId) {
 							then: {
 								$cond: {
 									if: {
-										$eq: [
-											"$validations.validation",
-											true,
-										],
+										$eq: ["$validations.validation", true],
 									},
 									then: true,
 									else: false,
@@ -195,5 +196,21 @@ AvailabilitySchema.statics.validate = async function (
 			message: "Could not save validation",
 		};
 	}
+};
+AvailabilitySchema.statics.deleteValidation = async function (userId, resId) {
+	const res = await this.findById(resId);
+	if (!res) return 404;
+	// Remove the validation from the validations array in the availability document
+	const index = res.validations.findIndex(
+		(item) => item.user.toString() === userId.toString()
+	);
+	if (index > -1) {
+		const validationId = res.validations[index]._id;
+		// Delete the validation
+		res.validations.splice(index, 1);
+	}
+	// Save the availability document
+	await res.save();
+	return 200;
 };
 module.exports = mongoose.model("Availability", AvailabilitySchema);

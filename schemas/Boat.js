@@ -317,4 +317,20 @@ boatSchema.statics.linkPhoto = async function (resId, picId) {
 		};
 	}
 };
+BoatSchema.statics.deleteValidation = async function (userId, resId) {
+	const res = await this.findById(resId);
+	if (!res) return 404;
+	// Remove the validation from the validations array in the availability document
+	const index = res.validations.findIndex(
+		(item) => item.user.toString() === userId.toString()
+	);
+	if (index > -1) {
+		const validationId = res.validations[index]._id;
+		// Delete the validation
+		res.validations.splice(index, 1);
+	}
+	// Save the availability document
+	await res.save();
+	return 200;
+};
 module.exports = mongoose.model("Boat", boatSchema);
