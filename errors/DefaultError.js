@@ -13,7 +13,7 @@ const DefaultError = class extends Error {
             ...info,
         };
 
-        this.getData = () => ({
+        this.toJSON = () => ({
             message,
             code,
             details,

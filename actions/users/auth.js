@@ -1,9 +1,9 @@
 'use strict';
 
 const User = require("../../schemas/User");
-const pre = require("../../endpoints/pre");
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const InvalidCredentials = require("../../errors/validation/InvalidCredentials");
+const TokenGenerationError = require("../../errors/auth/TokenGenerationError");
 require("dotenv").config();
 
 const login = async (req, res) => {
@@ -11,32 +11,32 @@ const login = async (req, res) => {
     try {
         const user = await User.findOne({ username, active: true });
         if (!user) {
-            res.status(401).end();
+            res.status(401).json({
+                error: new InvalidCredentials().toJSON()
+            }).end();
+            return;
         }
         const passwordMatch = await user.comparePassword(password);
         if (passwordMatch) {
-            const uid = user._id.toString(); // User ID
-            const encrypted_uid = pre.encrypt(uid);
             const token = jwt.sign({ user: user._id }, process.env.JWT_SECRET_KEY, {
                 expiresIn: '24h',
             });
             res.header("Authorization", "Bearer " + token);
             res.status(200).json({token}).end();
         } else {
-            res.status(401).end();
+            res.status(401).json({
+                error: new InvalidCredentials().toJSON()
+            }).end();
         }
     } catch (error) {
-        console.error(error);
-        res.status(500).end();
+        // TODO: Log error in separate file
+        res.status(500).json({
+            error: new TokenGenerationError().toJSON()
+        }).end();
     }
 };
 const logout = async (req, res) => {
-    try {
-        res.clearCookie("userSession");
-        res.status(200).end();
-    } catch (err) {
-        res.status(500).end();
-    }
+    res.status(405).end();
 };
 
 module.exports = {
