@@ -9,6 +9,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const User = require("../schemas/User");
+const jwt = require('jsonwebtoken');
 
 const encrypt = (text) => {
 	const n_iv = parseInt(process.env.UID_IV_LENGTH);
@@ -37,11 +38,18 @@ const decrypt = (text) => {
 };
 const authenticate = async (req, res, next) => {
 	try {
-		if (!req.cookies.userSession) {
-			return res.status(401).json({ message: "Need to authenticate." });
+		const authHeader = req.headers['authorization'];
+		if (!authHeader || !authHeader.startsWith('Bearer ')) {
+			return res.status(401).json({ message: 'Need to authenticate.' });
 		}
 
-		const uid = decrypt(req.cookies.userSession); // Aquí deberías implementar tu lógica de descifrado
+		const token = authHeader.split(' ')[1];
+		if (!token) {
+			return res.status(401).json({ message: 'Need to authenticate.' });
+		}
+
+		const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+		const uid = decoded.user; // Aquí deberías implementar tu lógica de descifrado
 		const user = await User.findById(uid).select("-password");
 
 		if (!user) {

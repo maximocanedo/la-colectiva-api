@@ -2,6 +2,9 @@
 
 const User = require("../../schemas/User");
 const pre = require("../../endpoints/pre");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require("dotenv").config();
 
 const login = async (req, res) => {
     const { username, password } = req.body;
@@ -12,10 +15,13 @@ const login = async (req, res) => {
         }
         const passwordMatch = await user.comparePassword(password);
         if (passwordMatch) {
-            const uid = user._id.toString();
+            const uid = user._id.toString(); // User ID
             const encrypted_uid = pre.encrypt(uid);
-            res.cookie("userSession", encrypted_uid, { httpOnly: true, sameSite: 'None', secure: true });
-            res.status(200).end();
+            const token = jwt.sign({ user: user._id }, process.env.JWT_SECRET_KEY, {
+                expiresIn: '24h',
+            });
+            res.header("Authorization", "Bearer " + token);
+            res.status(200).json({token}).end();
         } else {
             res.status(401).end();
         }
