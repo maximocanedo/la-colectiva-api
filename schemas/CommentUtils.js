@@ -66,10 +66,30 @@ async function addCommentForModel(Model, resId, content, userId) {
             { _id: resId },
             { $push: { comments: newComment._id } }
         );
+        const resource = await Comment.findById(newComment._id)
+            .select("user content uploadDate active _v _id")
+            .populate({
+                path: "user",
+                match: { active: true },
+                model: "User",
+                select: "name username"
+            })
+            .exec();
+
+        if (!resource) {
+            return {
+                comment: [],
+                status: 404,
+                error: null,
+                msg: "Resource not found.",
+            };
+        }
 
         return {
-            newComment,
+            comment: resource,
             status: 201,
+            error: null,
+            msg: "",
         };
     } catch (error) {
         throw error;
@@ -117,7 +137,7 @@ function handlePostComment(router, Model) {
                 }
 
                 res.status(201).json({
-                    comment: result.newComment,
+                    comment: result.comment,
                     message: "Comment added",
                 });
             } catch (err) {
