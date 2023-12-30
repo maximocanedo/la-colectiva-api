@@ -31,3 +31,4 @@ const deleteOne = [pre.auth, async (req, res) => {
         });
     }
 }];
+module.exports = deleteOne;

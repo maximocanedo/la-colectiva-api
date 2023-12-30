@@ -5,7 +5,7 @@ const router = express.Router();
 const cookieParser = require("cookie-parser");
 const Boat = require("../schemas/Boat");
 const {handleComments} = require("../schemas/CommentUtils");
-const {boats} = require("../actions/boats");
+const boats = require("../actions/boats");
 const {handleVotes} = require("../schemas/ValidationUtils");
 const {handlePictures} = require("../schemas/PictureUtils");
 
