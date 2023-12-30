@@ -1,6 +1,9 @@
 'use strict';
 
 const Dock = require("../../schemas/Dock");
+const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
+const ExpropiationError = require("../../errors/user/ExpropiationError");
+const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const deleteOne = async (req, res) => {
     try {
         const id = req.params.id;
@@ -9,13 +12,13 @@ const deleteOne = async (req, res) => {
         const isAdmin = req.user.role >= 3;
         if (!resource) {
             res.status(404).json({
-                message: "There's no resource with the provided ID. ",
-            });
+                error: new ResourceNotFoundError().toJSON()
+            }).end();
             return;
         }
         if (resource.user !== req.user._id && !isAdmin) {
             res.status(403).json({
-                message: "No resource was deleted. ",
+                error: new ExpropiationError().toJSON()
             });
             return;
         }
@@ -27,7 +30,7 @@ const deleteOne = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: "Internal error. ",
+            message: new CRUDOperationError().toJSON()
         });
     }
 };

@@ -1,6 +1,7 @@
 'use strict';
 
 const Dock = require("../../schemas/Dock");
+const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const explore = async (res, req) => {
     try {
         const { lat, lng, radio } = req.params;
@@ -12,7 +13,7 @@ const explore = async (res, req) => {
             status: prefer,
             name: { $regex: q || "", $options: "i" },
         };
-        if (prefer == -1) {
+        if (prefer === -1) {
             preferObj = {
                 status: { $gt: -1 },
                 name: { $regex: q || "", $options: "i" },
@@ -39,12 +40,12 @@ const explore = async (res, req) => {
             itemsPerPage,
         });
 
-        res.status(result.status).json(result.items);
+        res.status(result.status).json(result.items).end();
     } catch (err) {
         console.error(err);
         return res.status(500).json({
-            message: "Internal error",
-        });
+            error: new CRUDOperationError().toJSON(),
+        }).end();
     }
 };
 module.exports = explore;

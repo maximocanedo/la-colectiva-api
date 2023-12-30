@@ -3,9 +3,13 @@
 const pre = require("../../endpoints/pre");
 const Dock = require("../../schemas/Dock");
 const {ObjectId} = require("mongodb");
+const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
+const ExpropiationError = require("../../errors/user/ExpropiationError");
+const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const edit = [
     pre.auth,
     pre.allow.moderator,
+    // TODO not all properties are required.
     pre.verifyInput([
         "name",
         "address",
@@ -22,18 +26,17 @@ const edit = [
             const reg = await Dock.findOne({ _id: id, active: 1 });
             if (!reg) {
                 res.status(404).json({
-                    message: "There's no resource with that ID. ",
-                });
+                    error: new ResourceNotFoundError().toJSON()
+                }).end();
                 return;
             }
             if (
-                reg.user.toString() != userId.toString() ||
+                reg.user.toString() !== userId.toString() ||
                 req.user.role >= 2
             ) {
                 res.status(403).json({
-                    message:
-                        "You can't edit info about a resource that other user uploaded. ",
-                });
+                    error: new ExpropiationError().toJSON()
+                }).end();
                 return;
             }
             const {
@@ -54,12 +57,12 @@ const edit = [
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",
-            });
+            }).end();
         } catch (err) {
             console.error(err);
             res.status(500).json({
-                message: "Internal error. ",
-            });
+                message: new CRUDOperationError().toJSON()
+            }).end();
         }
     }
 ];

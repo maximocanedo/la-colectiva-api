@@ -1,6 +1,7 @@
 'use strict';
 
 const Dock = require("../../schemas/Dock");
+const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const list = async (req, res) => {
     try {
         const { prefer, q } = req.query;
@@ -9,7 +10,7 @@ const list = async (req, res) => {
         let preferObj = {
             status: prefer || -1,
         };
-        if (prefer == -1) {
+        if (prefer === -1) {
             preferObj = {
                 status: { $gt: -1 },
             };
@@ -28,7 +29,7 @@ const list = async (req, res) => {
     } catch (err) {
         console.error(err);
         return res.status(500).json({
-            message: "Internal error",
+            error: new CRUDOperationError().toJSON(),
         });
     }
 };
