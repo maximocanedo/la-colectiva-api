@@ -1,5 +1,7 @@
 'use strict';
 const Boat = require("../../schemas/Boat");
+const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
+const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
 const getOne = async (req, res) => {
     try {
         const id = req.params.id;
@@ -19,7 +21,9 @@ const getOne = async (req, res) => {
             .populate("enterprise", "name _id");
 
         if (!resource) {
-            return res.status(404).end();
+            return res.status(404).json({
+                error: new ResourceNotFoundError().toJSON()
+            }).end();
         }
 
         res.status(200).json({
@@ -38,7 +42,9 @@ const getOne = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).end();
+        res.status(500).json({
+            error: new CRUDOperationError().toJSON(),
+        }).end();
     }
 };
 module.exports = getOne;

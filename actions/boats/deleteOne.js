@@ -2,6 +2,9 @@
 
 const pre = require("../../endpoints/pre");
 const Boat = require("../../schemas/Boat");
+const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
+const ExpropiationError = require("../../errors/user/ExpropiationError");
+const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const deleteOne = [pre.auth, async (req, res) => {
     try {
         const id = req.params.id;
@@ -9,12 +12,14 @@ const deleteOne = [pre.auth, async (req, res) => {
         const isAdmin = req.user.role >= 3;
         if (!resource) {
             res.status(404).json({
-                message: "There's no resource with the provided ID. ",
+                error: new ResourceNotFoundError().toJSON()
             });
             return;
         }
         if (resource.user !== req.user._id && !isAdmin) {
-            res.status(403).end();
+            res.status(403).json({
+                error: new ExpropiationError().toJSON()
+            }).end();
             return;
         }
         resource.active = false;
@@ -22,7 +27,9 @@ const deleteOne = [pre.auth, async (req, res) => {
         res.status(204).end();
     } catch (err) {
         console.error(err);
-        res.status(500).end();
+        res.status(500).json({
+            error: new CRUDOperationError().toJSON()
+        }).end();
     }
 }]; // Eliminar registro
 
