@@ -26,10 +26,8 @@ const app = express();
 
 app.use(express.json());
 
-app.use(cors({
-	origin: ['http://localhost', 'https://colectiva.com.ar', 'https://149.50.132.47', 'http://colectiva.com.ar', 'http://149.50.132.47'],
-	credentials: true
-}));
+app.use(cors());
+
 
 let db;
 
@@ -45,12 +43,6 @@ connectToDB((err) => {
 	}
 });
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Credentials', true);
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, HEAD, PATCH, DELETE, OPTIONS');
-    next();
-});
 
 // Routes
 app.post("/auth", pre.verifyInput(["username", "password"]), users.login);
