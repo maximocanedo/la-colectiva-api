@@ -1,5 +1,7 @@
 'use strict';
 const Enterprise = require("../../../schemas/Enterprise");
+const ResourceNotFoundError = require("../../../errors/resource/ResourceNotFoundError");
+const CRUDOperationError = require("../../../errors/mongo/CRUDOperationError");
 const list = async (req, res) => {
     try {
         const id = req.params.id;
@@ -8,7 +10,7 @@ const list = async (req, res) => {
 
         if (!resource) {
             return res.status(404).json({
-                message: "Resource not found",
+                error: new ResourceNotFoundError().toJSON()
             });
         }
 
@@ -18,7 +20,7 @@ const list = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: "Internal error",
+            error: new CRUDOperationError().toJSON()
         });
     }
 };

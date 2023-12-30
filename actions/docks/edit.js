@@ -4,7 +4,7 @@ const pre = require("../../endpoints/pre");
 const Dock = require("../../schemas/Dock");
 const {ObjectId} = require("mongodb");
 const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
-const ExpropiationError = require("../../errors/user/ExpropiationError");
+const ExpropiationError = require("../../errors/user/ExpropriationError");
 const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const edit = [
     pre.auth,

@@ -9,7 +9,7 @@ const deleteOne = async (req, res) => {
 
         if (!resource) {
             return res.status(404).json({
-                message: "Resource not found",
+                error: new ResourceNotFoundError().toJSON()
             });
         }
         const result = await resource.deletePhone(phone);
@@ -18,7 +18,7 @@ const deleteOne = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: "Internal error",
+            error: new CRUDOperationError().toJSON()
         });
     }
 };

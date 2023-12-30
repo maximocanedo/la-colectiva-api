@@ -2,6 +2,9 @@
 
 const pre = require("../../endpoints/pre");
 const Enterprise = require("../../schemas/Enterprise");
+const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
+const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
+const UniqueKeyViolationError = require("../../errors/mongo/UniqueKeyViolationError");
 const createOne = [
     pre.auth,
     pre.allow.admin,
@@ -12,6 +15,16 @@ const createOne = [
         "foundationDate",
         "phones",
     ]),
+    async (req, res, next) => {
+        const { cuit } = req.body;
+        const obj = await Enterprise.findOne({ cuit });
+        if(!obj) next();
+        else {
+            res.status(400).json({
+                error: new UniqueKeyViolationError().toJSON()
+            }).end();
+        }
+    },
     async (req, res) => {
         try {
             const { cuit, name, description, foundationDate, phones } =
@@ -32,7 +45,7 @@ const createOne = [
         } catch (err) {
             console.log(err);
             res.status(500).json({
-                message: "Internal error",
+                error: new CRUDOperationError().toJSON()
             });
         }
     }

@@ -2,7 +2,7 @@
 
 const Dock = require("../../schemas/Dock");
 const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
-const ExpropiationError = require("../../errors/user/ExpropiationError");
+const ExpropiationError = require("../../errors/user/ExpropriationError");
 const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const deleteOne = async (req, res) => {
     try {

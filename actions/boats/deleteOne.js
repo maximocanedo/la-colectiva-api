@@ -3,7 +3,7 @@
 const pre = require("../../endpoints/pre");
 const Boat = require("../../schemas/Boat");
 const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
-const ExpropiationError = require("../../errors/user/ExpropiationError");
+const ExpropiationError = require("../../errors/user/ExpropriationError");
 const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const deleteOne = [pre.auth, async (req, res) => {
     try {
