@@ -1,5 +1,7 @@
 'use strict';
 const Path = require("../../schemas/Path");
+const ResourceNotFoundError = require("../../errors/resource/ResourceNotFoundError");
+const CRUDOperationError = require("../../errors/mongo/CRUDOperationError");
 const list = [async (req, res) => {
     try {
         // Cambia findOne por find para obtener todos los registros con active: true
@@ -9,7 +11,7 @@ const list = [async (req, res) => {
 
         if (!resources || resources.length === 0) {
             return res.status(404).json({
-                message: "Resources not found",
+                error: new ResourceNotFoundError().toJSON()
             });
         }
 
@@ -41,7 +43,7 @@ const list = [async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: "Internal error",
+            error: new CRUDOperationError().toJSON()
         });
     }
 }];

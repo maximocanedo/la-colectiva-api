@@ -10,7 +10,7 @@ const getOne = [async (req, res) => {
 
         if (!resource) {
             return res.status(404).json({
-                message: "Resource not found",
+                error: new ResourceNotFoundError().toJSON()
             });
         }
         const totalValidations = resource.validations.filter(
@@ -34,7 +34,7 @@ const getOne = [async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: "Internal error",
+            error: new CRUDOperationError().toJSON()
         });
     }
 }];
