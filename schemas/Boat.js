@@ -317,7 +317,7 @@ boatSchema.statics.linkPhoto = async function (resId, picId) {
 		};
 	}
 };
-BoatSchema.statics.deleteValidation = async function (userId, resId) {
+boatSchema.statics.deleteValidation = async function (userId, resId) {
 	const res = await this.findById(resId);
 	if (!res) return 404;
 	// Remove the validation from the validations array in the availability document
