@@ -19,9 +19,13 @@ router.post(
 	pre.allow.moderator,
 	pre.verifyInput(["path", "condition", "available"]),
 	async (req, res, next) => {
-		const path_obj = Path.findOne({ _id: req.path });
+		const path_obj = Path.findOne({ _id: req.path, active: true });
 		if (!path_obj)
-			return res.status(404).send("Path resource not found.").end();
+			return res.status(404).json({
+				error: new ResourceNotFoundException({
+					message: "El recorrido especificado no existe. "
+				}).toJSON()
+			}).end();
 		else next();
 	},
 	availabilities.createOne
