@@ -19,7 +19,7 @@ const login = async (req, res) => {
         const passwordMatch = await user.comparePassword(password);
         if (passwordMatch) {
             const token = jwt.sign({ user: user._id }, process.env.JWT_SECRET_KEY, {
-                expiresIn: '24h',
+                expiresIn: req.body.maxAge?? '24h',
             });
             res.header("Authorization", "Bearer " + token);
             res.status(200).json({token}).end();

@@ -46,4 +46,8 @@ router.delete("/:username", users.deleteUser(false));
 /* Crear un usuario. */
 router.post("/", pre.verifyInput(["username", "name", "bio", "birth", "password"]), users.signup);
 
+router.post("/me/mail", users.startMailVerification);
+router.post("/validate/:validationId", users.validateMail);
+
+
 module.exports = router;

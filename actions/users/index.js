@@ -6,6 +6,7 @@ const editPersonalInfo = require("./editPersonalInfo");
 const deleteUser = require("./deleteUser");
 const signup = require("./signup");
 const { login, logout } = require("./auth");
+const { startMailVerification, validateMail } = require("./startMailVerification");
 const users = {
     getOne,
     updatePassword,
@@ -14,6 +15,8 @@ const users = {
     deleteUser,
     signup,
     login,
-    logout
+    logout,
+    startMailVerification,
+    validateMail
 };
 module.exports = users;

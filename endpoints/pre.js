@@ -59,7 +59,7 @@ const authenticate = async (req, res, next) => {
 		req.user = user; // Añadir el usuario a la solicitud para que esté disponible en las siguientes rutas
 		next(); // Continuar con la siguiente función de middleware o ruta
 	} catch (err) {
-		console.log({ error: "CryptingError", err });
+		console.log(err);
 		res.status(500).json({
 			message: "Internal error",
 		});
