@@ -1,8 +1,10 @@
 import {ObjectId} from "mongodb";
 import IValidation from "./IValidation";
 import {Schema} from "mongoose";
+import ICommentable from "./ICommentable";
+import IValidatable from "./IValidatable";
 
-export default interface ISchedule {
+export default interface ISchedule extends ICommentable, IValidatable {
     _id: Schema.Types.ObjectId | string;
     path: Schema.Types.ObjectId | string;
     dock: Schema.Types.ObjectId | string;
@@ -10,7 +12,5 @@ export default interface ISchedule {
     user: Schema.Types.ObjectId | string;
     uploadDate: Date;
     active: boolean;
-    comments: ObjectId[] | string[];
-    validations: IValidation[];
 
 }

@@ -1,15 +1,21 @@
 "use strict";
-import mongoose, { Schema, Types, model } from "mongoose";
+import mongoose, {Schema, Types, model, Model} from "mongoose";
 import dotenv from "dotenv";
-import express, {Router} from "express";
+import express, {Router, Request, Response} from "express";
 import pre from "./../endpoints/pre";
 import Comment from "../schemas/Comment";
+import ICommentable from "../interfaces/models/ICommentable";
+import {CommentFetchResponse} from "../interfaces/responses/Comment.interfaces";
 
 dotenv.config();
 
 const router: Router = express.Router();
 
-async function listCommentsForModel(Model, { resId, page, itemsPerPage }) {
+
+async function listCommentsForModel(
+    Model: Model<ICommentable>,
+    { resId, page, itemsPerPage }: { resId: string, page: number, itemsPerPage: number }
+): Promise<CommentFetchResponse> {
     try {
         const resource = await Model.findById(resId)
             .select("comments")
@@ -53,7 +59,7 @@ async function listCommentsForModel(Model, { resId, page, itemsPerPage }) {
         };
     }
 }
-async function addCommentForModel(Model, resId, content, userId) {
+async function addCommentForModel(Model: Model<ICommentable>, resId: string, content: string, userId: Schema.Types.ObjectId | string) {
     try {
         // Crear el comentario y guardarlo
         const newComment = await Comment.create({
@@ -94,13 +100,13 @@ async function addCommentForModel(Model, resId, content, userId) {
         throw error;
     }
 }
-function handleGetComments(router, Model) {
-    router.get("/:id/comments", async (req, res) => {
+function handleGetComments(router: Router, Model: Model<ICommentable>) {
+    router.get("/:id/comments", async (req: Request, res: Response) => {
         try {
-            const resId = req.params.id;
-            const page = req.query.p || 0;
-            const itemsPerPage = req.query.itemsPerPage || 10;
-            const result = await listCommentsForModel(Model, {
+            const resId: string = req.params.id;
+            const page: number = parseInt((req.query.p?? 0) as string);
+            const itemsPerPage: number = parseInt((req.query.itemsPerPage?? 10) as string);
+            const result: CommentFetchResponse = await listCommentsForModel(Model, {
                 resId,
                 page,
                 itemsPerPage,
@@ -115,13 +121,13 @@ function handleGetComments(router, Model) {
     });
 }
 
-function handlePostComment(router, Model) {
+function handlePostComment(router: Router, Model: Model<ICommentable>): void {
     router.post(
         "/:id/comments",
         pre.auth,
         pre.allow.normal,
         pre.verifyInput(["content"]),
-        async (req, res) => {
+        async (req: Request, res: Response): Promise<void> => {
             try {
                 const resId = req.params.id;
                 const content = req.body.content;
@@ -130,7 +136,7 @@ function handlePostComment(router, Model) {
                 const result = await addCommentForModel(Model, resId, content, userId);
                 if (result.error) {
                     console.error(result.error);
-                    return res.status(500).json({
+                    res.status(500).json({
                         message: result.msg,
                     });
                 }
@@ -148,7 +154,7 @@ function handlePostComment(router, Model) {
         }
     );
 }
-function handleComments(router, Model) {
+function handleComments(router: Router, Model: Model<ICommentable>) {
     handlePostComment(router, Model);
     handleGetComments(router, Model);
 }

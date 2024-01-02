@@ -1,8 +1,11 @@
 import {ObjectId} from "mongodb";
 import IValidation from "./IValidation";
 import {Schema} from "mongoose";
+import IPictureable from "./IPictureable";
+import IValidatable from "./IValidatable";
+import ICommentable from "./ICommentable";
 
-export default interface IBoat {
+export default interface IBoat extends ICommentable, IValidatable, IPictureable {
     _id: Schema.Types.ObjectId | string,
     mat: string,
     name: string,
@@ -10,8 +13,5 @@ export default interface IBoat {
     enterprise: Schema.Types.ObjectId | string,
     user: Schema.Types.ObjectId | string,
     uploadDate: Date | string | number,
-    active: boolean,
-    comments?: ObjectId[] | string[],
-    validations: IValidation[],
-    pictures?: ObjectId[] | string[],
+    active: boolean
 }

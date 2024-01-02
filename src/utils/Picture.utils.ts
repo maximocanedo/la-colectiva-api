@@ -3,12 +3,13 @@ import pre from "../endpoints/pre";
 import Photo from "../schemas/Photo";
 import {Router, Response, Request, NextFunction} from "express";
 import { Model } from "mongoose";
+import IPictureable from "../interfaces/models/IPictureable";
 
 
 
 
-const handlePictures = (router: Router, model: Model<any> | any): void => {
-    router.get("/:id/photos/", async (req: Request, res: Response) => {
+const handlePictures = (router: Router, model: Model<IPictureable>): void => {
+    router.get("/:id/photos/", async (req: Request, res: Response): Promise<void> => {
         try {
             const id = req.params.id;
             const resource = await model.findById(id)
@@ -25,7 +26,7 @@ const handlePictures = (router: Router, model: Model<any> | any): void => {
                 })
                 .exec();
             if (!resource) {
-                return res.status(404).end();
+                res.status(404).end();
             }
             res.status(200).json(resource);
         } catch (err) {
@@ -37,15 +38,15 @@ const handlePictures = (router: Router, model: Model<any> | any): void => {
         "/:id/photos/",
         pre.auth,
         pre.allow.moderator,
-        async (req: Request, res: Response, next: NextFunction) => {
+        async (req: Request, res: Response, next: NextFunction): Promise<void> => {
             const { id } = req.params;
             const dock = await model.findById(id);
             if (!dock) {
-                return res.status(404).end();
+                res.status(404).end();
             } else next();
         },
         pre.uploadPhoto,
-        async (req, res) => {
+        async (req: Request, res: Response): Promise<void> => {
             try {
                 const archivo = req.file;
                 const { description } = req.body;
@@ -53,7 +54,7 @@ const handlePictures = (router: Router, model: Model<any> | any): void => {
                 const { id } = req.params;
                 const dock = await model.findById(id);
                 if (!dock) {
-                    return res.status(404).end();
+                    res.status(404).end();
                 }
                 const photoId = await Photo.saveUploaded(
                     archivo,
@@ -75,17 +76,17 @@ const handlePictures = (router: Router, model: Model<any> | any): void => {
         "/:id/photos/:photoId",
         pre.auth,
         pre.allow.moderator,
-        async (req, res) => {
+        async (req: Request, res: Response): Promise<void> => {
             try {
                 const { id, photoId } = req.params;
-                const dock = model.findOne(id);
+                const dock = model.findById(id);
                 if (!dock)
-                    return res.status(404).end();
+                    res.status(404).end();
                 await model.updateOne({ _id: id }, { $pull: { pictures: photoId } });
                 // Eliminar foto en sí.
                 let status = await Photo.deletePhotoById(photoId);
                 if (status.success)
-                    return res.status(200).json({
+                    res.status(200).json({
                         message: "Photo removed from resource",
                     });
                 res.status(200).json({

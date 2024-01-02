@@ -13,9 +13,6 @@ const requiredProps: string[] = ["mat", "name", "status", "enterprise", "user"];
 
 interface IBoatModel extends Model<IBoat> {
     listData(query: any, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<IBoatListDataResponse>;
-    //getValidations(wbId: string, userId: string): Promise<IAvailabilityResponseSample>;
-    //validate(resId: string, userId: string, validates: boolean): Promise<IAvailabilityResponseSample>;
-    //deleteValidation(userId: string, resId: string): Promise<number>;
     linkPhoto(resId: string, picId: string): Promise<{status: number}>;
 }
 
@@ -113,157 +110,6 @@ boatSchema.statics.listData = async function (query, { page, itemsPerPage }): Pr
 };
 
 /**
- * Método para obtener las validaciones de un recurso.
- * @deprecated Función obsoleta.
- * @param wbId ID del recurso del que se desea obtener las validaciones.
- * @param userId ID del usuario que desea obtener las validaciones.
- */
-boatSchema.statics.getValidations = async function (wbId, userId) {
-    try {
-        const aggregationResult = await this.aggregate([
-            { $match: { _id: new mongoose.Types.ObjectId(wbId) } },
-            {
-                $project: {
-                    validations: {
-                        $filter: {
-                            input: "$validations",
-                            as: "validation",
-                            cond: {
-                                $ne: ["$$validation.validation", null],
-                            },
-                        },
-                    },
-                },
-            },
-            {
-                $project: {
-                    inFavorCount: {
-                        $size: {
-                            $filter: {
-                                input: "$validations",
-                                as: "validation",
-                                cond: { $eq: ["$$validation.validation", true] },
-                            },
-                        },
-                    },
-                    againstCount: {
-                        $size: {
-                            $filter: {
-                                input: "$validations",
-                                as: "validation",
-                                cond: { $eq: ["$$validation.validation", false] },
-                            },
-                        },
-                    },
-                    userVote: {
-                        $cond: {
-                            if: {
-                                $ne: [
-                                    {
-                                        $indexOfArray: [
-                                            "$validations.user",
-                                            new mongoose.Types.ObjectId(userId),
-                                        ],
-                                    },
-                                    -1,
-                                ],
-                            },
-                            then: {
-                                $cond: {
-                                    if: {
-                                        $eq: [
-                                            "$validations.validation",
-                                            true,
-                                        ],
-                                    },
-                                    then: true,
-                                    else: false,
-                                },
-                            },
-                            else: null,
-                        },
-                    },
-                },
-            },
-        ]);
-
-        if (aggregationResult.length === 0) {
-            return {
-                success: false,
-                status: 404,
-                message: "Resource not found",
-            };
-        }
-
-        const { inFavorCount, againstCount, userVote } = aggregationResult[0];
-
-        return {
-            success: true,
-            status: 200,
-            message: "Validations retrieved",
-            inFavorCount,
-            againstCount,
-            userVote,
-        };
-    } catch (error) {
-        console.log(error);
-        return {
-            success: false,
-            status: 500,
-            message: "Could not retrieve validations",
-        };
-    }
-};
-/**
- * Método para validar un recurso.
- * @deprecated Función obsoleta.
- * @param resId ID del recurso que se desea validar.
- * @param userId ID del usuario que realiza la validación.
- * @param validates Valor de la validación.
- */
-boatSchema.statics.validate = async function (resId, userId, validates) {
-    try {
-        const resource = await this.findById(resId);
-        if (!resource) {
-            return {
-                success: false,
-                status: 404,
-                message: "Resource not found",
-            };
-        }
-
-        // Buscar si el usuario ya tiene una validación en este registro
-        const existingValidation = resource.validations.find((validation: IValidation) => {
-            return validation.user.toString() === userId.toString();
-        });
-
-        if (existingValidation) {
-            // Si ya existe una validación, actualizar su estado
-            existingValidation.validation = validates;
-        } else {
-            // Si no existe, crear una nueva validación
-            resource.validations.push({
-                user: userId,
-                validation: validates,
-            });
-        }
-
-        await resource.save();
-
-        return {
-            success: true,
-            status: 200,
-            message: "Validation saved",
-        };
-    } catch (error) {
-        return {
-            success: false,
-            status: 500,
-            message: "Could not save validation",
-        };
-    }
-};
-/**
  * Método para enlazar una foto a un recurso.
  * @param resId ID del recurso al que se desea enlazar la foto.
  * @param picId ID de la foto que se desea enlazar.
@@ -289,27 +135,5 @@ boatSchema.statics.linkPhoto = async function (resId, picId) {
             status: 500,
         };
     }
-};
-/**
- * Método para eliminar una validación de un recurso.
- * @deprecated Función obsoleta.
- * @param userId ID del usuario que desea eliminar su validación.
- * @param resId ID del recurso al que se le desea eliminar la validación.
- */
-boatSchema.statics.deleteValidation = async function (userId, resId) {
-    const res = await this.findById(resId);
-    if (!res) return 404;
-    // Remove the validation from the validations array in the availability document
-    const index = res.validations.findIndex(
-        (item: IValidation): boolean => item.user.toString() === userId.toString()
-    );
-    if (index > -1) {
-        // const validationId = res.validations[index]._id;
-        // Delete the validation
-        res.validations.splice(index, 1);
-    }
-    // Save the availability document
-    await res.save();
-    return 200;
 };
 export default mongoose.model<IBoat, IBoatModel>("Boat", boatSchema);
