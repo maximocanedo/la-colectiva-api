@@ -1,14 +1,13 @@
 "use strict";
-// Crea un nuevo archivo, por ejemplo, commentUtils.js
-const mongoose = require("mongoose");
-require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const cookieParser = require("cookie-parser");
-const Enterprise = require("./Enterprise");
-const pre = require("./../endpoints/pre");
-const Comment = require("./Comment");
-const Path = require("./Path");
+import mongoose, { Schema, Types, model } from "mongoose";
+import dotenv from "dotenv";
+import express, {Router} from "express";
+import pre from "./../endpoints/pre";
+import Comment from "./Comment";
+
+dotenv.config();
+
+const router: Router = express.Router();
 
 async function listCommentsForModel(Model, { resId, page, itemsPerPage }) {
     try {
