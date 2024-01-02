@@ -5,19 +5,37 @@ import IValidation from "../interfaces/models/IValidation";
 import Comment from "./Comment";
 import ValidationSchema from "./Validation";
 import moment from "moment-timezone";
+import ISchedule from "../interfaces/models/ISchedule";
 
 
 // const rp = ["path", "dock", "time"];
 // const localDate = moment.tz(Date.now(), "America/Argentina/Buenos_Aires");
 
-const scheduleSchema: Schema = new Schema({
+interface IScheduleModel extends mongoose.Model<ISchedule> {
+    listData(query: any, { page, itemsPerPage }: { page: number; itemsPerPage: number }): Promise<any>;
+    comment(resId: string, content: string, userId: string): Promise<any>;
+    listComments({
+         resId,
+         page,
+         itemsPerPage,
+     }: {
+        resId: string;
+        page: number;
+        itemsPerPage: number;
+    }): Promise<any>;
+    getValidations(wbId: string, userId: string): Promise<any>;
+    //validate(resId: string, userId: string, validates: boolean): Promise<any>;
+
+}
+
+const scheduleSchema: Schema<ISchedule, IScheduleModel> = new Schema<ISchedule, IScheduleModel>({
     path: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Path",
         required: true,
     },
     dock: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Dock",
         required: true,
     },
@@ -26,7 +44,7 @@ const scheduleSchema: Schema = new Schema({
         required: true,
     },
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "User",
         required: true,
     },
@@ -304,4 +322,4 @@ scheduleSchema.statics.validate = async function (resId, userId, validates) {
     }
 };
 
-export default mongoose.model("Schedule", scheduleSchema);
+export default mongoose.model<ISchedule, IScheduleModel>("Schedule", scheduleSchema);

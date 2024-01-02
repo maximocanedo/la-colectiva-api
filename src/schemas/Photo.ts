@@ -1,20 +1,32 @@
 "use strict";
 import fs from "fs";
 import path from "path";
-import mongoose from "mongoose";
+import mongoose, {Model, Schema} from "mongoose";
 import { ObjectId } from "mongodb";
 import Comment from "./Comment";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
+import IPicture from "../interfaces/models/IPicture";
 
 
-const photoSchema: mongoose.Schema = new mongoose.Schema({
+interface IPictureModel extends Model<IPicture> {
+    saveUploaded: (file: any, user: any, description: any) => Promise<any>;
+    getPhotoDetailsById: (id: any) => Promise<PhotoDetailsResponse | PhotoDetailsResponseError>;
+    comment: (photoId: any, content: any, userId: any) => Promise<any>;
+    listComments: (params: any) => Promise<any>;
+    getValidations: (wbId: any, userId: any) => Promise<GetValidationsResponse>;
+    //validate: (photoId: string, userId: string, validates: boolean) => Promise<ActionPerformedResponse>;
+    deletePhotoById: (id: any) => Promise<ActionPerformedResponse>;
+
+}
+
+const photoSchema: Schema<IPicture, IPictureModel> = new Schema<IPicture, IPictureModel>({
     filename: {
         type: String,
         required: true,
     },
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -61,9 +73,9 @@ photoSchema.statics.saveUploaded = async function (file, user, description): Pro
 
 interface PhotoDetailsResponse {
     url: string,
-    user: string,
-    description: string,
-    uploadDate: Date,
+    user: string | Schema.Types.ObjectId,
+    description?: string,
+    uploadDate: Date | string | number
     validations?: number,
     invalidations?: number
 }
@@ -84,7 +96,7 @@ photoSchema.statics.getPhotoDetailsById = async function (id): Promise<PhotoDeta
         ).length;
         return {
             url: `/photos/${id}/view`,
-            user: pic.user, // Supongo que username es una propiedad en tu esquema
+            user: pic.user,
             description: pic.description,
             uploadDate: pic.uploadDate,
             validations: totalValidations,
@@ -272,7 +284,10 @@ photoSchema.statics.getValidations = async function (wbId, userId): Promise<GetV
         };
     }
 };
-photoSchema.statics.validate = async function (photoId, userId, validates) {
+
+photoSchema.statics.validate =
+    async function
+    (photoId: string, userId: string, validates: boolean): Promise<ActionPerformedResponse> {
     try {
         const photo = await this.findById(photoId);
         if (!photo) {
@@ -355,4 +370,4 @@ photoSchema.statics.deletePhotoById = async function (id): Promise<ActionPerform
         };
     }
 };
-export default mongoose.model("Photo", photoSchema);
+export default mongoose.model<IPicture, IPictureModel>("Photo", photoSchema);

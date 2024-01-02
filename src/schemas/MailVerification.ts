@@ -1,16 +1,19 @@
 'use strict';
-import mongoose, { Schema } from "mongoose";
+import mongoose, {Model, Schema} from "mongoose";
 import { ObjectId } from "mongodb";
+import IMailVerification from "../interfaces/models/IMailVerification";
 
+interface IMailVerificationModel extends Model<IMailVerification> {
 
+}
 
-const MailVerificationSchema: Schema = new Schema({
+const MailVerificationSchema: Schema<IMailVerification, IMailVerificationModel> = new Schema<IMailVerification, IMailVerificationModel>({
     code: {
         type: String,
         required: true,
     },
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -30,4 +33,4 @@ const MailVerificationSchema: Schema = new Schema({
     }
 });
 
-export default mongoose.model("MailVerification", MailVerificationSchema);
+export default mongoose.model<IMailVerification, IMailVerificationModel>("MailVerification", MailVerificationSchema);

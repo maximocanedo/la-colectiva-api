@@ -1,16 +1,25 @@
 "use strict";
-import mongoose, { Schema, Types } from "mongoose";
+import mongoose, {Model, Schema, Types} from "mongoose";
 import Comment from "./Comment";
 import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
 import {IBoatListDataResponse} from "../interfaces/responses/Boat.interfaces";
 import Photo from "./Photo";
+import IBoat from "../interfaces/models/IBoat";
 
 
 const requiredProps: string[] = ["mat", "name", "status", "enterprise", "user"];
 
-const boatSchema: Schema = new Schema({
+interface IBoatModel extends Model<IBoat> {
+    listData(query: any, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<IBoatListDataResponse>;
+    //getValidations(wbId: string, userId: string): Promise<IAvailabilityResponseSample>;
+    //validate(resId: string, userId: string, validates: boolean): Promise<IAvailabilityResponseSample>;
+    //deleteValidation(userId: string, resId: string): Promise<number>;
+    linkPhoto(resId: string, picId: string): Promise<{status: number}>;
+}
+
+const boatSchema: Schema<IBoat, IBoatModel> = new Schema<IBoat, IBoatModel>({
     mat: {
         type: String,
         minlength: 2,
@@ -29,11 +38,11 @@ const boatSchema: Schema = new Schema({
         default: true,
     },
     enterprise: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Enterprise",
     },
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -303,4 +312,4 @@ boatSchema.statics.deleteValidation = async function (userId, resId) {
     await res.save();
     return 200;
 };
-export default mongoose.model("Boat", boatSchema);
+export default mongoose.model<IBoat, IBoatModel>("Boat", boatSchema);

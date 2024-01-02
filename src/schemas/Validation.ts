@@ -1,10 +1,11 @@
 "use strict";
 import { Schema } from "mongoose";
 import { ObjectId } from "mongodb";
+import IValidation from "../interfaces/models/IValidation";
 
-const ValidationSchema: Schema = new Schema({
+const ValidationSchema: Schema<IValidation> = new Schema<IValidation>({
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },

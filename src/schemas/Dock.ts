@@ -1,10 +1,11 @@
 "use strict";
-import mongoose, { Schema } from "mongoose";
+import mongoose, {Model, Schema} from "mongoose";
 import Comment from "./Comment";
 import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
 import Photo from "./Photo";
+import IDock from "../interfaces/models/IDock";
 
 const DOCK_PROPERTY_STATUS: any = {
     PRIVATE: 0,
@@ -12,8 +13,16 @@ const DOCK_PROPERTY_STATUS: any = {
     BUSINESS: 2,
 };
 
+interface IDockModel extends Model<IDock> {
+    listData(query: any, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<IDock[]>;
+    comment(resId: string, content: string, userId: string): Promise<any>;
+    listComments({resId, page, itemsPerPage}: {resId: string, page: number, itemsPerPage: number}): Promise<any>;
+    getValidations(wbId: string, userId: string): Promise<any>;
+    // validate(resId: string, userId: string, validates: boolean): Promise<any>;
+    linkPhoto(resId: string, picId: string): Promise<any>;
+}
 
-const dockSchema: Schema = new Schema({
+const dockSchema: Schema<IDock, IDockModel> = new Schema<IDock, IDockModel>({
     name: {
         type: String,
         maxlength: 48,
@@ -25,7 +34,7 @@ const dockSchema: Schema = new Schema({
         required: false,
     },
     region: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "WaterBody",
     },
@@ -40,7 +49,7 @@ const dockSchema: Schema = new Schema({
         default: DOCK_PROPERTY_STATUS.PRIVATE,
     },
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -335,4 +344,4 @@ dockSchema.statics.linkPhoto = async function (resId, picId) {
         };
     }
 };
-export default mongoose.model("Dock", dockSchema);
+export default mongoose.model<IDock, IDockModel>("Dock", dockSchema);

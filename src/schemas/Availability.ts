@@ -1,9 +1,9 @@
 "use strict";
-import { Schema, Types, model } from "mongoose";
-import { ObjectId } from "mongodb";
+import {Schema, Types, model, Model} from "mongoose";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
 import {IAvailabilityResponseSample} from "../interfaces/responses/Availability.interfaces";
+import IAvailability from "../interfaces/models/IAvailability";
 
 // TODO: Agregar endpoint para verificar si un horario está disponible en X condiciones / Condiciones del horario en cuestión.
 /*const conditionOptions: string[] = [
@@ -21,9 +21,16 @@ import {IAvailabilityResponseSample} from "../interfaces/responses/Availability.
 
 const requiredP: string[] = ["path", "condition", "available"]; */
 
-const AvailabilitySchema: Schema = new Schema({
+interface IAvailabilityModel extends Model<IAvailability> {
+    getValidations(wbId: string, userId: string): Promise<IAvailabilityResponseSample>;
+    //validate(resId: string, userId: string, validates: boolean): Promise<IAvailabilityResponseSample>;
+    deleteValidation(userId: string, resId: string): Promise<number>;
+
+}
+
+const AvailabilitySchema: Schema<IAvailability, IAvailabilityModel> = new Schema<IAvailability, IAvailabilityModel>({
     path: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "Path",
     },
@@ -40,7 +47,7 @@ const AvailabilitySchema: Schema = new Schema({
         default: true,
     },
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -234,5 +241,5 @@ AvailabilitySchema.statics.deleteValidation = async function (userId: string, re
     await res.save();
     return 200;
 };
-const Availability = model("Availability", AvailabilitySchema);
+const Availability: IAvailabilityModel = model<IAvailability, IAvailabilityModel>("Availability", AvailabilitySchema);
 export default Availability;

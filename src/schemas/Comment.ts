@@ -1,14 +1,19 @@
 "use strict";
-import mongoose from "mongoose";
-import { ObjectId } from "mongodb";
+import mongoose, {Model, Schema} from "mongoose";
+import {ObjectId} from "mongodb";
 import moment from "moment-timezone";
+import IComment from "../interfaces/models/IComment";
 
 const localDate = moment.tz(Date.now(), "America/Argentina/Buenos_Aires");
 
+interface ICommentModel extends Model<IComment> {
+    add(userId: ObjectId, content: string): Promise<IComment>;
+    delete(commentId: ObjectId): Promise<CommentDeleteResponse>;
+}
 
-const CommentSchema: mongoose.Schema = new mongoose.Schema({
+const CommentSchema: Schema<IComment, ICommentModel> = new Schema<IComment, ICommentModel>({
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -29,14 +34,13 @@ const CommentSchema: mongoose.Schema = new mongoose.Schema({
         default: true,
     },
 });
-CommentSchema.statics.add = async function (userId, content) {
+CommentSchema.statics.add = async function (userId, content): Promise<IComment> {
     try {
-        const newComment = await this.create({
+        return await this.create({
             user: userId,
             content: content,
             uploadDate: moment.tz(Date.now(), "America/Argentina/Buenos_Aires")
         });
-        return newComment;
     } catch (error) {
         throw error;
     }
@@ -74,4 +78,4 @@ CommentSchema.statics.delete = async function (commentId): Promise<CommentDelete
     }
 };
 
-export default mongoose.model("Comment", CommentSchema);
+export default mongoose.model<IComment, ICommentModel>("Comment", CommentSchema);

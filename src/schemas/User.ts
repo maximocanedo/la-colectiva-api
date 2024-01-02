@@ -1,7 +1,9 @@
 'use strict';
-import mongoose, { Model, Schema } from 'mongoose';
+import mongoose, { Model, Schema, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 import IUser from "../interfaces/models/IUser";
+
+
 
 const UserStatics = {
     roles: {
@@ -25,7 +27,16 @@ const UserStatics = {
     ],
 };
 
-const userSchema: Schema = new Schema({
+interface IUserMethods {
+    sayHi(): void;
+    comparePassword(password: string): Promise<boolean>;
+}
+
+interface UserModel extends Model<IUser, {}, IUserMethods> {
+    isUsernameAvailable(username: string): Promise<boolean>;
+}
+
+const userSchema: Schema<IUser, UserModel, IUserMethods> = new Schema<IUser, UserModel, IUserMethods>({
     username: {
         type: String,
         required: true,
@@ -94,7 +105,7 @@ userSchema.pre("save", async function (next: mongoose.CallbackWithoutResultAndOp
  * @returns true si el nombre de usuario está disponible, false si no.
  */
 userSchema.statics.isUsernameAvailable = async function (username: string): Promise<boolean> {
-    const user = await this.find({ username }).count();
+    const user: number = await this.countDocuments({ username });
     return user == 0;
 };
 
@@ -111,7 +122,6 @@ userSchema.methods.comparePassword = async function (password: string): Promise<
     }
 };
 
-type UserType = IUser & mongoose.Document;
 
-const User: Model<UserType> = mongoose.model<UserType>("User", userSchema);
+const User: UserModel = mongoose.model<IUser, UserModel>("User", userSchema);
 export default User;

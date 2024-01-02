@@ -1,7 +1,8 @@
 import {ObjectId} from "mongodb";
+import {Schema} from "mongoose";
 
 export default interface IValidation {
-    user: ObjectId | string,
+    user: Schema.Types.ObjectId | string,
     uploadDate?: Date | string,
     validation: boolean
 }

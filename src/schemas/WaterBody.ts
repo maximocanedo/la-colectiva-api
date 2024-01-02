@@ -1,9 +1,10 @@
 "use strict";
-import mongoose, { Schema } from "mongoose";
+import mongoose, {Model, Schema} from "mongoose";
 import { ObjectId } from "mongodb";
 import Comment from "./Comment";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
+import IWaterBody from "../interfaces/models/IWaterBody";
 
 const WATERBODY_TYPE: any = {
     RIVER: 0, // Río
@@ -23,7 +24,22 @@ const WATERBODY_TYPE: any = {
     OCEAN: 14, // Océano
 };
 
-const waterBodySchema: Schema = new Schema({
+interface IWaterBodyModel extends Model<IWaterBody> {
+    comment(resId: string, content: string, userId: string): Promise<any>;
+    listComments({
+         resId,
+         page,
+         itemsPerPage,
+     }: {
+        resId: string;
+        page: number;
+        itemsPerPage: number;
+    }): Promise<any>;
+    getValidations(wbId: string, userId: string): Promise<any>;
+    //validate(resId: string, userId: string, validates: boolean): Promise<any>;
+}
+
+const waterBodySchema: Schema<IWaterBody, IWaterBodyModel> = new Schema<IWaterBody, IWaterBodyModel>({
     name: {
         type: String,
         maxlength: 48,
@@ -267,4 +283,4 @@ waterBodySchema.statics.validate = async function (wbId, userId, validates) {
     }
 };
 
-export default mongoose.model("WaterBody", waterBodySchema);
+export default mongoose.model<IWaterBody, IWaterBodyModel>("WaterBody", waterBodySchema);

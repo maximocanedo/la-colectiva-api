@@ -3,7 +3,7 @@ import mongoose, { Schema, Types, model } from "mongoose";
 import dotenv from "dotenv";
 import express, {Router} from "express";
 import pre from "./../endpoints/pre";
-import Comment from "./Comment";
+import Comment from "../schemas/Comment";
 
 dotenv.config();
 

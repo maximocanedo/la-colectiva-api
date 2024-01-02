@@ -4,12 +4,29 @@ import Comment from "./Comment";
 import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
+import IPath from "../interfaces/models/IPath";
 
 // const properties: string[] = ["boat", "user", "title", "description", "notes"];
 
-const pathSchema: Schema = new Schema({
+interface IPathModel extends mongoose.Model<IPath> {
+    comment(resId: string, content: string, userId: string): Promise<any>;
+    listComments({
+         resId,
+         page,
+         itemsPerPage,
+     }: {
+        resId: string;
+        page: number;
+        itemsPerPage: number;
+    }): Promise<any>;
+    getValidations(wbId: string, userId: string): Promise<any>;
+    //validate(resId: string, userId: string, validates: boolean): Promise<any>;
+
+}
+
+const pathSchema: Schema<IPath, IPathModel> = new Schema<IPath, IPathModel>({
     boat: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Boat",
         required: true,
     },
@@ -20,7 +37,7 @@ const pathSchema: Schema = new Schema({
         minlength: 3,
     },
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -259,4 +276,4 @@ pathSchema.statics.validate = async function (resId, userId, validates) {
     }
 };
 
-export default mongoose.model("Path", pathSchema);
+export default mongoose.model<IPath, IPathModel>("Path", pathSchema);

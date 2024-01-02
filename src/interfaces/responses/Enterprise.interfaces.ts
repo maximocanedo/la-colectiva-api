@@ -1,3 +1,5 @@
+import {ObjectId} from "mongodb";
+
 export interface IEnterpriseGetValidationsResponse {
     success: boolean,
     status: number,
@@ -13,7 +15,7 @@ export interface IEnterpriseAddPhoneResponse {
     msg: string
 }
 export interface IEnterpriseListCommentsResponse {
-    comments: any[],
+    comments?: ObjectId[] | string[],
     status: number,
     error?: any,
     msg: string

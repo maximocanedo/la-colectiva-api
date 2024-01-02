@@ -13,7 +13,7 @@ export default interface IDock {
     uploadDate: Date | string | number,
     active: boolean,
     comments?: ObjectId[] | string[],
-    validations?: IValidation[],
+    validations: IValidation[],
     coordinates: number[],
     pictures?: ObjectId[] | string[],
 }

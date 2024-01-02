@@ -1,5 +1,5 @@
 "use strict";
-import mongoose, { Schema } from "mongoose";
+import mongoose, {Model, Schema} from "mongoose";
 import Comment from "./Comment";
 import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
@@ -9,9 +9,22 @@ import {
     IEnterpriseGetValidationsResponse, IEnterpriseListCommentsResponse
 } from "../interfaces/responses/Enterprise.interfaces";
 import {IActionPerformedCommonResponse} from "../interfaces/responses/Default.interfaces";
+import IEnterprise from "../interfaces/models/IEnterprise";
+
+interface IEnterpriseMethods {
+    addPhone(phoneNumber: string): Promise<IEnterpriseAddPhoneResponse>;
+    deletePhone(phoneNumber: string): Promise<IEnterpriseAddPhoneResponse>;
+}
+interface IEnterpriseModel extends Model<IEnterprise, {}, IEnterpriseMethods> {
+    comment(resId: string, content: string, userId: string): Promise<IEnterpriseCommentAddedResponse>;
+    listComments({resId, page, itemsPerPage}: {resId: string, page: number, itemsPerPage: number}): Promise<IEnterpriseListCommentsResponse>;
+    getValidations(wbId: string, userId: string): Promise<IEnterpriseGetValidationsResponse>;
+    //validate(resId: string, userId: string, validates: boolean): Promise<IActionPerformedCommonResponse>;
 
 
-const enterpriseSchema: Schema = new Schema({
+}
+
+const enterpriseSchema: Schema<IEnterprise, IEnterpriseModel, IEnterpriseMethods> = new Schema<IEnterprise, IEnterpriseModel, IEnterpriseMethods>({
     cuit: {
         type: Number,
         required: true,
@@ -25,7 +38,7 @@ const enterpriseSchema: Schema = new Schema({
         required: true,
     },
     user: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         required: true,
         ref: "User",
     },
@@ -312,4 +325,4 @@ enterpriseSchema.statics.validate = async function (resId, userId, validates): P
     }
 };
 
-export default mongoose.model("Enterprise", enterpriseSchema);
+export default mongoose.model<IEnterprise, IEnterpriseModel>("Enterprise", enterpriseSchema);

@@ -2,7 +2,7 @@
 import mongoose, { Model, Schema, Types } from "mongoose";
 import { Router, Request, Response } from "express";
 import pre from "./../endpoints/pre";
-import {IValidation} from "../schemas/Validation";
+import IValidation from "../interfaces/models/IValidation";
 
 const getValidations = (router: Router, Model: any): void => {
     router.get("/:id/votes", pre.auth, async (req: Request, res: Response): Promise<void> => {
