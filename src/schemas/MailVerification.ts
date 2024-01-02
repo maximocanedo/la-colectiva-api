@@ -1,8 +1,10 @@
 'use strict';
-const mongoose = require("mongoose");
-const { ObjectId } = require("mongodb");
+import mongoose, { Schema } from "mongoose";
+import { ObjectId } from "mongodb";
 
-const MailVerificationSchema = new mongoose.Schema({
+
+
+const MailVerificationSchema: Schema = new Schema({
     code: {
         type: String,
         required: true,
@@ -28,4 +30,4 @@ const MailVerificationSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("MailVerification", MailVerificationSchema);
+export default mongoose.model("MailVerification", MailVerificationSchema);
