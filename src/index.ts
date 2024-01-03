@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { ObjectId } from 'mongodb';
 import { connectToDB } from './db';
-import routes from './endpoints/index.ts';
+import routes from './endpoints/index';
 import cors from 'cors';
 import pre from './endpoints/pre';
 import users from './actions/users';
