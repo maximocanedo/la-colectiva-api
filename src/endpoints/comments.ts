@@ -1,22 +1,20 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const cookieParser = require("cookie-parser");
-const User = require("../schemas/User");
-const pre = require("./pre");
-const path = require("path");
-const fs = require("fs");
-const Comment = require("./../schemas/Comment");
+
+import express, {Request, Response, Router} from "express";
+import pre from "./pre";
+import Comment from "../schemas/Comment";
+import dotenv from "dotenv";
+
+const router: Router = express.Router();
+dotenv.config();
 router.use(express.json());
-router.use(cookieParser());
 
 router.post(
 	"/",
 	pre.auth,
 	pre.allow.normal,
 	pre.verifyInput(["content"]),
-	async (req, res) => {
+	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const { content } = req.body;
 			// Utilizar el método add para crear el comentario
@@ -32,7 +30,7 @@ router.post(
 		}
 	}
 ); // Añadir un comentario
-router.get("/:comment_id", async (req, res) => {
+router.get("/:comment_id", async (req: Request, res: Response): Promise<void> => {
 	try {
 		let { comment_id } = req.params;
 		let comment = await Comment.findOne({
@@ -40,7 +38,7 @@ router.get("/:comment_id", async (req, res) => {
 			active: true,
 		}).populate({ path: "user", model: "User", select: "name _id" });
 		if (!comment) {
-			return res.status(404).json({
+			res.status(404).json({
 				message: "Comment not found. ",
 			});
 		}
@@ -51,7 +49,7 @@ router.get("/:comment_id", async (req, res) => {
 		});
 	}
 }); // Ver contenido de un comentario
-router.put("/:comment_id", async (req, res) => {
+router.put("/:comment_id", async (req: Request, res: Response): Promise<void> => {
 	try {
 		let { comment_id } = req.params;
 		let { content } = req.body; // Suponiendo que el cuerpo de la solicitud tiene el nuevo contenido del comentario
@@ -59,7 +57,8 @@ router.put("/:comment_id", async (req, res) => {
 		let comment = await Comment.findOne({ _id: comment_id, active: true });
 
 		if (!comment) {
-			return res.status(404);
+			res.status(404);
+			return;
 		}
 
 		comment.content = content;
@@ -75,15 +74,16 @@ router.put("/:comment_id", async (req, res) => {
 	}
 });
 
-router.delete("/:comment_id", pre.auth, pre.allow.normal, async (req, res) => {
+router.delete("/:comment_id", pre.auth, pre.allow.normal, async (req: Request, res: Response): Promise<void> => {
 	try {
 		const { comment_id } = req.params;
 		const result = await Comment.delete(comment_id);
 		if (!result.success) {
 			console.error(result.message);
-			return res.status(result.status).json({
+			res.status(result.status).json({
 				message: result.message,
 			});
+			return;
 		}
 		res.status(result.status).json({
 			message: result.message,
@@ -96,4 +96,4 @@ router.delete("/:comment_id", pre.auth, pre.allow.normal, async (req, res) => {
 	}
 }); // Eliminar permanentemente un comentario
 
-module.exports = router;
+export default router;

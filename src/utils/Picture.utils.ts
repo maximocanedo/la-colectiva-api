@@ -8,7 +8,7 @@ import IPictureable from "../interfaces/models/IPictureable";
 
 
 
-const handlePictures = (router: Router, model: Model<IPictureable>): void => {
+const handlePictures = (router: Router, model: Model<IPictureable> | any): void => {
     router.get("/:id/photos/", async (req: Request, res: Response): Promise<void> => {
         try {
             const id = req.params.id;

@@ -13,7 +13,7 @@ const router: Router = express.Router();
 
 
 async function listCommentsForModel(
-    Model: Model<ICommentable>,
+    Model: Model<any> | any,
     { resId, page, itemsPerPage }: { resId: string, page: number, itemsPerPage: number }
 ): Promise<CommentFetchResponse> {
     try {
@@ -59,7 +59,7 @@ async function listCommentsForModel(
         };
     }
 }
-async function addCommentForModel(Model: Model<ICommentable>, resId: string, content: string, userId: Schema.Types.ObjectId | string) {
+async function addCommentForModel(Model: Model<any> | any, resId: string, content: string, userId: Schema.Types.ObjectId | string) {
     try {
         // Crear el comentario y guardarlo
         const newComment = await Comment.create({
@@ -100,7 +100,7 @@ async function addCommentForModel(Model: Model<ICommentable>, resId: string, con
         throw error;
     }
 }
-function handleGetComments(router: Router, Model: Model<ICommentable>) {
+function handleGetComments(router: Router, Model: Model<any> | any) {
     router.get("/:id/comments", async (req: Request, res: Response) => {
         try {
             const resId: string = req.params.id;
@@ -121,7 +121,7 @@ function handleGetComments(router: Router, Model: Model<ICommentable>) {
     });
 }
 
-function handlePostComment(router: Router, Model: Model<ICommentable>): void {
+function handlePostComment(router: Router, Model: Model<any> | any): void {
     router.post(
         "/:id/comments",
         pre.auth,
@@ -154,8 +154,8 @@ function handlePostComment(router: Router, Model: Model<ICommentable>): void {
         }
     );
 }
-function handleComments(router: Router, Model: Model<ICommentable>) {
+function handleComments(router: Router, Model: Model<any> | any) {
     handlePostComment(router, Model);
     handleGetComments(router, Model);
 }
-module.exports = { listCommentsForModel, addCommentForModel, handleGetComments, handlePostComment, handleComments };
+export { listCommentsForModel, addCommentForModel, handleGetComments, handlePostComment, handleComments };

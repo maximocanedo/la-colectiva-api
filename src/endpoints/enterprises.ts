@@ -1,18 +1,24 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const cookieParser = require("cookie-parser");
-const Enterprise = require("../schemas/Enterprise");
-const pre = require("./pre");
-const Comment = require("../schemas/Comment");
-const Path = require("../schemas/Path");
-const { handleComments } = require("../schemas/CommentUtils");
-const {handleVotes} = require("../schemas/ValidationUtils");
-const enterprises = require("../actions/enterprises");
+
+import dotenv from "dotenv";
+import express, { Router } from "express";
+import Enterprise from "../schemas/Enterprise";
+import { handleComments } from "../utils/Comment.utils";
+import enterprises from "../actions/enterprises";
+import { handleVotes } from "../utils/Validation.utils";
+
+
+dotenv.config();
+const router: Router = express.Router();
 
 router.use(express.json());
-router.use(cookieParser());
+
+
+/* Validaciones */
+handleVotes(router, Enterprise);
+
+/* Comentarios */
+handleComments(router, Enterprise);
 
 /* Acciones básicas */
 router.post("/", enterprises.createOne); // Crear un registro
@@ -29,10 +35,5 @@ router.get("/:id/phones", enterprises.phones.list); // Listar números de teléf
 router.post("/:id/phones", enterprises.phones.createOne); // Agregar un número de teléfono
 router.delete("/:id/phones", enterprises.phones.deleteOne); // Eliminar un número de teléfono
 
-/* Validaciones */
-handleVotes(router, Enterprise);
 
-/* Comentarios */
-handleComments(router, Enterprise);
-
-module.exports = router;
+export default router;

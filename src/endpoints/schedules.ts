@@ -1,20 +1,20 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
+import dotenv from "dotenv";
+import express, { Router, Request, Response, NextFunction } from "express";
+import Schedule from "../schemas/Schedule";
+import pre from "./pre";
+import { Types } from "mongoose";
+import { handleComments } from "../utils/Comment.utils";
+import { handleVotes } from "../utils/Validation.utils";
+
+
+dotenv.config();;
 const router = express.Router();
-const cookieParser = require("cookie-parser");
-const Schedule = require("../schemas/Schedule");
-const pre = require("./pre");
-const Comment = require("../schemas/Comment");
-const mongoose = require("mongoose");
-const WaterBody = require("../schemas/WaterBody");
-const {Types} = require("mongoose");
-const {handleComments} = require("../schemas/CommentUtils");
 
 router.use(express.json());
-router.use(cookieParser());
 
 handleComments(router, Schedule);
+handleVotes(router, Schedule);
 
 /* Acciones básicas */
 router.post(
@@ -22,7 +22,7 @@ router.post(
 	pre.auth,
 	pre.allow.moderator,
 	pre.verifyInput(["path", "dock", "time"]),
-	async (req, res) => {
+	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const { path, dock, time } = req.body;
 			const userId = req.user._id;
@@ -44,7 +44,7 @@ router.post(
 		}
 	}
 ); // Crear un registro
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		// Utiliza findOne para buscar un registro con ID y active: true
@@ -62,9 +62,10 @@ router.get("/:id", async (req, res) => {
 			.populate({ path: "dock", model: "Dock", select: "_id name" });
 
 		if (!resource) {
-			return res.status(404).json({
+			res.status(404).json({
 				message: "Resource not found",
 			});
+			return;
 		}
 		const totalValidations = resource.validations.filter(
 			(validation) => validation.validation === true
@@ -139,7 +140,7 @@ router.get("/:id", async (req, res) => {
 		}
 	}
 ); // Editar recurso */
-router.delete("/:id", pre.auth, async (req, res) => {
+router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		const resource = await Schedule.findById(id);
@@ -171,86 +172,5 @@ router.delete("/:id", pre.auth, async (req, res) => {
 }); // Eliminar registro
 
 
-router.get("/:resId/votes", pre.auth, async (req, res) => {
-	try {
-		const { resId } = req.params;
-		const userId = req.user._id;
-		const validates = true;
 
-		const result = await Schedule.getValidations(resId, userId);
-
-		if (!result.success) {
-			console.error(result.message);
-			return res.status(result.status).json(result);
-		}
-
-		res.status(result.status).json(result);
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
-	}
-}); // Validar
-router.post(
-	"/:resId/validate",
-	pre.auth,
-	pre.allow.normal,
-	async (req, res) => {
-		try {
-			const { resId } = req.params;
-			const userId = req.user._id;
-			const validates = true;
-
-			const result = await Schedule.validate(resId, userId, validates);
-
-			if (!result.success) {
-				console.error(result.message);
-				return res.status(result.status).json({
-					message: result.message,
-				});
-			}
-
-			res.status(result.status).json({
-				message: result.message,
-			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
-); // Validar
-router.post(
-	"/:resId/invalidate",
-	pre.auth,
-	pre.allow.normal,
-	async (req, res) => {
-		try {
-			const { resId } = req.params;
-			const userId = req.user._id;
-			const validates = false;
-
-			const result = await Schedule.validate(resId, userId, validates);
-
-			if (!result.success) {
-				console.error(result.message);
-				return res.status(result.status).json({
-					message: result.message,
-				});
-			}
-
-			res.status(result.status).json({
-				message: result.message,
-			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
-); // Invalidar
-
-module.exports = router;
+export default router;

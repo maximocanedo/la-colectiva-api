@@ -1,30 +1,33 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const cookieParser = require("cookie-parser");
-const WaterBody = require("../schemas/WaterBody");
-const pre = require("./pre");
-const Comment = require("../schemas/Comment");
-const {handleComments} = require("../schemas/CommentUtils");
+import dotenv from "dotenv";
+import express, { Router, Request, Response, NextFunction }	from "express";
+import WaterBody from "../schemas/WaterBody";
+import pre from "./pre";
+import { handleComments } from "../utils/Comment.utils";
+import { handleVotes } from "../utils/Validation.utils";
+
+
+dotenv.config();
+const router: Router = express.Router();
 
 router.use(express.json());
-router.use(cookieParser());
 
 handleComments(router, WaterBody);
+handleVotes(router, WaterBody);
 
 /* Acciones básicas */
 router.get(
 	"/",
-	async (req, res) => {
+	async (req: Request, res: Response): Promise<void> => {
 		try {
 			// Utiliza find para buscar registros con active: true
 			let resources = await WaterBody.find({ active: true });
 
 			if (resources.length === 0) {
-				return res.status(404).json({
+				res.status(404).json({
 					message: "Resources not found",
 				});
+				return;
 			}
 
 			let resourcesData = resources.map((resource) => {
@@ -62,7 +65,7 @@ router.post(
 	pre.auth,
 	pre.allow.moderator,
 	pre.verifyInput(["name", "type"]),
-	async (req, res) => {
+	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const { name, type } = req.body;
 			const userId = req.user._id;
@@ -83,16 +86,17 @@ router.post(
 		}
 	}
 ); // Crear un registro
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		// Utiliza findOne para buscar un registro con ID y active: true
 		let resource = await WaterBody.findOne({ _id: id, active: true });
 
 		if (!resource) {
-			return res.status(404).json({
+			res.status(404).json({
 				message: "Resource not found",
 			});
+			return;
 		}
 		const totalValidations = resource.validations.filter(
 			(validation) => validation.validation === true
@@ -123,7 +127,7 @@ router.patch(
 	pre.auth,
 	pre.allow.moderator,
 	pre.verifyInput(["name", "type"]),
-	async (req, res) => {
+	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const id = req.params.id;
 			const userId = req.user._id;
@@ -156,7 +160,7 @@ router.patch(
 		}
 	}
 ); // Editar recurso
-router.delete("/:id", pre.auth, async (req, res) => {
+router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		const resource = await WaterBody.findById(id);
@@ -189,85 +193,5 @@ router.delete("/:id", pre.auth, async (req, res) => {
 
 
 
-/* Validaciones */
-router.get("/:wbId/votes", pre.auth, async (req, res) => {
-	try {
-		const { wbId } = req.params;
-		const userId = req.user._id;
-		const validates = true;
 
-		const result = await WaterBody.getValidations(wbId, userId);
-
-		if (!result.success) {
-			console.error(result.message);
-			return res.status(result.status).json(result);
-		}
-
-		res.status(result.status).json(result);
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
-	}
-}); // Validar
-
-router.post("/:wbId/validate", pre.auth, pre.allow.normal, async (req, res) => {
-	try {
-		const { wbId } = req.params;
-		const userId = req.user._id;
-		const validates = true;
-
-		const result = await WaterBody.validate(wbId, userId, validates);
-
-		if (!result.success) {
-			console.error(result.message);
-			return res.status(result.status).json({
-				message: result.message,
-			});
-		}
-
-		res.status(result.status).json({
-			message: result.message,
-		});
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
-	}
-}); // Validar
-
-
-router.post(
-	"/:wbId/invalidate",
-	pre.auth,
-	pre.allow.normal,
-	async (req, res) => {
-		try {
-			const { wbId } = req.params;
-			const userId = req.user._id;
-			const validates = false;
-
-			const result = await WaterBody.validate(wbId, userId, validates);
-
-			if (!result.success) {
-				console.error(result.message);
-				return res.status(result.status).json({
-					message: result.message,
-				});
-			}
-
-			res.status(result.status).json({
-				message: result.message,
-			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
-); // Invalidar
-
-module.exports = router;
+export default router;

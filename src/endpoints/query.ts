@@ -1,17 +1,15 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const cookieParser = require("cookie-parser");
-const Path = require("../schemas/Path");
-const pre = require("./pre");
-const Comment = require("../schemas/Comment");
-const Schedule = require("../schemas/Schedule");
-const { ObjectId } = require("mongodb");
-const { ISODate } = require("mongoose");
+
+import dotenv from "dotenv";
+import express, { Router, Request, Response } from "express";
+import Schedule from "../schemas/Schedule";
+import {ObjectId} from "mongodb";
+
+
+dotenv.config();
+const router: Router = express.Router();
 
 router.use(express.json());
-router.use(cookieParser());
 // Próxima lancha
 let data = {
 	dock: "Perla",
@@ -28,7 +26,7 @@ const time = new ISODate(
 );
 const conditions = ["WEDNESDAY"];*/
 
-const Oldalgo = (departure, arrival, time, conditions) => ([
+const Oldalgo = (departure: ObjectId, arrival: ObjectId, time: string | number, conditions: any[]) => ([
 	{
 		$match: {
 			$or: [
@@ -239,7 +237,7 @@ const Oldalgo = (departure, arrival, time, conditions) => ([
 
 
 ]);
-const algo = (departure, arrival, time, conditions) => ([
+const algo = (departure: ObjectId, arrival: ObjectId, time: string | number, conditions: any[]): any => ([
 	{
 		$match: {
 			$or: [
@@ -489,22 +487,23 @@ const algo = (departure, arrival, time, conditions) => ([
 
 router.get(
 	"/next",
-	async (req, res) => {
+	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const { departure, arrival, time, conditions } = req.query;
 
 			const stringHora = new Date("1990-01-01T" + time + ":00.000+00:00");
-			const result = await Schedule.aggregate(algo(
-				new ObjectId(departure),
-				new ObjectId(arrival),
-				stringHora,
-				[ ...conditions ]
+			const result: any[] = await Schedule.aggregate(algo(
+				new ObjectId(departure as string),
+				new ObjectId(arrival as string),
+				stringHora + "",
+				[ ...(conditions as any[]) ]
 			));
 
 			if (!result) {
-				return res.status(404).json({
+				res.status(404).json({
 					message: "No schedules found",
 				});
+				return;
 			}
 			res.status(200).json(result);
 		} catch (err) {
@@ -514,4 +513,4 @@ router.get(
 	}
 );
 
-module.exports = router;
+export default router;

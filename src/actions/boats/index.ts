@@ -5,7 +5,7 @@ import edit from "./edit";
 import getOne from "./getOne";
 import list from "./list";
 
-export {
+export default {
     createOne,
     deleteOne,
     edit,

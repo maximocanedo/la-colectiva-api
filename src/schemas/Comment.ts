@@ -7,8 +7,8 @@ import IComment from "../interfaces/models/IComment";
 const localDate = moment.tz(Date.now(), "America/Argentina/Buenos_Aires");
 
 interface ICommentModel extends Model<IComment> {
-    add(userId: ObjectId, content: string): Promise<IComment>;
-    delete(commentId: ObjectId): Promise<CommentDeleteResponse>;
+    add(userId: ObjectId | string, content: string): Promise<IComment>;
+    delete(commentId: ObjectId | string): Promise<CommentDeleteResponse>;
 }
 
 const CommentSchema: Schema<IComment, ICommentModel> = new Schema<IComment, ICommentModel>({

@@ -1,14 +1,14 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const cookieParser = require("cookie-parser");
-const User = require("../schemas/User");
-const pre = require("./pre");
-const users = require("../actions/users");
+import dotenv from "dotenv";
+import express, { Request, Response, Router } from "express";
+import pre from "./pre";
+import users from "../actions/users";
+
+const router: Router = express.Router();
+dotenv.config();
+
 
 router.use(express.json());
-router.use(cookieParser());
 
 
 /* Obtener información de un usuario */
@@ -17,7 +17,7 @@ router.get("/:username", users.getOne(false));
 
 /* Cambiar un dato (Contraseña, rol) de un usuario. */
 router.patch("/me", pre.auth, pre.verifyInput(["password"]), users.updatePassword);
-router.patch("/:username", pre.auth, pre.allow.admin, async (req, res) => {
+router.patch("/:username", pre.auth, pre.allow.admin, async (req: Request, res: Response): Promise<void> => {
 	const { password, role } = req.body;
 	if (password) {
 		await users.updatePassword(req, res);
@@ -50,4 +50,4 @@ router.post("/me/mail", users.startMailVerification);
 router.post("/validate/:validationId", users.validateMail);
 
 
-module.exports = router;
+export default router;

@@ -1,16 +1,16 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const cookieParser = require("cookie-parser");
-const Path = require("../schemas/Path");
-const pre = require("./pre");
-const { handleComments } = require("../schemas/CommentUtils");
-const {handleVotes} = require("../schemas/ValidationUtils");
-const paths = require("../actions/paths");
+import dotenv from "dotenv";
+import express, { Router } from "express";
+import Path from "../schemas/Path";
+import { handleComments } from "../utils/Comment.utils";
+import paths from "../actions/paths";
+import { handleVotes } from "../utils/Validation.utils";
+
+
+dotenv.config();
+const router: Router = express.Router();
 
 router.use(express.json());
-router.use(cookieParser());
 
 /* Acciones básicas */
 router.post("/", paths.createOne); // Crear un registro
@@ -27,4 +27,4 @@ handleVotes(router, Path);
 /* Comentarios */
 handleComments(router, Path);
 
-module.exports = router;
+export default router;

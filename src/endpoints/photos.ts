@@ -1,27 +1,28 @@
 "use strict";
-require("dotenv").config();
-const express = require("express");
-const router = express.Router();
-const cookieParser = require("cookie-parser");
-const Photo = require("../schemas/Photo");
-const pre = require("./pre");
-const path = require("path");
-const fs = require("fs");
-const Comment = require("../schemas/Comment");
-const multer = require("multer");
-const Schedule = require("../schemas/Schedule");
-const {handleComments} = require("../schemas/CommentUtils");
+
+import dotenv from "dotenv";
+import express, { Request, Response, NextFunction, Router } from "express";
+import Photo from "../schemas/Photo";
+import pre from "./pre";
+import path from "path";
+import fs from "fs";
+import { handleComments } from "../utils/Comment.utils";
+import { handleVotes } from "../utils/Validation.utils";
+
+
+dotenv.config();
+const router: Router = express.Router();
 router.use(express.json());
-router.use(cookieParser());
 
 handleComments(router, Photo);
+handleVotes(router, Photo);
 
 router.post(
 	"/upload",
 	pre.auth,
 	pre.allow.moderator,
 	pre.uploadPhoto,
-	async (req, res) => {
+	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const archivo = req.file;
 			console.log({ file: req.file });
@@ -44,14 +45,15 @@ router.post(
 		}
 	}
 ); // Subir imagen
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		const photoDetails = await Photo.getPhotoDetailsById(id);
 		if (!photoDetails) {
-			return res.status(404).json({
+			res.status(404).json({
 				message: "Image not found",
 			});
+			return;
 		}
 		res.status(200).json(photoDetails);
 	} catch (err) {
@@ -61,18 +63,19 @@ router.get("/:id", async (req, res) => {
 		});
 	}
 }); // Ver detalles de imagen
-router.get("/:id/view", async (req, res) => {
+router.get("/:id/view", async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		let pic = await Photo.findById(id);
 
 		if (!pic) {
-			return res.status(404).json({
+			res.status(404).json({
 				message: "Image not found",
 			});
+			return;
 		}
 
-		let fullRoute = path.join(__dirname, "../data/photos/", pic.filename);
+		let fullRoute: string = path.join(__dirname, "../data/photos/", pic.filename);
 
 		// Envía la imagen como respuesta
 		res.sendFile(fullRoute);
@@ -88,10 +91,10 @@ router.patch(
 	pre.auth,
 	pre.allow.moderator,
 	pre.verifyInput(["description"]),
-	async (req, res) => {
+	async (req: Request, res: Response): Promise<void> => {
 		try {
-			const id = req.params.id;
-			const username = req.user.username;
+			const id: string = req.params.id;
+			const username: string = req.user.username;
 			const pic = await Photo.findOne({ _id: id, active: 1 });
 			if (!pic) {
 				res.status(404).json({
@@ -126,7 +129,7 @@ router.patch(
 		}
 	}
 ); // Editar pie de imagen
-router.delete("/:id", pre.auth, async (req, res) => {
+router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		const pic = await Photo.findById(id);
@@ -171,88 +174,4 @@ router.delete("/:id", pre.auth, async (req, res) => {
 }); // Eliminar imagen
 
 
-
-// Validaciones
-router.get("/:resId/votes", pre.auth, async (req, res) => {
-	try {
-		const { resId } = req.params;
-		const userId = req.user._id;
-		const validates = true;
-
-		const result = await Photo.getValidations(resId, userId);
-
-		if (!result.success) {
-			console.error(result.message);
-			return res.status(result.status).json(result);
-		}
-
-		res.status(result.status).json(result);
-	} catch (err) {
-		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
-	}
-});
-router.post(
-	"/:photoId/validate",
-	pre.auth,
-	pre.allow.normal,
-	async (req, res) => {
-		try {
-			const { photoId } = req.params;
-			const userId = req.user._id;
-			const validates = true;
-
-			const result = await Photo.validate(photoId, userId, validates);
-
-			if (!result.success) {
-				console.error(result.message);
-				return res.status(result.status).json({
-					message: result.message,
-				});
-			}
-
-			res.status(result.status).json({
-				message: result.message,
-			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
-); // Validar
-router.post(
-	"/:photoId/invalidate",
-	pre.auth,
-	pre.allow.normal,
-	async (req, res) => {
-		try {
-			const { photoId } = req.params;
-			const userId = req.user._id;
-			const validates = false;
-
-			const result = await Photo.validate(photoId, userId, validates);
-
-			if (!result.success) {
-				console.error(result.message);
-				return res.status(result.status).json({
-					message: result.message,
-				});
-			}
-
-			res.status(result.status).json({
-				message: result.message,
-			});
-		} catch (err) {
-			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
-		}
-	}
-); // Invalidar
-
-module.exports = router;
+export default router;
