@@ -1,9 +1,7 @@
 "use strict";
 import mongoose, {Model, Schema} from "mongoose";
 import { ObjectId } from "mongodb";
-import Comment from "./Comment";
 import ValidationSchema from "./Validation";
-import IValidation from "../interfaces/models/IValidation";
 import IWaterBody from "../interfaces/models/IWaterBody";
 
 const WATERBODY_TYPE: any = {

@@ -4,6 +4,7 @@ import {Schema} from "mongoose";
 import IPictureable from "./IPictureable";
 import IValidatable from "./IValidatable";
 import ICommentable from "./ICommentable";
+import IUser from "./IUser";
 
 export default interface IBoat extends ICommentable, IValidatable, IPictureable {
     _id: Schema.Types.ObjectId | string,
@@ -11,7 +12,7 @@ export default interface IBoat extends ICommentable, IValidatable, IPictureable 
     name: string,
     status: boolean,
     enterprise: Schema.Types.ObjectId | string,
-    user: Schema.Types.ObjectId | string,
+    user: IUser | Schema.Types.ObjectId | string,
     uploadDate: Date | string | number,
     active: boolean
 }

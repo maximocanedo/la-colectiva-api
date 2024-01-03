@@ -14,7 +14,7 @@ const DOCK_PROPERTY_STATUS: any = {
 };
 
 interface IDockModel extends Model<IDock> {
-    listData(query: any, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<IDock[]>;
+    listData(query: any, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<IDockListDataResponse>;
     linkPhoto(resId: string, picId: string): Promise<any>;
 }
 
@@ -77,8 +77,14 @@ const dockSchema: Schema<IDock, IDockModel> = new Schema<IDock, IDockModel>({
         },
     ],
 });
+interface IDockListDataResponse {
+    items: IDock[];
+    status: number;
+    error: any;
+    msg: string;
 
-dockSchema.statics.listData = async function (query, { page, itemsPerPage }) {
+}
+dockSchema.statics.listData = async function (query, { page, itemsPerPage }): Promise<IDockListDataResponse> {
     try {
         const resource = await this.find(query)
             .sort({ name: 1 })
