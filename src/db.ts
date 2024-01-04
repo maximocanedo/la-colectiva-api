@@ -2,10 +2,14 @@
 import { MongoClient } from "mongodb";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
 
-const atlasConnectionString: string = process.env.MONGODB_LOCAL_CONNECTION_STRING?? "";
+const envPath: string =  path.resolve(__dirname, "..", ".env");
+dotenv.config({ path: envPath });
 
-export const connectToDB = async (cb: () => void) => {
+
+const atlasConnectionString: string = process.env.MONGODB_LOCAL_CONNECTION_STRING as string;
+
+export const connectToDB = async (cb: () => void): Promise<void> => {
     return await mongoose.connect(atlasConnectionString) && cb();
 };

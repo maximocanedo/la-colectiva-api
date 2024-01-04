@@ -9,6 +9,8 @@ import routes from './endpoints/index';
 import cors from 'cors';
 import pre from './endpoints/pre';
 import users from './actions/users';
+import * as Joi from 'joi';
+import * as x from './validators/index';
 
 const useSSL: boolean = false;
 
@@ -39,8 +41,13 @@ app.use(cors());
     });
 })();
 
+
+
 // Routes
-app.post("/auth", pre.verifyInput(["username", "password"]), users.login);
+app.post("/auth", pre.expect({
+    username: x.user.username.required(),
+    password: x.user.password.required()
+}), users.login);
 app.delete("/auth", users.logout);
 app.use("/users", routes.users);
 app.use("/photos", routes.photos);
@@ -53,3 +60,4 @@ app.use("/paths", routes.paths);
 app.use("/availabilities", routes.availabilities);
 app.use("/schedules", routes.schedules);
 app.use("/query", routes.query);
+

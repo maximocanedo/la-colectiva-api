@@ -3,13 +3,21 @@ import crypto, {Decipher} from "crypto";
 import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import Photo from "../schemas/Photo";
-import multer, {Multer, StorageEngine} from "multer";
+import multer, {Multer, MulterError, StorageEngine} from "multer";
 import path from "path";
 import fs from "fs";
 import User from "../schemas/User";
-import jwt, {Jwt} from 'jsonwebtoken';
-
+import jwt from 'jsonwebtoken';
+import * as Joi from 'joi';
+import {IError} from "../interfaces/responses/Error.interfaces";
+import E from "../errors/index";
+import {handlers} from "../errors/handlers";
+import {InvalidToken} from "../errors/A.errors";
 dotenv.config();
+/**
+ * Cifra un texto con el algoritmo y la clave secreta especificados en el archivo .env
+ * @param text Texto a cifrar
+ */
 const encrypt = (text: string): string => {
     const n_iv = parseInt(process.env.UID_IV_LENGTH as string);
     let iv = crypto.randomBytes(n_iv);
@@ -22,6 +30,10 @@ const encrypt = (text: string): string => {
     encrypted = Buffer.concat([encrypted, cipher.final()]);
     return iv.toString("hex") + ":" + encrypted.toString("hex");
 };
+/**
+ * Descifra un texto cifrado con el algoritmo y la clave secreta especificados en el archivo .env
+ * @param text Texto cifrado
+ */
 const decrypt = (text: string) => {
     let textParts: string[] = text.split(":");
     let iv: Buffer = Buffer.from(textParts.shift() as string, "hex");
@@ -35,22 +47,31 @@ const decrypt = (text: string) => {
     decrypted = Buffer.concat([decrypted, decipher.final()]);
     return decrypted.toString();
 };
+/**
+ * Interfaz de token
+ */
 interface TokenInterface {
     user: string;
     iat: number;
     exp: number;
 }
+/**
+ * Verifica que el usuario esté autenticado
+ * @param req
+ * @param res
+ * @param next
+ */
 const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const authHeader = req.headers['authorization'];
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            res.status(401).json({ message: 'Need to authenticate.' });
+            res.status(401).json(E.Unauthenticated);
             return;
         }
 
         const token: string = (authHeader as string).split(' ')[1];
         if (!token) {
-            res.status(401).json({ message: 'Need to authenticate.' });
+            res.status(401).json(E.Unauthenticated);
             return;
         }
 
@@ -59,94 +80,69 @@ const authenticate = async (req: Request, res: Response, next: NextFunction): Pr
         const user = await User.findById(uid).select("-password");
 
         if (!user) {
-            res.status(401).json({ message: "User not found." });
+            res.status(401).json(E.InvalidToken);
             return;
         }
         req.user = user;
         next();
     } catch (err) {
         console.log(err);
-        res.status(500).json({
-            message: "Internal error",
-        });
+        if(err instanceof jwt.JsonWebTokenError || err instanceof jwt.TokenExpiredError || err instanceof jwt.NotBeforeError) {
+            const finalError: IError = handlers.jwtMiddleware(err);
+            res.status(401).json(finalError);
+            return;
+        }
+        res.status(500).json(E.InternalError);
     }
 };
-const adminsCanAccess = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+/**
+ * Permite el acceso a los usuarios con un rol mayor o igual al especificado
+ * @param role Rol mínimo requerido
+ */
+const allowAccessForRole = (role: number) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const user = req.user;
-        if (user.role >= 3) {
+        if (user.role >= role) {
             next();
             return;
         }
-        res.status(403).json({
-            message: "Action not allowed",
-        });
+        res.status(403).json(E.AttemptedUnauthorizedOperation);
     } catch (err) {
-        res.status(500).json({
-            message: "Internal error",
-        });
+        res.status(500).json(E.InternalError);
     }
-};
-const moderatorsCanAccess = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const user = req.user;
-        if (user.role >= 2) {
-            next();
-            return;
-        }
-        res.status(403).json({
-            message: "Action not allowed",
-        });
-    } catch (err) {
-        res.status(500).json({
-            message: "Internal error",
-        });
-    }
-};
-const normalUsersCanAccess = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const user = req.user;
-        if (user.role >= 1) {
-            next();
-            return;
-        }
-        res.status(403).json({
-            message: "Action not allowed",
-        });
-    } catch (err) {
-        res.status(500).json({
-            message: "Internal error",
-        });
-    }
-};
-const everybodyCanAccess = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const user = req.user;
-        if (user.role >= 0) {
-            next();
-            return;
-        }
-        res.status(403).json({
-            message: "Action not allowed",
-        });
-    } catch (err) {
-        res.status(500).json({
-            message: "Internal error",
-        });
-    }
-};
-const verifyInput = (requiredProps: string[]) => (req: Request, res: Response, next: NextFunction) => {
+}
+/**
+ * Permite el acceso a los usuarios administradores.
+ */
+const adminsCanAccess = allowAccessForRole(3);
+/**
+ * Permite el acceso a los usuarios moderadores o administradores.
+ */
+const moderatorsCanAccess = allowAccessForRole(2);
+/**
+ * Permite el acceso a los usuarios normales, moderadores o administradores.
+ */
+const normalUsersCanAccess = allowAccessForRole(1);
+/**
+ * Permite el acceso a todos los usuarios, incluídos los usuarios con funciones limitadas.
+ */
+const everybodyCanAccess = allowAccessForRole(0);
+/**
+ * Verifica que los campos requeridos estén presentes en el cuerpo de la solicitud
+ * @param requiredProps Campos requeridos
+ * @deprecated Usar expect() en su lugar
+ */
+const verifyInput = (requiredProps: string[]) => (req: Request, res: Response, next: NextFunction): void => {
     const missingProps = requiredProps.filter((prop) => !(prop in req.body));
     if (missingProps.length > 0) {
-        return res.status(400).json({
+        res.status(400).json({
             message: `Missing required properties: ${missingProps.join(", ")}`,
         });
+        return;
     }
     next(); // Si todo está bien, pasa al siguiente middleware o al controlador
 };
-const imageFileTypes = ["image/jpeg", "image/png", "image/gif"]; // Tipos de archivos de imagen permitidos
-
-
+const imageFileTypes: string[] = ["image/jpeg", "image/png", "image/gif"]; // Tipos de archivos de imagen permitidos
 const storage: StorageEngine = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb) => {
         const destinationPath = path.join(__dirname, "../data/photos/");
@@ -179,33 +175,42 @@ const upload: Multer = multer({
 });
 const uploadPhoto = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     upload.single("file")(req, res, function (err) {
-        if (err instanceof multer.MulterError) {
-            // Error de Multer (tamaño excedido, etc.)
-            res.status(400).json({
-                message: "Bad Request: " + err.message,
-            });
-        } else if (err) {
-            // Error en el filtro de archivos (tipo de archivo no permitido)
-            res.status(400).json({
-                message: "Bad Request: Invalid file type",
-            });
-        }
-        // Si no hubo errores, pasa al siguiente middleware o al controlador
-        next();
+        if(err instanceof multer.MulterError) {
+            const finalError: IError = handlers.multerErrorMiddleware(err);
+            res.status(400).json(finalError);
+        } else if(err) {
+            res.status(500).json(E.UploadError);
+        } else next();
     });
 };
-
-const allow = {
-    admin: adminsCanAccess,
-    moderator: moderatorsCanAccess,
-    normal: normalUsersCanAccess,
-    all: everybodyCanAccess,
+/**
+ * Verifica que los campos requeridos estén presentes en el cuerpo de la solicitud
+ * @param keys Campos requeridos
+ */
+const expect = (keys: any) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const schema: Joi.ObjectSchema = Joi.object().keys(keys);
+    const result: Joi.ValidationResult = schema.validate(req.body);
+    if (result.error) {
+        const error: IError = {
+            ...E.ValidationError,
+            details: (result.error as Joi.ValidationError).message
+        };
+        res.status(400).json(error);
+        return;
+    } else next();
+};
+const allow: any = {
+    admin: allowAccessForRole(3),
+    moderator: allowAccessForRole(2),
+    normal: allowAccessForRole(1),
+    all: allowAccessForRole(0),
 };
 const auth = authenticate;
 export default {
     verifyInput,
     uploadPhoto,
     encrypt,
+    expect,
     decrypt,
     authenticate,
     adminsCanAccess,
