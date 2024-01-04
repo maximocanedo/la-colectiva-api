@@ -91,7 +91,7 @@ router.delete("/:comment_id", pre.auth, pre.allow.normal, async (req: Request, r
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json(E.InternalError);
+		res.status(500).json({error: E.InternalError});
 	}
 }); // Eliminar permanentemente un comentario
 
