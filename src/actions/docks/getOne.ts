@@ -2,6 +2,12 @@
 import Dock from "../../schemas/Dock";
 import { Request, Response, NextFunction } from "express";
 import IValidation from "../../interfaces/models/IValidation";
+import {MongoError} from "mongodb";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
+import mongoose from "mongoose";
+import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
+import E from "../../errors";
 const getOne = async (req: Request, res: Response) => {
     try {
         const id = req.params.id;
@@ -12,7 +18,7 @@ const getOne = async (req: Request, res: Response) => {
 
         if (!resource) {
             res.status(404).json({
-                error: 'new ResourceNotFoundError().toJSON()'
+                error: E.ResourceNotFound
             });
         }
         const totalValidations = resource.validations.filter(
@@ -42,10 +48,15 @@ const getOne = async (req: Request, res: Response) => {
             invalidations: totalInvalidations,
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'new CRUDOperationError().toJSON()'
-        });
+        if(err instanceof MongoError) {
+            const error: IError = mongoErrorMiddleware(err as MongoError);
+            res.status(500).json({error}).end();
+        } else if(err instanceof mongoose.Error) {
+            const error: IError = mongooseErrorMiddleware(err as mongoose.Error);
+            res.status(500).json({error}).end();
+        } else res.status(500).json({
+            error: E.CRUDOperationError
+        }).end();
     }
 };
 export default getOne;

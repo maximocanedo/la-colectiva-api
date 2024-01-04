@@ -1,6 +1,12 @@
 'use strict';
 import Dock from "../../schemas/Dock";
 import { Request, Response, NextFunction } from "express";
+import E from "./../../errors"
+import {MongoError} from "mongodb";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
+import mongoose from "mongoose";
+import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 const deleteOne = async (req: Request, res: Response) => {
     try {
         const id = req.params.id;
@@ -9,13 +15,13 @@ const deleteOne = async (req: Request, res: Response) => {
         const isAdmin = req.user.role >= 3;
         if (!resource) {
             res.status(404).json({
-                error: 'new ResourceNotFoundError().toJSON()'
+                error: E.ResourceNotFound
             }).end();
             return;
         }
         if (resource.user !== req.user._id && !isAdmin) {
             res.status(403).json({
-                error: 'new ExpropiationError().toJSON()'
+                error: E.AttemptedUnauthorizedOperation
             });
             return;
         }
@@ -25,10 +31,15 @@ const deleteOne = async (req: Request, res: Response) => {
             message: "Data was disabled. ",
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            message: 'new CRUDOperationError().toJSON()'
-        });
+        if(err instanceof MongoError) {
+            const error: IError = mongoErrorMiddleware(err as MongoError);
+            res.status(500).json({error}).end();
+        } else if(err instanceof mongoose.Error) {
+            const error: IError = mongooseErrorMiddleware(err as mongoose.Error);
+            res.status(500).json({error}).end();
+        } else res.status(500).json({
+            error: E.CRUDOperationError
+        }).end();
     }
 };
 

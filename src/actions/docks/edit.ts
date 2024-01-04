@@ -1,29 +1,52 @@
 'use strict';
 import pre from "../../endpoints/pre";
 import Dock from "../../schemas/Dock";
-import {ObjectId} from "mongodb";
-import { Request, Response } from "express";
+import {MongoError, ObjectId} from "mongodb";
+import {NextFunction, Request, Response} from "express";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
+import mongoose from "mongoose";
+import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
+import E from "../../errors";
+import V from "../../validators";
+import WaterBody from "../../schemas/WaterBody";
 const edit = [
     pre.auth,
     pre.allow.moderator,
-    // TODO not all properties are required.
-    pre.verifyInput([
-        "name",
-        "address",
-        "region",
-        "notes",
-        "status",
-        "latitude",
-        "longitude",
-    ]),
-    async (req: Request, res: Response) => {
+    pre.expect({
+        name: V.dock.name,
+        address: V.dock.address,
+        region: V.objectId,
+        notes: V.dock.notes,
+        coordinates: V.dock.coordinates
+    }),
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { name, address, region, notes, coordinates } = req.body;
+        if(!name && !address && !region && !notes && (!coordinates || coordinates.length == 0)) {
+            res.status(400).json({
+                error: E.AtLeastOneFieldRequiredError
+            });
+            return;
+        } else next();
+    },
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { region } = req.body;
+        if(!region) next();
+        const obj = await WaterBody.findOne({ _id: region, active: true });
+        if (!obj) {
+            res.status(400).json({
+                error: E.ResourceNotFound
+            });
+        } else next();
+    },
+    async (req: Request, res: Response): Promise<void> => {
         try {
-            const id = req.params.id;
+            const id: string = req.params.id;
             const userId = req.user._id;
             const reg = await Dock.findOne({ _id: id, active: 1 });
             if (!reg) {
                 res.status(404).json({
-                    error: 'new ResourceNotFoundError().toJSON()'
+                    error: E.ResourceNotFound
                 }).end();
                 return;
             }
@@ -32,7 +55,7 @@ const edit = [
                 req.user.role >= 2
             ) {
                 res.status(403).json({
-                    error: 'new ExpropiationError().toJSON()'
+                    error: E.UnauthorizedRecordModification
                 }).end();
                 return;
             }
@@ -42,23 +65,27 @@ const edit = [
                 region,
                 notes,
                 status,
-                latitude,
-                longitude,
+                coordinates
             } = req.body;
             reg.name = name;
             reg.address = address;
             reg.region = new ObjectId(region);
             reg.notes = notes;
             reg.status = status;
-            reg.coordinates = [latitude, longitude];
+            reg.coordinates = coordinates;
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",
             }).end();
         } catch (err) {
-            console.error(err);
-            res.status(500).json({
-                message: 'new CRUDOperationError().toJSON()'
+            if(err instanceof MongoError) {
+                const error: IError = mongoErrorMiddleware(err as MongoError);
+                res.status(500).json({error}).end();
+            } else if(err instanceof mongoose.Error) {
+                const error: IError = mongooseErrorMiddleware(err as mongoose.Error);
+                res.status(500).json({error}).end();
+            } else res.status(500).json({
+                error: E.CRUDOperationError
             }).end();
         }
     }

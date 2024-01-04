@@ -3,6 +3,7 @@ import * as Joi from 'joi';
 import * as user from "./user.v";
 import * as availability from "./availability.v";
 import * as boat from "./boat.v";
+import * as dock from "./dock.v";
 import * as comment from "./comment.v";
 import * as picture from "./picture.v";
 import * as waterBody from "./waterbody.v";
@@ -26,6 +27,7 @@ const V = {
     user,
     availability,
     boat,
+    dock,
     comment,
     picture,
     waterBody
