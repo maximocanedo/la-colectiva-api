@@ -2,6 +2,7 @@
 import * as Joi from 'joi';
 import * as user from "./user.v";
 import * as availability from "./availability.v";
+import * as boat from "./boat.v";
 import * as comment from "./comment.v";
 import * as picture from "./picture.v";
 import * as waterBody from "./waterbody.v";
@@ -24,6 +25,7 @@ const V = {
     objectId: objectIdF,
     user,
     availability,
+    boat,
     comment,
     picture,
     waterBody

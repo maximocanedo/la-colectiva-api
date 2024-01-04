@@ -10,6 +10,7 @@ import * as Joi from 'joi';
 import {IError} from "../interfaces/responses/Error.interfaces";
 import E from "../errors/index";
 import {handlers} from "../errors/handlers";
+import {endpoint} from "../interfaces/types/Endpoint";
 dotenv.config();
 /**
  * Cifra un texto con el algoritmo y la clave secreta especificados en el archivo .env
@@ -58,7 +59,7 @@ interface TokenInterface {
  * @param res
  * @param next
  */
-const authenticate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const authenticate: endpoint = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const authHeader = req.headers['authorization'];
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -202,7 +203,6 @@ const allow: any = {
     normal: allowAccessForRole(1),
     all: allowAccessForRole(0),
 };
-const auth = authenticate;
 export default {
     verifyInput,
     uploadPhoto,
@@ -215,5 +215,5 @@ export default {
     normalUsersCanAccess,
     everybodyCanAccess,
     allow,
-    auth,
+    auth: authenticate
 };

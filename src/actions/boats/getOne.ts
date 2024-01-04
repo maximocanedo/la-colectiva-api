@@ -3,9 +3,16 @@ import Boat from "../../schemas/Boat";
 import { Request, Response } from "express";
 import IBoat from "../../interfaces/models/IBoat";
 import IUser from "../../interfaces/models/IUser";
-const getOne = async (req: Request, res: Response) => {
+import {endpoint} from "../../interfaces/types/Endpoint";
+import E from "../../errors/index";
+import {MongoError} from "mongodb";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
+import mongoose from "mongoose";
+import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
+const getOne: endpoint = async (req: Request, res: Response): Promise<void> => {
     try {
-        const id = req.params.id;
+        const id: string = req.params.id;
         // Utiliza findOne para buscar un registro con ID y active: true
         let resource = await Boat.findOne({ _id: id, active: true, status: true }, {
             mat: 1,
@@ -23,7 +30,7 @@ const getOne = async (req: Request, res: Response) => {
 
         if (!resource) {
             res.status(404).json({
-                error: 'new ResourceNotFoundError().toJSON()'
+                error: E.ResourceNotFound
             }).end();
             return;
         }
@@ -46,9 +53,14 @@ const getOne = async (req: Request, res: Response) => {
             uploadDate: resource.uploadDate,
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'new CRUDOperationError().toJSON(),'
+        if(err instanceof MongoError) {
+            const error: IError = mongoErrorMiddleware(err as MongoError);
+            res.status(500).json({error}).end();
+        } else if(err instanceof mongoose.Error) {
+            const error: IError = mongooseErrorMiddleware(err as mongoose.Error);
+            res.status(500).json({error}).end();
+        } else res.status(500).json({
+            error: E.CRUDOperationError
         }).end();
     }
 };

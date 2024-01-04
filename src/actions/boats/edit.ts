@@ -3,16 +3,42 @@
 
 import pre from "../../endpoints/pre";
 import Boat from "../../schemas/Boat";
-import {ObjectId} from "mongodb";
-import { Request, Response } from "express";
-import {Schema} from "mongoose";
+import {MongoError, ObjectId} from "mongodb";
+import { Request, Response, NextFunction } from "express";
+import mongoose, {Schema} from "mongoose";
+import E from "../../errors/index";
+import V from "../../validators";
+import Enterprise from "../../schemas/Enterprise";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
+import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
+import {endpoint} from "../../interfaces/types/Endpoint";
 
-
-const edit = [
+const edit: endpoint[] = [
     pre.auth,
     pre.allow.moderator,
-    // TODO: Not all properties are required.
-    pre.verifyInput(["mat", "name", "status", "enterprise"]),
+    pre.expect({
+        mat: V.boat.mat,
+        name: V.boat.name,
+        status: V.boat.status,
+        enterprise: V.boat.enterprise,
+    }),
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { mat, name, status, enterprise } = req.body;
+        if(!mat && !name && !('status' in req.body) && !enterprise) {
+            res.status(400).json({ error: E.AtLeastOneFieldRequiredError }).end();
+        } else next();
+    },
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { enterprise } = req.body;
+        if(enterprise) {
+            const enterprise_obj = await Enterprise.findOne({ _id: enterprise, active: true });
+            if(!enterprise_obj) res.status(404).json({
+                error: E.ResourceNotFound
+            }).end();
+            else next();
+        } else next();
+    },
     async (req: Request, res: Response): Promise<void> => {
         try {
             const id = req.params.id;
@@ -20,7 +46,7 @@ const edit = [
             const reg = await Boat.findOne({ _id: id, active: 1 });
             if (!reg) {
                 res.status(404).json({
-                    error: 'new ResourceNotFoundError().toJSON(),'
+                    error: E.ResourceNotFound
                 }).end();
                 return;
             }
@@ -29,24 +55,29 @@ const edit = [
                 !(req.user.role >= 3)
             ) {
                 res.status(403).json({
-                    error: 'new ExpropriationError().toJSON(),'
+                    error: E.UnauthorizedRecordModification
                 });
                 return;
             }
             const { mat, name, status, enterprise } = req.body;
-            reg.name = name;
-            reg.mat = mat;
-            reg.enterprise = new Schema.Types.ObjectId(enterprise);
-            reg.status = status;
+            if(name) reg.name = name;
+            if(mat) reg.mat = mat;
+            if(enterprise) reg.enterprise = new Schema.Types.ObjectId(enterprise);
+            if('status' in req.body) reg.status = status;
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",
             });
         } catch (err) {
-            console.error(err);
-            res.status(500).json({
-                error: 'new CRUDOperationError().toJSON(),'
-            });
+            if(err instanceof MongoError) {
+                const error: IError = mongoErrorMiddleware(err as MongoError);
+                res.status(500).json({error}).end();
+            } else if(err instanceof mongoose.Error) {
+                const error: IError = mongooseErrorMiddleware(err as mongoose.Error);
+                res.status(500).json({error}).end();
+            } else res.status(500).json({
+                error: E.CRUDOperationError
+            }).end();
         }
     }
 ];
