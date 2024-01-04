@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express, { Request, Response, Router } from "express";
 import pre from "./pre";
 import users from "../actions/users";
-import * as v from "../validators/index";
+import V from "../validators/index";
 const router: Router = express.Router();
 dotenv.config();
 
@@ -17,11 +17,11 @@ router.get("/:username", users.getOne(false));
 
 /* Cambiar un dato (Contraseña, rol) de un usuario. */
 router.patch("/me", pre.auth, pre.expect({
-	password: v.user.password.required()
+	password: V.user.password.required()
 }), users.updatePassword);
 router.patch("/:username", pre.auth, pre.allow.admin, pre.expect({
-	password: v.user.password,
-	role: v.user.role
+	password: V.user.password,
+	role: V.user.role
 }), async (req: Request, res: Response): Promise<void> => {
 	const { password, role } = req.body;
 	if (password) {
@@ -50,12 +50,12 @@ router.delete("/:username", users.deleteUser(false));
 
 /* Crear un usuario. */
 router.post("/", pre.expect({
-	username: v.user.username.required(),
-	name: v.user.name.required(),
-	bio: v.user.bio.required(),
-	mail: v.user.mail,
-	birth: v.user.birth.required(),
-	password: v.user.password.required()
+	username: V.user.username.required(),
+	name: V.user.name.required(),
+	bio: V.user.bio.required(),
+	mail: V.user.mail,
+	birth: V.user.birth.required(),
+	password: V.user.password.required()
 }),  users.signup);
 
 router.post("/me/mail", users.startMailVerification);

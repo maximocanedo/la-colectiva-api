@@ -6,9 +6,10 @@ import pre from "./pre";
 import { Types } from "mongoose";
 import { handleComments } from "../utils/Comment.utils";
 import { handleVotes } from "../utils/Validation.utils";
+import E from "../errors";
 
 
-dotenv.config();;
+dotenv.config();
 const router = express.Router();
 
 router.use(express.json());
@@ -21,7 +22,11 @@ router.post(
 	"/",
 	pre.auth,
 	pre.allow.moderator,
-	pre.verifyInput(["path", "dock", "time"]),
+	pre.expect({
+		path: V.objectId.required(),
+		dock: V.objectId.required(),
+		time: V.string().required()
+	}),
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const { path, dock, time } = req.body;
@@ -38,9 +43,7 @@ router.post(
 			});
 		} catch (err) {
 			console.log(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
+			res.status(500).json(E.InternalError);
 		}
 	}
 ); // Crear un registro
@@ -62,9 +65,7 @@ router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 			.populate({ path: "dock", model: "Dock", select: "_id name" });
 
 		if (!resource) {
-			res.status(404).json({
-				message: "Resource not found",
-			});
+			res.status(404).json(E.ResourceNotFound);
 			return;
 		}
 		const totalValidations = resource.validations.filter(
@@ -87,9 +88,7 @@ router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
+		res.status(500).json(E.InternalError);
 	}
 }); // Ver recurso
 /*router.patch(
@@ -147,15 +146,11 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 		const username = req.user._id;
 		const isAdmin = req.user.role >= 3;
 		if (!resource) {
-			res.status(404).json({
-				message: "There's no resource with the provided ID. ",
-			});
+			res.status(404).json(E.ResourceNotFound);
 			return;
 		}
 		if (resource.user != username && !isAdmin) {
-			res.status(403).json({
-				message: "No resource was deleted. ",
-			});
+			res.status(403).json(E.AttemptedUnauthorizedOperation);
 			return;
 		}
 		resource.active = false;
@@ -165,9 +160,7 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({
-			message: "Internal error. ",
-		});
+		res.status(500).json(E.InternalError);
 	}
 }); // Eliminar registro
 

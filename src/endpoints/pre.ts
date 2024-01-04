@@ -1,18 +1,15 @@
 "use strict";
 import crypto, {Decipher} from "crypto";
 import dotenv from "dotenv";
-import express, { Request, Response, NextFunction } from "express";
-import Photo from "../schemas/Photo";
-import multer, {Multer, MulterError, StorageEngine} from "multer";
+import { Request, Response, NextFunction } from "express";
+import multer, {Multer, StorageEngine} from "multer";
 import path from "path";
-import fs from "fs";
 import User from "../schemas/User";
 import jwt from 'jsonwebtoken';
 import * as Joi from 'joi';
 import {IError} from "../interfaces/responses/Error.interfaces";
 import E from "../errors/index";
 import {handlers} from "../errors/handlers";
-import {InvalidToken} from "../errors/A.errors";
 dotenv.config();
 /**
  * Cifra un texto con el algoritmo y la clave secreta especificados en el archivo .env

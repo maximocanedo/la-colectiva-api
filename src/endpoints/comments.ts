@@ -4,6 +4,8 @@ import express, {Request, Response, Router} from "express";
 import pre from "./pre";
 import Comment from "../schemas/Comment";
 import dotenv from "dotenv";
+import E from "../errors/index";
+import V from "../validators/index";
 
 const router: Router = express.Router();
 dotenv.config();
@@ -13,7 +15,9 @@ router.post(
 	"/",
 	pre.auth,
 	pre.allow.normal,
-	pre.verifyInput(["content"]),
+	pre.expect({
+		content: V.comment.content.required(),
+	}),
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const { content } = req.body;
@@ -24,12 +28,11 @@ router.post(
 				newComment,
 			});
 		} catch (err) {
-			res.status(500).json({
-				message: "Internal error",
-			});
+			res.status(500).json(E.InternalError);
 		}
 	}
 ); // Añadir un comentario
+
 router.get("/:comment_id", async (req: Request, res: Response): Promise<void> => {
 	try {
 		let { comment_id } = req.params;
@@ -38,18 +41,17 @@ router.get("/:comment_id", async (req: Request, res: Response): Promise<void> =>
 			active: true,
 		}).populate({ path: "user", model: "User", select: "name _id" });
 		if (!comment) {
-			res.status(404).json({
-				message: "Comment not found. ",
-			});
+			res.status(404).json(E.ResourceNotFound);
 		}
 		res.status(200).json(comment);
 	} catch (err) {
-		res.status(500).json({
-			message: "Internal error",
-		});
+		res.status(500).json(E.InternalError);
 	}
 }); // Ver contenido de un comentario
-router.put("/:comment_id", async (req: Request, res: Response): Promise<void> => {
+
+router.put("/:comment_id",
+	pre.expect({ content: V.comment.content.required() }),
+	async (req: Request, res: Response): Promise<void> => {
 	try {
 		let { comment_id } = req.params;
 		let { content } = req.body; // Suponiendo que el cuerpo de la solicitud tiene el nuevo contenido del comentario
@@ -57,7 +59,7 @@ router.put("/:comment_id", async (req: Request, res: Response): Promise<void> =>
 		let comment = await Comment.findOne({ _id: comment_id, active: true });
 
 		if (!comment) {
-			res.status(404);
+			res.status(404).json(E.ResourceNotFound);
 			return;
 		}
 
@@ -68,9 +70,7 @@ router.put("/:comment_id", async (req: Request, res: Response): Promise<void> =>
 
 		res.status(200).json(updatedComment);
 	} catch (err) {
-		res.status(500).json({
-			message: "Internal error",
-		});
+		res.status(500).json(E.InternalError);
 	}
 });
 
@@ -79,6 +79,7 @@ router.delete("/:comment_id", pre.auth, pre.allow.normal, async (req: Request, r
 		const { comment_id } = req.params;
 		const result = await Comment.delete(comment_id);
 		if (!result.success) {
+			// TODO Usar errores personalizados
 			console.error(result.message);
 			res.status(result.status).json({
 				message: result.message,
@@ -90,9 +91,7 @@ router.delete("/:comment_id", pre.auth, pre.allow.normal, async (req: Request, r
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
+		res.status(500).json(E.InternalError);
 	}
 }); // Eliminar permanentemente un comentario
 

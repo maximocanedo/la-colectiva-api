@@ -1,5 +1,10 @@
 'use strict';
 import * as Joi from 'joi';
+import * as user from "./user.v";
+import * as availability from "./availability.v";
+import * as comment from "./comment.v";
+import * as picture from "./picture.v";
+import * as waterBody from "./waterbody.v";
 
 /**
  * Aclaración.
@@ -10,47 +15,21 @@ import * as Joi from 'joi';
 /**
  * ObjectId
  */
-export const objectId: Joi.StringSchema<string> = Joi
+const objectIdF: Joi.StringSchema<string> = Joi
     .string()
     .hex()
     .length(24);
 
-export const user = {
-    /**
-     * Nombre de usuario.
-     */
-    username: Joi
-        .string()
-        .regex(/^[a-zA-Z0-9_.]{3,24}$/)
-        .min(3)
-        .max(24),
-    /**
-     * Contraseña de usuario.
-     */
-    password: Joi.string(),
-    /**
-     * Nombre completo del usuario.
-     */
-    name: Joi
-        .string()
-        .min(3)
-        .max(24),
-    /**
-     * Correo electrónico del usuario.
-     */
-    mail: Joi
-        .string()
-        .regex(/^.+@.+\..+$/),
-    /**
-     * Biografía del usuario.
-     */
-    bio: Joi.string().max(48),
-    /**
-     * Fecha de nacimiento del usuario.
-     */
-    birth: Joi.date(),
-    /**
-     * Rol de usuario.
-     */
-    role: Joi.number().min(0).max(3)
+const V = {
+    objectId: objectIdF,
+    user,
+    availability,
+    comment,
+    picture,
+    waterBody
 };
+export const objectId: Joi.StringSchema<string> = Joi
+    .string()
+    .hex()
+    .length(24);
+export default V;

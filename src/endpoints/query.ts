@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import express, { Router, Request, Response } from "express";
 import Schedule from "../schemas/Schedule";
 import {ObjectId} from "mongodb";
+import E from "../errors";
 
 
 dotenv.config();
@@ -500,15 +501,13 @@ router.get(
 			));
 
 			if (!result) {
-				res.status(404).json({
-					message: "No schedules found",
-				});
+				res.status(404).json(E.ResourceNotFound);
 				return;
 			}
 			res.status(200).json(result);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({ message: "Internal error. " });
+			res.status(500).json(E.InternalError);
 		}
 	}
 );

@@ -5,6 +5,8 @@ import WaterBody from "../schemas/WaterBody";
 import pre from "./pre";
 import { handleComments } from "../utils/Comment.utils";
 import { handleVotes } from "../utils/Validation.utils";
+import E from "../errors";
+import V from "../validators";
 
 
 dotenv.config();
@@ -24,9 +26,7 @@ router.get(
 			let resources = await WaterBody.find({ active: true });
 
 			if (resources.length === 0) {
-				res.status(404).json({
-					message: "Resources not found",
-				});
+				res.status(404).json(E.ResourceNotFound);
 				return;
 			}
 
@@ -53,9 +53,7 @@ router.get(
 			res.status(200).json(resourcesData);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
+			res.status(500).json(E.InternalError);
 		}
 
 	}
@@ -64,7 +62,10 @@ router.post(
 	"/",
 	pre.auth,
 	pre.allow.moderator,
-	pre.verifyInput(["name", "type"]),
+	pre.expect({
+		name: V.waterBody.name.required(),
+		type: V.waterBody.type.required(),
+	}),
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const { name, type } = req.body;
@@ -80,9 +81,7 @@ router.post(
 			});
 		} catch (err) {
 			console.log(err);
-			res.status(500).json({
-				message: "Internal error",
-			});
+			res.status(500).json(E.InternalError);
 		}
 	}
 ); // Crear un registro
@@ -93,9 +92,7 @@ router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 		let resource = await WaterBody.findOne({ _id: id, active: true });
 
 		if (!resource) {
-			res.status(404).json({
-				message: "Resource not found",
-			});
+			res.status(404).json(E.ResourceNotFound);
 			return;
 		}
 		const totalValidations = resource.validations.filter(
@@ -117,32 +114,28 @@ router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({
-			message: "Internal error",
-		});
+		res.status(500).json(E.InternalError);
 	}
 }); // Ver recurso
 router.patch(
 	"/:id",
 	pre.auth,
 	pre.allow.moderator,
-	pre.verifyInput(["name", "type"]),
+	pre.expect({
+		name: V.waterBody.name.required(),
+		type: V.waterBody.type.required(),
+	}),
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const id = req.params.id;
 			const userId = req.user._id;
 			const reg = await WaterBody.findOne({ _id: id, active: 1 });
 			if (!reg) {
-				res.status(404).json({
-					message: "There's no resource with that ID. ",
-				});
+				res.status(404).json(E.ResourceNotFound);
 				return;
 			}
 			if (reg.user.toString() != userId.toString()) {
-				res.status(403).json({
-					message:
-						"You can't edit info about a resource that other user uploaded. ",
-				});
+				res.status(403).json(E.UnauthorizedRecordModification);
 				return;
 			}
 			const { name, type } = req.body;
@@ -154,9 +147,7 @@ router.patch(
 			});
 		} catch (err) {
 			console.error(err);
-			res.status(500).json({
-				message: "Internal error. ",
-			});
+			res.status(500).json(E.InternalError);
 		}
 	}
 ); // Editar recurso
@@ -167,15 +158,11 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 		const username = req.user._id;
 		const isAdmin = req.user.role >= 3;
 		if (!resource) {
-			res.status(404).json({
-				message: "There's no photo with the provided ID. ",
-			});
+			res.status(404).json(E.ResourceNotFound);
 			return;
 		}
 		if (resource.user != username && !isAdmin) {
-			res.status(403).json({
-				message: "No image was deleted. ",
-			});
+			res.status(403).json(E.AttemptedUnauthorizedOperation);
 			return;
 		}
 		resource.active = false;
@@ -185,9 +172,7 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json({
-			message: "Internal error. ",
-		});
+		res.status(500).json(E.InternalError);
 	}
 }); // Eliminar registro
 
