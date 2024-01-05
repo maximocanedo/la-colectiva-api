@@ -9,7 +9,6 @@ import createOne from "./createOne";
 import createOnePhone from "./phones/createOne";
 import deleteOnePhone from "./phones/deleteOne";
 import listPhones from "./phones/list";
-
 export default {
     createOne,
     deleteOne,

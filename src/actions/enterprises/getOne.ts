@@ -2,22 +2,24 @@
 
 import {Request, Response} from "express";
 import Enterprise from "../../schemas/Enterprise";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 const getOne = async (req: Request, res: Response) => {
     try {
         const id = req.params.id;
         // Utiliza findOne para buscar un registro con ID y active: true
         let resource = await Enterprise.findOne({ _id: id, active: true });
-
         if (!resource) {
-            return res.status(404).json({
-                error: 'new ResourceNotFoundError().toJSON()'
+            res.status(404).json({
+                error: E.ResourceNotFound
             });
+            return;
         }
         const totalValidations = resource.validations.filter(
-            (validation) => validation.validation === true
+            (validation) => validation.validation
         ).length;
         const totalInvalidations = resource.validations.filter(
-            (validation) => validation.validation === false
+            (validation) => !validation.validation
         ).length;
 
         const {
@@ -44,10 +46,8 @@ const getOne = async (req: Request, res: Response) => {
             invalidations: totalInvalidations,
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'new ExpropriationError().toJSON()'
-        });
+        const error = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({error});
     }
 };
 export default getOne;

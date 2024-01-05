@@ -1,6 +1,8 @@
 'use strict';
 import Enterprise from "../../schemas/Enterprise";
 import { Request, Response, NextFunction } from "express";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 const list = async (req: Request, res: Response): Promise<void> => {
     try {
         // Utiliza find para buscar todos los registros con active: true
@@ -8,16 +10,16 @@ const list = async (req: Request, res: Response): Promise<void> => {
 
         if (!resources || resources.length === 0) {
             res.status(404).json({
-                error: 'new ResourceNotFoundError().toJSON()'
+                error: E.ResourceNotFound
             });
         }
 
         const responseData = resources.map((resource) => {
             const totalValidations = resource.validations.filter(
-                (validation) => validation.validation === true
+                (validation) => validation.validation
             ).length;
             const totalInvalidations = resource.validations.filter(
-                (validation) => validation.validation === false
+                (validation) => !validation.validation
             ).length;
 
             const {
@@ -48,10 +50,8 @@ const list = async (req: Request, res: Response): Promise<void> => {
         // Envía los registros como respuesta
         res.status(200).json(responseData);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'new CRUDOperationError().toJSON()'
-        });
+        const error = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({error});
     }
 };
 export default list;

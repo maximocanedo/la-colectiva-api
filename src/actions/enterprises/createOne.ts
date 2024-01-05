@@ -2,23 +2,28 @@
 import pre from "../../endpoints/pre";
 import Enterprise from "../../schemas/Enterprise";
 import {Request, Response, NextFunction} from "express";
-const createOne = [
+import V from "./../../validators";
+import E from "../../errors";
+import {endpoint} from "../../interfaces/types/Endpoint";
+import defaultHandler from "../../errors/handlers/default.handler";
+
+const createOne: endpoint[] = [
     pre.auth,
     pre.allow.admin,
-    pre.verifyInput([
-        "cuit",
-        "name",
-        "description",
-        "foundationDate",
-        "phones",
-    ]),
-    async (req: Request, res: Response, next: NextFunction) => {
+    pre.expect({
+        cuit: V.enterprise.cuit.required(),
+        name: V.enterprise.name.required(),
+        description: V.enterprise.description,
+        foundationDate: V.enterprise.foundationDate,
+        phones: V.enterprise.phones
+    }),
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { cuit } = req.body;
         const obj = await Enterprise.findOne({ cuit });
         if(!obj) next();
         else {
             res.status(400).json({
-                error: 'new UniqueKeyViolationError().toJSON()'
+                error: E.DuplicationError
             }).end();
         }
     },
@@ -40,10 +45,8 @@ const createOne = [
                 message: "The file was successfully saved. ",
             });
         } catch (err) {
-            console.log(err);
-            res.status(500).json({
-                error: 'new CRUDOperationError().toJSON()'
-            });
+            const error = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({error});
         }
     }
 ];
