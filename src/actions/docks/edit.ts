@@ -16,7 +16,7 @@ const edit = [
     pre.expect({
         name: V.dock.name,
         address: V.dock.address,
-        region: V.objectId,
+        region: V.dock.region,
         notes: V.dock.notes,
         coordinates: V.dock.coordinates
     }),

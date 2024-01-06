@@ -7,6 +7,7 @@ import * as dock from "./dock.v";
 import * as comment from "./comment.v";
 import * as enterprise from "./enterprise.v";
 import * as picture from "./picture.v";
+import * as schedule from "./schedule.v";
 import * as waterBody from "./waterbody.v";
 import * as path from "./path.v";
 
@@ -30,14 +31,10 @@ const V = {
     comment,
     dock,
     enterprise,
-    objectId: objectIdF,
     path,
     picture,
+    schedule,
     user,
     waterBody
 };
-export const objectId: Joi.StringSchema<string> = Joi
-    .string()
-    .hex()
-    .length(24);
 export default V;

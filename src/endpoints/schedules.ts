@@ -7,6 +7,7 @@ import { Types } from "mongoose";
 import { handleComments } from "../utils/Comment.utils";
 import { handleVotes } from "../utils/Validation.utils";
 import E from "../errors";
+import V from "../validators";
 
 
 dotenv.config();
@@ -23,9 +24,9 @@ router.post(
 	pre.auth,
 	pre.allow.moderator,
 	pre.expect({
-		path: V.objectId.required(),
-		dock: V.objectId.required(),
-		time: V.string().required()
+		path: V.schedule.path.required(),
+		dock: V.schedule.dock.required(),
+		time: V.schedule.time.required()
 	}),
 	async (req: Request, res: Response): Promise<void> => {
 		try {

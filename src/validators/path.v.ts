@@ -1,6 +1,6 @@
 import * as Joi from "joi";
 import { StringSchema, DateSchema, BooleanSchema, NumberSchema } from "joi";
-import { objectId } from "./index";
+import { objectId } from "./def.v";
 /**
  * ID de la embarcación que realiza el recorrido.
  */

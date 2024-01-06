@@ -11,6 +11,7 @@ import pre from './endpoints/pre';
 import users from './actions/users';
 import * as Joi from 'joi';
 import * as x from './validators/index';
+import V from "./validators/index";
 
 const useSSL: boolean = false;
 
@@ -29,13 +30,14 @@ app.use(express.json());
 
 app.use(cors());
 
+app.set('json spaces', 4);
+
 // Conexión a la base de datos
-(async () => {
-    await connectToDB(() => {
-        // Crear el servidor HTTPS
-        if (useSSL) https.createServer(options, app).listen(5050, () => {
+(async (): Promise<void> => {
+    await connectToDB((): void => {
+        if (useSSL) https.createServer(options, app).listen(5050, (): void => {
             console.log("App listening...");
-        }); else app.listen(80, () => {
+        }); else app.listen(80, (): void => {
             console.log("App listening on local server...");
         });
     });
@@ -45,8 +47,8 @@ app.use(cors());
 
 // Routes
 app.post("/auth", pre.expect({
-    username: x.user.username.required(),
-    password: x.user.password.required()
+    username: V.user.username.required(),
+    password: V.user.password.required()
 }), users.login);
 app.delete("/auth", users.logout);
 app.use("/users", routes.users);

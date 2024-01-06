@@ -15,6 +15,7 @@ const defaultHandler = (err: Error, def: IError | null = null ): IError | null =
     } else if(err instanceof JsonWebTokenError || err instanceof NotBeforeError || err instanceof TokenExpiredError) {
         return jwtMiddleware(err as Error);
     } else {
+        console.error(err);
         return def;
     }
 };

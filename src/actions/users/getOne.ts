@@ -2,9 +2,9 @@
 import {Request, Response} from "express";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
+import User from "./../../schemas/User";
 import E from "../../errors";
 
-const User = require("../../schemas/User");
 const getOne = (me = false) => (async (req: Request, res: Response): Promise<void> => {
     try {
         const username = me ? req.user.username : req.params.username;

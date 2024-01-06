@@ -19,7 +19,7 @@ const createOne: endpoint[] = [
     pre.expect({
         name: V.dock.name.required(),
         address: V.dock.address.required(),
-        region: V.objectId.required(),
+        region: V.dock.region.required(),
         notes: V.dock.notes.required(),
         coordinates: V.dock.coordinates.required()
     }),

@@ -1,6 +1,6 @@
 import * as Joi from "joi";
 import { StringSchema, DateSchema, BooleanSchema, NumberSchema } from "joi";
-import { objectId } from "./index";
+import { objectId } from "./def.v";
 
 /**
  * Matrícula de la embarcación.
@@ -17,7 +17,7 @@ export const status: BooleanSchema = Joi.boolean();
 /**
  * ID de la empresa a la que pertenece la embarcación.
  */
-export const enterprise: StringSchema = objectId;
+export const enterprise = objectId;
 /**
  * ID del usuario que registró la embarcación.
  */
