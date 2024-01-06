@@ -7,7 +7,7 @@ import E from "../../errors";
 import V from "../../validators";
 const patchEdit = [
     pre.auth,
-    pre.allow.admin,
+    pre.allow.moderator,
     pre.expect({
         cuit: V.enterprise.cuit,
         name: V.enterprise.name,
@@ -26,27 +26,30 @@ const patchEdit = [
                     error: E.AtLeastOneFieldRequiredError
                 });
             }
-
-            const updatedFields: any = {}; // Almacena los campos actualizados dinámicamente
-
-            // Actualiza solo los campos que se proporcionan en la solicitud
-            if (name) updatedFields.name = name;
-            if (cuit) updatedFields.cuit = cuit;
-            if (description) updatedFields.description = description;
-            if (foundationDate) updatedFields.foundationDate = foundationDate;
-
-            // Busca y actualiza el registro en la base de datos
-            const updatedEnterprise = await Enterprise.findByIdAndUpdate(
-                id,
-                { $set: updatedFields },
-                { new: true }
-            );
-
-            if (!updatedEnterprise) {
+            const en = await Enterprise.findOne({ _id: id, active: true });
+            if(!en) {
                 res.status(404).json({
                     error: E.ResourceNotFound
-                });
+                }).end();
+                return;
             }
+            const username = req.user._id;
+            const isAdmin = req.user.role >= 3;
+            if (en.user !== username && !isAdmin) {
+                res.status(403).json({
+                    error: E.AttemptedUnauthorizedOperation
+                }).end();
+                return;
+            }
+
+            // Actualiza solo los campos que se proporcionan en la solicitud
+            if (name) en.name = name;
+            if (cuit) en.cuit = cuit;
+            if (description) en.description = description;
+            if (foundationDate) en.foundationDate = foundationDate;
+
+            // Busca y actualiza el registro en la base de datos
+            const updatedEnterprise = await en.save();
 
             res.status(200).json({
                 message: "Registro actualizado correctamente.",

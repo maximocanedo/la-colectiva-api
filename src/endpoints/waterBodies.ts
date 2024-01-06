@@ -151,7 +151,7 @@ router.patch(
 		}
 	}
 ); // Editar recurso
-router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<void> => {
+router.delete("/:id", pre.auth, pre.allow.moderator, async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		const resource = await WaterBody.findById(id);

@@ -9,7 +9,7 @@ import V from "../../validators";
 
 const createOne = [
     pre.auth,
-    pre.allow.admin,
+    pre.allow.moderator,
     pre.expect({
         boat: V.path.boat.required(),
         title: V.path.title.required(),

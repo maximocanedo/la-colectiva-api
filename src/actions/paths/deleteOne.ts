@@ -4,7 +4,7 @@ import Path from "../../schemas/Path";
 import { NextFunction, Request, Response } from "express";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
-const deleteOne = [pre.auth, async (req: Request, res: Response): Promise<void> => {
+const deleteOne = [pre.auth, pre.allow.moderator, async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
         const resource = await Path.findById(id);

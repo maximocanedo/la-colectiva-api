@@ -66,7 +66,7 @@ const mailContent = {
         "¡Bienvenido de nuevo!",
         "Rehabilitaste tu cuenta de La Colectiva con éxito. "
     ]
-}
+};
 
 const startMailVerification = [
     pre.auth,

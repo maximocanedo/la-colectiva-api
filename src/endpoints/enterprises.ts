@@ -6,6 +6,7 @@ import Enterprise from "../schemas/Enterprise";
 import { handleComments } from "../utils/Comment.utils";
 import enterprises from "../actions/enterprises";
 import { handleVotes } from "../utils/Validation.utils";
+import pre from "./pre";
 
 
 dotenv.config();
@@ -31,9 +32,9 @@ router.put("/:id", enterprises.edit); // Editar recurso
 router.delete("/:id", enterprises.deleteOne); // Eliminar registro
 
 /* Acciones con teléfonos */
-router.get("/:id/phones", enterprises.phones.list); // Listar números de teléfono
-router.post("/:id/phones", enterprises.phones.createOne); // Agregar un número de teléfono
-router.delete("/:id/phones", enterprises.phones.deleteOne); // Eliminar un número de teléfono
+router.get("/:id/phones", pre.auth, pre.allow.moderator, enterprises.phones.list); // Listar números de teléfono
+router.post("/:id/phones", pre.auth, pre.allow.moderator, enterprises.phones.createOne); // Agregar un número de teléfono
+router.delete("/:id/phones", pre.auth, pre.allow.moderator, enterprises.phones.deleteOne); // Eliminar un número de teléfono
 
 
 export default router;

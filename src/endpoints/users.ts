@@ -43,12 +43,12 @@ router.head("/me", users.getOne(true));
 router.head("/:username", users.getOne(false));
 
 /* Actualizar información, como nombre y biografía. */
-router.put("/me", users.editPersonalInfo(true));
-router.put("/:username", users.editPersonalInfo(false));
+router.put("/me", pre.auth, users.editPersonalInfo(true));
+router.put("/:username", pre.auth, pre.allow.admin, users.editPersonalInfo(false));
 
 /* Eliminar un usuario. */
 router.delete("/me", users.deleteUser(true));
-router.delete("/:username", users.deleteUser(false));
+router.delete("/:username", pre.auth, pre.allow.admin, users.deleteUser(false));
 
 
 /* Crear un usuario. */

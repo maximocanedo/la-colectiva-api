@@ -9,7 +9,7 @@ import defaultHandler from "../../errors/handlers/default.handler";
 
 const createOne: endpoint[] = [
     pre.auth,
-    pre.allow.admin,
+    pre.allow.moderator,
     pre.expect({
         cuit: V.enterprise.cuit.required(),
         name: V.enterprise.name.required(),

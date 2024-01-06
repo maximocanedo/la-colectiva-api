@@ -6,6 +6,7 @@ import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 const deleteOne = [
     pre.auth,
+    pre.allow.moderator,
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { id } = req.params;
         const resource = await Enterprise.findOne({ _id: id, active: true });

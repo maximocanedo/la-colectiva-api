@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import {endpoint} from "../../interfaces/types/Endpoint";
 
-const deleteOne: endpoint[] = [pre.auth, async (req: Request, res: Response): Promise<void> => {
+const deleteOne: endpoint[] = [pre.auth, pre.allow.moderator, async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
         const resource = await Boat.findById(id);

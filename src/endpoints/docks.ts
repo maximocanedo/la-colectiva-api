@@ -21,7 +21,7 @@ router.get("/", docks.list); // Listar recursos
 router.post("/", docks.createOne); // Crear un registro
 router.get("/:id", docks.getOne); // Ver recurso
 router.patch("/:id", docks.edit); // Editar recurso
-router.delete("/:id", pre.auth, docks.deleteOne); // Eliminar registro
+router.delete("/:id", pre.auth, pre.allow.moderator, docks.deleteOne); // Eliminar registro
 
 /* Comentarios */
 handleComments(router, Dock);
