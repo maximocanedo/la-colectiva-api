@@ -4,6 +4,9 @@ import express, { Request, Response, Router } from "express";
 import pre from "./pre";
 import users from "../actions/users";
 import V from "../validators/index";
+import {IError} from "../interfaces/responses/Error.interfaces";
+import defaultHandler from "../errors/handlers/default.handler";
+import E from "../errors";
 const router: Router = express.Router();
 dotenv.config();
 
@@ -31,7 +34,7 @@ router.patch("/:username", pre.auth, pre.allow.admin, pre.expect({
 		await users.updateRole(req, res);
 	}
 	if (!password && !role) {
-		res.status(400).send("Invalid field").end();
+		res.status(400).json({ error: E.AtLeastOneFieldRequiredError }).end();
 	}
 });
 
