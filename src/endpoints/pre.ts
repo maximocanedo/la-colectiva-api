@@ -63,13 +63,13 @@ const authenticate: endpoint = async (req: Request, res: Response, next: NextFun
     try {
         const authHeader = req.headers['authorization'];
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            res.status(401).json(E.Unauthenticated);
+            res.status(401).json({error: E.Unauthenticated});
             return;
         }
 
         const token: string = (authHeader as string).split(' ')[1];
         if (!token) {
-            res.status(401).json(E.Unauthenticated);
+            res.status(401).json({error: E.Unauthenticated});
             return;
         }
 
@@ -78,7 +78,7 @@ const authenticate: endpoint = async (req: Request, res: Response, next: NextFun
         const user = await User.findById(uid).select("-password");
 
         if (!user) {
-            res.status(401).json(E.InvalidToken);
+            res.status(401).json({error: E.InvalidToken});
             return;
         }
         req.user = user;
@@ -87,10 +87,10 @@ const authenticate: endpoint = async (req: Request, res: Response, next: NextFun
         console.log(err);
         if(err instanceof jwt.JsonWebTokenError || err instanceof jwt.TokenExpiredError || err instanceof jwt.NotBeforeError) {
             const finalError: IError = handlers.jwtMiddleware(err);
-            res.status(401).json(finalError);
+            res.status(401).json({error: finalError});
             return;
         }
-        res.status(500).json(E.InternalError);
+        res.status(500).json({error: E.InternalError});
     }
 };
 /**
@@ -104,9 +104,9 @@ const allowAccessForRole = (role: number) => async (req: Request, res: Response,
             next();
             return;
         }
-        res.status(403).json(E.AttemptedUnauthorizedOperation);
+        res.status(403).json({error: E.AttemptedUnauthorizedOperation});
     } catch (err) {
-        res.status(500).json(E.InternalError);
+        res.status(500).json({error: E.InternalError});
     }
 }
 /**
