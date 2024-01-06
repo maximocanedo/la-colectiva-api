@@ -56,7 +56,7 @@ router.post("/", pre.expect({
 	username: V.user.username.required(),
 	name: V.user.name.required(),
 	bio: V.user.bio.required(),
-	mail: V.user.mail,
+	email: V.user.mail.required(),
 	birth: V.user.birth.required(),
 	password: V.user.password.required()
 }),  users.signup);

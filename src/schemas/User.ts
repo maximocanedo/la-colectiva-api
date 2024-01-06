@@ -67,7 +67,7 @@ const userSchema: Schema<IUser, UserModel, IUserMethods> = new Schema<IUser, Use
     role: {
         type: Number,
         required: true,
-        default: UserStatics.roles.NORMAL,
+        default: UserStatics.roles.LIMITED,
     },
     password: {
         type: String,
