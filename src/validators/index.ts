@@ -8,6 +8,7 @@ import * as comment from "./comment.v";
 import * as enterprise from "./enterprise.v";
 import * as picture from "./picture.v";
 import * as waterBody from "./waterbody.v";
+import * as path from "./path.v";
 
 /**
  * Aclaración.
@@ -24,14 +25,15 @@ const objectIdF: Joi.StringSchema<string> = Joi
     .length(24);
 
 const V = {
-    objectId: objectIdF,
-    user,
     availability,
     boat,
     comment,
     dock,
     enterprise,
+    objectId: objectIdF,
+    path,
     picture,
+    user,
     waterBody
 };
 export const objectId: Joi.StringSchema<string> = Joi

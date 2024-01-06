@@ -3,16 +3,24 @@ import pre from "../../endpoints/pre";
 import Path from "../../schemas/Path";
 import Boat from "../../schemas/Boat";
 import {NextFunction, Request, Response} from "express";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
+import V from "../../validators";
 
 const createOne = [
     pre.auth,
     pre.allow.admin,
-    pre.verifyInput(["boat", "title", "description", "notes"]),
+    pre.expect({
+        boat: V.path.boat.required(),
+        title: V.path.title.required(),
+        description: V.path.description.required(),
+        notes: V.path.notes.required()
+    }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { boat } = req.body;
         const obj = await Boat.findById(boat);
         if(!obj) res.status(404).json({
-            error: 'new ResourceNotFoundError().toJSON()'
+            error: E.ResourceNotFound
         }); else next();
     },
     async (req: Request, res: Response): Promise<void> => {
@@ -31,10 +39,8 @@ const createOne = [
                 message: "The file was successfully saved. ",
             });
         } catch (err) {
-            console.log(err);
-            res.status(500).json({
-                error: 'new CRUDOperationError().toJSON(),'
-            });
+            const error = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({error});
         }
     }
 ];

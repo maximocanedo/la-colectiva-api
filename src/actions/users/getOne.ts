@@ -1,5 +1,8 @@
 'use strict';
 import {Request, Response} from "express";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 
 const User = require("../../schemas/User");
 const getOne = (me = false) => (async (req: Request, res: Response): Promise<void> => {
@@ -15,8 +18,8 @@ const getOne = (me = false) => (async (req: Request, res: Response): Promise<voi
         }
         res.status(200).json(user);
     } catch (e) {
-        console.error({ e });
-        res.status(500);
+        const error: IError | null = defaultHandler(e as Error, E.CRUDOperationError);
+        res.status(500).json({ error });
     }
 });
 export default getOne;

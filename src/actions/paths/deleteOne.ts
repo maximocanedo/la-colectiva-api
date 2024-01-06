@@ -2,21 +2,23 @@
 import pre from "../../endpoints/pre";
 import Path from "../../schemas/Path";
 import { NextFunction, Request, Response } from "express";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 const deleteOne = [pre.auth, async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
         const resource = await Path.findById(id);
         const username = req.user._id;
-        const isAdmin = req.user.role >= 3;
+        const isAdmin: boolean = req.user.role >= 3;
         if (!resource) {
             res.status(404).json({
-                error: 'new ResourceNotFoundError().toJSON(),'
+                error: E.ResourceNotFound
             });
             return;
         }
-        if (resource.user !== username && !isAdmin) {
+        if (resource.user.toString() !== username.toString() && !isAdmin) {
             res.status(403).json({
-                error: 'new ExpropriationError().toJSON()'
+                error: E.AttemptedUnauthorizedOperation
             });
             return;
         }
@@ -26,10 +28,8 @@ const deleteOne = [pre.auth, async (req: Request, res: Response): Promise<void> 
             message: "Data was disabled. ",
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'new CRUDOperationError().toJSON(),'
-        });
+        const error = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({error});
     }
 }];
 export default deleteOne;

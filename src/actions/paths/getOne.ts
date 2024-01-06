@@ -1,6 +1,8 @@
 'use strict';
 import Path from "../../schemas/Path";
 import {Request, Response} from "express";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 const getOne = [async (req: Request, res: Response): Promise<void> => {
     try {
         const id = req.params.id;
@@ -11,15 +13,15 @@ const getOne = [async (req: Request, res: Response): Promise<void> => {
 
         if (!resource) {
             res.status(404).json({
-                error: 'new ResourceNotFoundError().toJSON()'
+                error: E.ResourceNotFound
             });
             return;
         }
         const totalValidations = resource.validations.filter(
-            (validation) => validation.validation === true
+            (validation) => validation.validation
         ).length;
         const totalInvalidations = resource.validations.filter(
-            (validation) => validation.validation === false
+            (validation) => !validation.validation
         ).length;
 
         const { user, boat, title, description, notes } = resource;
@@ -34,10 +36,8 @@ const getOne = [async (req: Request, res: Response): Promise<void> => {
             invalidations: totalInvalidations,
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'new CRUDOperationError().toJSON()'
-        });
+        const error = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({error});
     }
 }];
 export default getOne;

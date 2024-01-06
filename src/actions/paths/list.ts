@@ -1,6 +1,8 @@
 'use strict';
 import Path from "../../schemas/Path";
 import { Request, Response } from "express";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 const list = [async (req: Request, res: Response): Promise<void> => {
     try {
         // Cambia findOne por find para obtener todos los registros con active: true
@@ -10,7 +12,7 @@ const list = [async (req: Request, res: Response): Promise<void> => {
 
         if (!resources || resources.length === 0) {
             res.status(404).json({
-                error: 'new ResourceNotFoundError().toJSON()'
+                error: E.ResourceNotFound
             });
             return;
         }
@@ -18,10 +20,10 @@ const list = [async (req: Request, res: Response): Promise<void> => {
         // Mapea los recursos para obtener los datos que necesitas de cada uno
         const formattedResources = resources.map((resource) => {
             const totalValidations = resource.validations.filter(
-                (validation) => validation.validation === true
+                (validation) => validation.validation
             ).length;
             const totalInvalidations = resource.validations.filter(
-                (validation) => validation.validation === false
+                (validation) => !validation.validation
             ).length;
 
             const { user, boat, title, description, notes, _id } = resource;
@@ -41,10 +43,8 @@ const list = [async (req: Request, res: Response): Promise<void> => {
         // Envía la lista de recursos como respuesta
         res.status(200).json(formattedResources);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'new CRUDOperationError().toJSON()'
-        });
+        const error = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({error});
     }
 }];
 export default list;

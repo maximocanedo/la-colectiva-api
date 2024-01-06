@@ -3,6 +3,9 @@ import User from "../../schemas/User";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import {Request, Response} from "express";
+import E from "./../../errors";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
 dotenv.config();
 
 const login = async (req: Request, res: Response): Promise<void>  => {
@@ -11,7 +14,7 @@ const login = async (req: Request, res: Response): Promise<void>  => {
         const user = await User.findOne({ username, active: true });
         if (!user) {
             res.status(401).json({
-                error: 'new InvalidCredentials().toJSON()'
+                error: E.InvalidCredentials
             }).end();
             return;
         }
@@ -24,14 +27,12 @@ const login = async (req: Request, res: Response): Promise<void>  => {
             res.status(200).json({token}).end();
         } else {
             res.status(401).json({
-                error: 'new InvalidCredentials().toJSON()'
+                error: E.InvalidCredentials
             }).end();
         }
-    } catch (error) {
-        // TODO: Log error in separate file
-        res.status(500).json({
-            error: 'new TokenGenerationError().toJSON()'
-        }).end();
+    } catch (e) {
+        const error: IError | null = defaultHandler(e as Error, E.TokenGenerationError);
+        res.status(500).json({ error });
     }
 };
 const logout = async (req: Request, res: Response): Promise<void> => {

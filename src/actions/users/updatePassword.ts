@@ -1,6 +1,9 @@
 'use strict';
 import User from "../../schemas/User";
 import {Request, Response} from "express";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 const updatePassword = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = req.user._id;
@@ -10,7 +13,9 @@ const updatePassword = async (req: Request, res: Response): Promise<void> => {
         const user = await User.findById(userId);
 
         if (!user) {
-            res.status(404);
+            res.status(404).json({
+                error: E.ResourceNotFound
+            });
             return;
         }
 
@@ -19,8 +24,8 @@ const updatePassword = async (req: Request, res: Response): Promise<void> => {
 
         res.status(200);
     } catch (err) {
-        console.error(err);
-        res.status(500);
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({ error });
     }
 };
 

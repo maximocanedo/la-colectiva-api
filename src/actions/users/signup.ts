@@ -1,14 +1,17 @@
 'use strict';
 import User from "../../schemas/User";
 import {Request, Response} from "express";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
         let { username, name, email, bio, birth, password } = req.body;
-        const usernameIsAvailable = await User.isUsernameAvailable(
+        const usernameIsAvailable: boolean = await User.isUsernameAvailable(
             username
         );
         if (!usernameIsAvailable) {
-            res.status(409).end();
+            res.status(409).json({ error: E.DuplicationError }).end();
             return;
         }
         let m = null;
@@ -20,8 +23,8 @@ const signup = async (req: Request, res: Response): Promise<void> => {
         const savedStatus = await newUser.save();
         res.status(201).end();
     } catch (err) {
-        console.error(err);
-        res.status(500).end();
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({ error });
     }
 };
 

@@ -1,6 +1,9 @@
 'use strict';
 import User from "../../schemas/User";
 import {Request, Response} from "express";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
 const editPersonalInfo = (me = false) => (async (req: Request, res: Response): Promise<void> => {
     try {
         const { username } = me ? req.user : req.params;
@@ -8,7 +11,7 @@ const editPersonalInfo = (me = false) => (async (req: Request, res: Response): P
 
         const user = await User.findOne({ username, active: true });
         if (!user) {
-            res.status(404).end();
+            res.status(404).json({ error: E.ResourceNotFound }).end();
             return;
         }
 
@@ -22,8 +25,8 @@ const editPersonalInfo = (me = false) => (async (req: Request, res: Response): P
         res.status(200).end();
 
     } catch (err) {
-        console.error(err);
-        res.status(500).end();
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({ error });
     }
 });
 
