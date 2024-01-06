@@ -4,23 +4,47 @@
 ## Descripción
 La API de la Colectiva está diseñada para proporcionar una forma sencilla de visualizar y manejar datos a través de un conjunto de endpoints RESTful. Está construída con Typescript para garantizar un desarrollo robusto y escalable.
 
-## Propósito
-El propósito general de La Colectiva es el de brindar respuestas a preguntas como:
+## Primeros pasos
+Estas instrucciones te permitirán crear una copia del proyecto y correrla en tu máquina local para desarrollo y pruebas. 
+### Pre requisitos
+Se necesita tener `node`, y `ts-node` instalado en tu sistema. Además necesitarás tener un servidor MongoDB corriendo.
+#### Archivo .env
+Necesitarás tener un archivo .env en la carpeta raíz del repositorio una vez clonado, con las siguientes variables:
+`MONGODB_LOCAL_CONNECTION_STRING`: La connection string de tu servidor de base de datos MongoDB.
+`UID_SECRET_KEY`: Clave secreta para encriptar datos varios.
+`UID_IV_LENGTH`: Número entero.
+`UID_ALGORITHM`: Algoritmo de encriptación.
+`JWT_SECRET_KEY`: Clave secreta para encriptar los tokens JWT emitidos.
+#### Instalando
+Una vez clonado el repositorio, abrí una terminal e instalá las dependencias con el siguiente comando:
+```bash
+$ npm install
+```
+#### Corriendo
+Una vez instaladas las dependencias, ejecutá el siguiente comando para iniciar el servidor:
+```bash
+$ ts-node src/index.ts
+```
+#### Probando
+Ejecutar el siguiente comando para verificar que todo esté funcionando correctamente.
+```bash
+curl http://localhost/users/me
+```
+La respuesta debería verse así:
+```json
+{
+    "error": {
+        "code": "A-06",
+        "message": "No autenticado. ",
+        "details": "Esta operación requiere autenticación. "
+    }
+}
+```
+## Contribuir
+Ver CONTRIBUTING.md para conocer los detalles del código de conducta, y del proceso para enviar pull requests.
 
-- ¿A qué hora pasa la próxima lancha?
-- ¿Cuál es la mejor forma de llegar a mi destino?
+## Autor
+Máximo Canedo
 
-Para eso, esta API se enfoca principalmente en brindar información sobre horarios, recorridos y datos relacionados con el transporte en las islas del Delta.
-
-## ¿Cómo funciona?
-### Usuarios
-Los usuarios pueden registrarse, iniciar sesión y realizar acciones en base a su rol, que puede ser:
-
-- **Limitado**: El usuario puede visualizar información, realizar consultas.
-- **Común**: El usuario puede dar upvotes y downvotes, y comentar registros.
-- **Moderador**: El usuario puede agregar, modificar y eliminar registros propios y que serán de acceso público.
-- **Administrador**: El usuario puede asignar roles a otros usuarios.
-
-Las sesiones de los usuarios se administran usando JWT.
-
-
+## Licencia
+Ver LICENSE.md.
