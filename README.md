@@ -22,17 +22,17 @@ Necesitarás tener un archivo .env en la carpeta raíz del repositorio una vez c
 `JWT_SECRET_KEY`: Clave secreta para encriptar los tokens JWT emitidos.
 
 
-#### Instalando
+### Instalando
 Una vez clonado el repositorio, abrí una terminal e instalá las dependencias con el siguiente comando:
 ```bash
 $ npm install
 ```
-#### Corriendo
+### Corriendo
 Una vez instaladas las dependencias, ejecutá el siguiente comando para iniciar el servidor:
 ```bash
 $ ts-node src/index.ts
 ```
-#### Probando
+### Probando
 Ejecutar el siguiente comando para verificar que todo esté funcionando correctamente.
 ```bash
 curl http://localhost/users/me
