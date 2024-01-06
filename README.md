@@ -10,11 +10,18 @@ Estas instrucciones te permitirán crear una copia del proyecto y correrla en tu
 Se necesita tener `node`, y `ts-node` instalado en tu sistema. Además necesitarás tener un servidor MongoDB corriendo.
 #### Archivo .env
 Necesitarás tener un archivo .env en la carpeta raíz del repositorio una vez clonado, con las siguientes variables:
+
 `MONGODB_LOCAL_CONNECTION_STRING`: La connection string de tu servidor de base de datos MongoDB.
+
 `UID_SECRET_KEY`: Clave secreta para encriptar datos varios.
+
 `UID_IV_LENGTH`: Número entero.
+
 `UID_ALGORITHM`: Algoritmo de encriptación.
+
 `JWT_SECRET_KEY`: Clave secreta para encriptar los tokens JWT emitidos.
+
+
 #### Instalando
 Una vez clonado el repositorio, abrí una terminal e instalá las dependencias con el siguiente comando:
 ```bash
