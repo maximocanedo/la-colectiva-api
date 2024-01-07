@@ -29,12 +29,15 @@ router.patch("/:username", pre.auth, pre.allow.admin, pre.expect({
 	const { password, role } = req.body;
 	if (password) {
 		await users.updatePassword(req, res);
+		return;
 	}
 	if (role) {
 		await users.updateRole(req, res);
+		return;
 	}
 	if (!password && !role) {
 		res.status(400).json({ error: E.AtLeastOneFieldRequiredError }).end();
+		return;
 	}
 });
 
@@ -47,7 +50,7 @@ router.put("/me", pre.auth, users.editPersonalInfo(true));
 router.put("/:username", pre.auth, pre.allow.admin, users.editPersonalInfo(false));
 
 /* Eliminar un usuario. */
-router.delete("/me", users.deleteUser(true));
+router.delete("/me", pre.auth, users.deleteUser(true));
 router.delete("/:username", pre.auth, pre.allow.admin, users.deleteUser(false));
 
 

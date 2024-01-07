@@ -13,7 +13,7 @@ const getOne = (me = false) => (async (req: Request, res: Response): Promise<voi
             { password: 0 }
         );
         if (!user) {
-            res.status(404);
+            res.status(404).json({ error: E.ResourceNotFound }).end();
             return;
         }
         res.status(200).json(user);

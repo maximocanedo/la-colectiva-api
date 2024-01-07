@@ -10,7 +10,7 @@ const updatePassword = async (req: Request, res: Response): Promise<void> => {
         const { password } = req.body;
 
         // Buscar el usuario completo por su ID
-        const user = await User.findById(userId);
+        const user = await User.findOne({ _id: userId, active: true });
 
         if (!user) {
             res.status(404).json({
@@ -21,8 +21,7 @@ const updatePassword = async (req: Request, res: Response): Promise<void> => {
 
         user.password = password;
         const updatedUser = await user.save();
-
-        res.status(200);
+        res.status(200).end();
     } catch (err) {
         const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
         res.status(500).json({ error });
