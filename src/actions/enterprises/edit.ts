@@ -16,6 +16,18 @@ const edit = [
         phones: V.enterprise.phones.required()
     }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { cuit } = req.body;
+        if(!cuit) next();
+        else {
+            const reg = await Enterprise.findOne({ cuit });
+            if(!reg) next();
+            else {
+                res.status(409).json({ error: E.DuplicationError }).end();
+            }
+        }
+        return;
+    },
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { id } = req.params;
         const resource = await Enterprise.findOne({ _id: id, active: true });
         if(!resource) {

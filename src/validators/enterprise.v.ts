@@ -5,7 +5,7 @@ import { objectId } from "./def.v";
 /**
  * Número de CUIT de la empresa.
  */
-export const cuit = Joi.string();
+export const cuit = Joi.number();
 /**
  * Nombre de la empresa.
  */

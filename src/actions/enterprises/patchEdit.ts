@@ -1,7 +1,7 @@
 'use strict';
 import pre from "../../endpoints/pre";
 import Enterprise from "../../schemas/Enterprise";
-import { Request, Response } from "express";
+import {NextFunction, Request, Response} from "express";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 import V from "../../validators";
@@ -15,6 +15,18 @@ const patchEdit = [
         foundationDate: V.enterprise.foundationDate,
         phones: V.enterprise.phones
     }),
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { cuit } = req.body;
+        if(!cuit) next();
+        else {
+            const reg = await Enterprise.findOne({ cuit });
+            if(!reg) next();
+            else {
+                res.status(409).json({ error: E.DuplicationError }).end();
+            }
+        }
+        return;
+    },
     async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params; // Obtiene el ID del registro a actualizar
