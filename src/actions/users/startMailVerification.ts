@@ -107,7 +107,7 @@ const validateMail = [
                 res.status(401).end();
             } else {
                 mailVerification.active = true;
-                if(user.email === null) {
+                if(!user.email || typeof user.email === 'undefined') {
                     user.role = 1;
                 }
                 if(!user.active) {

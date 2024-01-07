@@ -54,6 +54,7 @@ const userSchema: Schema<IUser, UserModel, IUserMethods> = new Schema<IUser, Use
         required: false,
         match: /^.+@.+\..+$/,
         unique: true,
+        sparse: true,
     },
     bio: {
         type: String,

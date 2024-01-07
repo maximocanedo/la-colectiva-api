@@ -9,9 +9,21 @@ import defaultHandler from "../../errors/handlers/default.handler";
 dotenv.config();
 
 const login = async (req: Request, res: Response): Promise<void>  => {
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
+    let query: any = {
+        active: true
+    };
+
+    if (username) {
+        query.$or = [{ username }];
+    }
+    if (email) {
+        if (query.$or) query.$or.push({ email });
+        else query.$or = [{ email }];
+    }
+
     try {
-        const user = await User.findOne({ username, active: true });
+        const user = await User.findOne(query);
         if (!user) {
             res.status(401).json({
                 error: E.InvalidCredentials

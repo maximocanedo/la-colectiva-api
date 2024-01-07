@@ -47,8 +47,10 @@ app.set('json spaces', 4);
 
 // Routes
 app.post("/auth", pre.expect({
-    username: V.user.username.required(),
-    password: V.user.password.required()
+    username: V.user.username,
+    password: V.user.password.required(),
+    email: V.user.mail,
+    maxAge: Joi.string()
 }), users.login);
 app.delete("/auth", users.logout);
 app.use("/users", routes.users);
