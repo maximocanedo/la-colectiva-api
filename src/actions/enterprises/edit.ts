@@ -17,25 +17,17 @@ const edit = [
     }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { cuit } = req.body;
+        const { id } = req.params;
         if(!cuit) next();
         else {
             const reg = await Enterprise.findOne({ cuit });
             if(!reg) next();
             else {
-                res.status(409).json({ error: E.DuplicationError }).end();
+                if(reg._id === id) next();
+                else res.status(409).json({ error: E.DuplicationError }).end();
             }
         }
         return;
-    },
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { id } = req.params;
-        const resource = await Enterprise.findOne({ _id: id, active: true });
-        if(!resource) {
-            res.status(404).json({
-                error: E.ResourceNotFound
-            });
-            return;
-        } else next();
     },
     async (req: Request, res: Response): Promise<void> => {
         try {
