@@ -66,8 +66,7 @@ const patchEdit = [
             const updatedEnterprise = await en.save();
 
             res.status(200).json({
-                message: "Registro actualizado correctamente.",
-                updatedEnterprise,
+                message: "Registro actualizado correctamente."
             });
         } catch (err) {
             const error = defaultHandler(err as Error, E.CRUDOperationError);
