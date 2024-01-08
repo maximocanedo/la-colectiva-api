@@ -1,6 +1,6 @@
 'use strict';
 import Dock from "../../schemas/Dock";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import IValidation from "../../interfaces/models/IValidation";
 import {MongoError} from "mongodb";
 import {IError} from "../../interfaces/responses/Error.interfaces";
@@ -8,9 +8,9 @@ import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
 import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import E from "../../errors";
-const getOne = async (req: Request, res: Response) => {
+const getOne = async (req: Request, res: Response): Promise<void> => {
     try {
-        const id = req.params.id;
+        const id: string = req.params.id;
         // Utiliza findOne para buscar un registro con ID y active: true
         let resource: any = await Dock.findOne({ _id: id, active: true })
             .populate("user", "name _id")
@@ -19,7 +19,8 @@ const getOne = async (req: Request, res: Response) => {
         if (!resource) {
             res.status(404).json({
                 error: E.ResourceNotFound
-            });
+            }).end();
+            return;
         }
         const totalValidations = resource.validations.filter(
             (validation: IValidation) => validation.validation
@@ -46,7 +47,7 @@ const getOne = async (req: Request, res: Response) => {
             coordinates: resource.coordinates,
             validations: totalValidations,
             invalidations: totalInvalidations,
-        });
+        }).end();
     } catch (err) {
         if(err instanceof MongoError) {
             const error: IError = mongoErrorMiddleware(err as MongoError);

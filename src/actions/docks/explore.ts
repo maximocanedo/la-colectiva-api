@@ -7,11 +7,20 @@ import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
 import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import E from "../../errors";
-const explore = async (res: Response, req: Request) => {
+const explore = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { lat, lng, radio } = req.params;
-        const { prefer, q } = req.query;
-        let coordinates: string[] = [lat, lng];
+        const lat: number = parseFloat(req.params.lat as string);
+        const lng: number = parseFloat(req.params.lng as string);
+        const radio: number = parseFloat(req.params.radio as string);
+        if(isNaN(lat) || isNaN(lng) || isNaN(radio)) {
+            res.status(400).json({
+                error: E.InvalidInputFormatError
+            }).end();
+            return;
+        }
+        const prefer: string = req.query.prefer as string || "1";
+        const q: string = req.query.q as string || "";
+        let coordinates: number[] = [lat, lng];
         const page: number = parseInt(req.query.p as string) || 0;
         const itemsPerPage: number = parseInt(req.query.itemsPerPage as string) || 10;
         let preferObj: any = {
@@ -47,6 +56,7 @@ const explore = async (res: Response, req: Request) => {
 
         res.status(result.status).json(result.items).end();
     } catch (err) {
+        console.log(err);
         if(err instanceof MongoError) {
             const error: IError = mongoErrorMiddleware(err as MongoError);
             res.status(500).json({error}).end();

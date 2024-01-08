@@ -21,6 +21,7 @@ const createOne: endpoint[] = [
         address: V.dock.address.required(),
         region: V.dock.region.required(),
         notes: V.dock.notes.required(),
+        status: V.dock.status.required(),
         coordinates: V.dock.coordinates.required()
     }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {

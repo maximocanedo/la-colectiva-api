@@ -14,12 +14,12 @@ const router: Router = express.Router();
 router.use(express.json());
 
 /* Listados */
-router.get("/@:lat(\\-?\\d+(\\.\\d+)?),:lng(\\-?\\d+(\\.\\d+)?),:radio(\\d+?)", docks.explore); // Listar recursos
+router.get("/@:lat,:lng,:radio", docks.explore); // Listar recursos
 router.get("/", docks.list); // Listar recursos
 
 /* Acciones básicas */
 router.post("/", docks.createOne); // Crear un registro
-router.get("/:id", docks.getOne); // Ver recurso
+router.get("/:id([0-9a-fA-F]{24})", docks.getOne); // Ver recurso
 router.patch("/:id", docks.edit); // Editar recurso
 router.delete("/:id", pre.auth, pre.allow.moderator, docks.deleteOne); // Eliminar registro
 
