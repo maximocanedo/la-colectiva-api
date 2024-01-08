@@ -56,7 +56,7 @@ app.delete("/auth", users.logout);
 app.use("/users", routes.users);
 app.use("/photos", routes.photos);
 app.use("/comments", routes.comments);
-app.use("/waterBodies", routes.waterBodies);
+app.use("/regions", routes.waterBodies);
 app.use("/docks", routes.docks);
 app.use("/enterprises", routes.enterprises);
 app.use("/boats", routes.boats);
