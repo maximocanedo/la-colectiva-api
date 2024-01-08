@@ -9,6 +9,7 @@ import {MongoError} from "mongodb";
 import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import Mongoose from "mongoose";
+import defaultHandler from "../../errors/handlers/default.handler";
 
 const getOne = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -30,13 +31,8 @@ const getOne = async (req: Request, res: Response): Promise<void> => {
         }
         res.status(200).json(resource);
     } catch (err: Error | any) {
-        if(err instanceof MongoError) {
-            const finalError: IError = mongoErrorMiddleware(err as MongoError);
-            res.status(502).json({error: finalError}).end();
-        } else if(err instanceof mongoose.Error) {
-            const finalError: IError = mongooseErrorMiddleware(err as Mongoose.Error);
-            res.status(502).json({error: finalError}).end();
-        } else res.status(500).json({error: E.InternalError}).end();
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({ error });
     }
 };
 
