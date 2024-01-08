@@ -9,7 +9,7 @@ import IPictureable from "../interfaces/models/IPictureable";
 
 
 const handlePictures = (router: Router, model: Model<IPictureable> | any): void => {
-    router.get("/:id/photos/", async (req: Request, res: Response): Promise<void> => {
+    router.get("/:id/pictures/", async (req: Request, res: Response): Promise<void> => {
         try {
             const id = req.params.id;
             const resource = await model.findById(id)
@@ -35,7 +35,7 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
         }
     }); // Listar fotos
     router.post(
-        "/:id/photos/",
+        "/:id/pictures/",
         pre.auth,
         pre.allow.moderator,
         async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -73,7 +73,7 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
         }
     ); // Subir imagen
     router.delete(
-        "/:id/photos/:photoId",
+        "/:id/pictures/:photoId",
         pre.auth,
         pre.allow.moderator,
         async (req: Request, res: Response): Promise<void> => {
