@@ -8,6 +8,7 @@ import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
 import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import E from "../../errors";
+import defaultHandler from "../../errors/handlers/default.handler";
 const getOne = async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
@@ -49,15 +50,8 @@ const getOne = async (req: Request, res: Response): Promise<void> => {
             invalidations: totalInvalidations,
         }).end();
     } catch (err) {
-        if(err instanceof MongoError) {
-            const error: IError = mongoErrorMiddleware(err as MongoError);
-            res.status(500).json({error}).end();
-        } else if(err instanceof mongoose.Error) {
-            const error: IError = mongooseErrorMiddleware(err as mongoose.Error);
-            res.status(500).json({error}).end();
-        } else res.status(500).json({
-            error: E.CRUDOperationError
-        }).end();
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({ error });
     }
 };
 export default getOne;
