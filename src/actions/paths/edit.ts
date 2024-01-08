@@ -10,21 +10,24 @@ const edit = [
     pre.auth,
     pre.allow.moderator,
     pre.expect({
-        boat: V.path.boat.required(),
-        title: V.path.title.required(),
-        description: V.path.description.required(),
-        notes: V.path.notes.required()
+        boat: V.path.boat,
+        title: V.path.title,
+        description: V.path.description,
+        notes: V.path.notes
     }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { boat } = req.body;
-        const obj = await Boat.findById(boat);
-        if(!obj) res.status(404).json({
-            error: E.ResourceNotFound
-        }); else next();
+        if(!boat) next();
+        else {
+            const obj = await Boat.findById(boat);
+            if (!obj) res.status(404).json({
+                error: E.ResourceNotFound
+            }); else next();
+        }
     },
     async (req: Request, res: Response): Promise<void> => {
         try {
-            const id = req.params.id;
+            const id: string = req.params.id;
             const userId = req.user._id;
             const reg: any = await Path.findOne({ _id: id, active: 1 });
             if (!reg) {
@@ -39,13 +42,12 @@ const edit = [
                 });
                 return;
             }
-            const { boat, name, description, foundationDate, phones } =
+            const { boat, title, description, notes, } =
                 req.body;
-            reg.boat = boat;
-            reg.name = name;
-            reg.description = description;
-            reg.foundationDate = foundationDate;
-            reg.phones = phones;
+            if(boat) reg.boat = boat;
+            if(title) reg.title = title;
+            if(description) reg.description = description;
+            if(notes) reg.notes = notes;
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",
