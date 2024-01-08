@@ -86,7 +86,7 @@ interface IDockListDataResponse {
 }
 dockSchema.statics.listData = async function (query, { page, itemsPerPage }): Promise<IDockListDataResponse> {
     try {
-        const resource = await this.find(query)
+        const resource = await this.find(query, {comments: 0, validations: 0})
             .sort({ name: 1 })
             .skip(page * itemsPerPage)
             .limit(itemsPerPage)

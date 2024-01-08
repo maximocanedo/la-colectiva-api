@@ -75,7 +75,7 @@ const boatSchema: Schema<IBoat, IBoatModel> = new Schema<IBoat, IBoatModel>({
  */
 boatSchema.statics.listData = async function (query, { page, itemsPerPage }): Promise<IBoatListDataResponse> {
     try {
-        const resource = await this.find(query)
+        const resource = await this.find(query, {comments: 0, validations: 0})
             .sort({ name: 1 })
             .skip(page * itemsPerPage)
             .limit(itemsPerPage)
