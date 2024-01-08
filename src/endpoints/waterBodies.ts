@@ -122,11 +122,18 @@ router.patch(
 	pre.auth,
 	pre.allow.moderator,
 	pre.expect({
-		name: V.waterBody.name.required(),
-		type: V.waterBody.type.required(),
+		name: V.waterBody.name,
+		type: V.waterBody.type,
 	}),
 	async (req: Request, res: Response): Promise<void> => {
 		try {
+			const { name, type } = req.body;
+			if(!name && !type) {
+				res.status(400).json({
+					error: E.AtLeastOneFieldRequiredError
+				}).end();
+				return;
+			}
 			const id = req.params.id;
 			const userId = req.user._id;
 			const reg = await WaterBody.findOne({ _id: id, active: 1 });
@@ -138,9 +145,8 @@ router.patch(
 				res.status(403).json(E.UnauthorizedRecordModification);
 				return;
 			}
-			const { name, type } = req.body;
-			reg.name = name;
-			reg.type = type;
+			if(name) reg.name = name;
+			if(type) reg.type = type;
 			await reg.save();
 			res.status(200).json({
 				message: "Resource updated. ",
