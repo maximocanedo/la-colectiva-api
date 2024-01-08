@@ -3,8 +3,8 @@
 import dotenv from "dotenv";
 import express, { Router, Request, Response } from "express";
 import Schedule from "../schemas/Schedule";
-import {ObjectId} from "mongodb";
 import E from "../errors";
+import mongoose from "mongoose";
 
 
 dotenv.config();
@@ -20,14 +20,14 @@ let data = {
 	},
 	conditions: ["MONDAY", "HOLIDAY"],
 };
-/*const departure = new ObjectId("64ee579d54394a493a991c89");
-const arrival = new ObjectId("656257413cf87c69b28b9132");
+/*const departure = new mongoose.Types.ObjectId("64ee579d54394a493a991c89");
+const arrival = new mongoose.Types.ObjectId("656257413cf87c69b28b9132");
 const time = new ISODate(
 	"1990-01-01T09:44:00.000+00:00"
 );
 const conditions = ["WEDNESDAY"];*/
 
-const Oldalgo = (departure: ObjectId, arrival: ObjectId, time: string | number, conditions: any[]) => ([
+const Oldalgo = (departure: mongoose.Types.ObjectId, arrival: mongoose.Types.ObjectId, time: string | number, conditions: any[]) => ([
 	{
 		$match: {
 			$or: [
@@ -238,7 +238,7 @@ const Oldalgo = (departure: ObjectId, arrival: ObjectId, time: string | number, 
 
 
 ]);
-const algo = (departure: ObjectId, arrival: ObjectId, time: string | number, conditions: any[]): any => ([
+const algo = (departure: mongoose.Types.ObjectId, arrival: mongoose.Types.ObjectId, time: Date, conditions: any[]): any => ([
 	{
 		$match: {
 			$or: [
@@ -494,9 +494,9 @@ router.get(
 
 			const stringHora = new Date("1990-01-01T" + time + ":00.000+00:00");
 			const result: any[] = await Schedule.aggregate(algo(
-				new ObjectId(departure as string),
-				new ObjectId(arrival as string),
-				stringHora + "",
+				new mongoose.Types.ObjectId(departure as string),
+				new mongoose.Types.ObjectId(arrival as string),
+				stringHora,
 				[ ...(conditions as any[]) ]
 			));
 
