@@ -67,12 +67,12 @@ const edit = [
                 status,
                 coordinates
             } = req.body;
-            reg.name = name;
-            reg.address = address;
-            reg.region = new ObjectId(region);
-            reg.notes = notes;
-            reg.status = status;
-            reg.coordinates = coordinates;
+            if(name) reg.name = name;
+            if(address) reg.address = address;
+            if(region) reg.region = new ObjectId(region);
+            if(notes) reg.notes = notes;
+            if(status) reg.status = status;
+            if(coordinates) reg.coordinates = coordinates;
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",
