@@ -12,6 +12,7 @@ import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handl
 import E from "../../errors";
 import V from "../../validators";
 import {endpoint} from "../../interfaces/types/Endpoint";
+import defaultHandler from "../../errors/handlers/default.handler";
 
 const createOne: endpoint[] = [
     pre.auth,
@@ -58,15 +59,8 @@ const createOne: endpoint[] = [
                 message: "The file was successfully saved. ",
             });
         } catch (err) {
-            if(err instanceof MongoError) {
-                const error: IError = mongoErrorMiddleware(err as MongoError);
-                res.status(500).json({error}).end();
-            } else if(err instanceof mongoose.Error) {
-                const error: IError = mongooseErrorMiddleware(err as mongoose.Error);
-                res.status(500).json({error}).end();
-            } else res.status(500).json({
-                error: E.CRUDOperationError
-            }).end();
+            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({ error });
         }
     }
 

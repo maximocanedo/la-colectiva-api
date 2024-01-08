@@ -12,6 +12,7 @@ import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import mongoose from "mongoose";
 import {endpoint} from "../../interfaces/types/Endpoint";
+import defaultHandler from "../../errors/handlers/default.handler";
 
 
 
@@ -44,24 +45,20 @@ const createOne: endpoint[] = [
         try {
             const { mat, name, status, enterprise } = req.body;
             const user = req.user._id;
-            await Boat.create({
+            const reg = await Boat.create({
                 mat,
                 name,
                 status,
                 enterprise,
                 user,
             });
-            res.status(201).end();
-        } catch (err) {
-            if(err instanceof MongoError) {
-                const error: IError = mongoErrorMiddleware(err as MongoError);
-                res.status(500).json({error}).end();
-            } else if(err instanceof mongoose.Error) {
-                const error: IError = mongooseErrorMiddleware(err as mongoose.Error);
-                res.status(500).json({error}).end();
-            } else res.status(500).json({
-                error: E.CRUDOperationError
+            res.status(201).json({
+                id: reg._id,
+                message: "The file was successfully saved. ",
             }).end();
+        } catch (err) {
+            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({ error });
         }
     }
 ];
