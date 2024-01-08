@@ -13,7 +13,7 @@ const list = async (req: Request, res: Response): Promise<void> => {
         const q: string = req.query.q as string || "";
         const page: number = parseInt((req.query.p?? 0) as string) || 0;
         const itemsPerPage: number = parseInt((req.query.itemsPerPage?? 10) as string) || 10;
-        let preferObj = {
+        let preferObj: any = {
             status: prefer || -1,
         };
         if (prefer === -1) {
@@ -21,6 +21,10 @@ const list = async (req: Request, res: Response): Promise<void> => {
                 // @ts-ignore
                 status: { $gt: -1 },
             };
+        }
+        preferObj = {
+            ...preferObj,
+            active: true
         }
         const query = {
             $and: [

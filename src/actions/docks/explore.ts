@@ -33,6 +33,10 @@ const explore = async (req: Request, res: Response): Promise<void> => {
                 name: { $regex: q || "", $options: "i" },
             };
         }
+        preferObj = {
+            ...preferObj,
+            active: true
+        }
         const query = {
             $and: [
                 {

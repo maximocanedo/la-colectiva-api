@@ -32,12 +32,14 @@ const edit = [
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { region } = req.body;
         if(!region) next();
-        const obj = await WaterBody.findOne({ _id: region, active: true });
-        if (!obj) {
-            res.status(400).json({
-                error: E.ResourceNotFound
-            });
-        } else next();
+        else {
+            const obj = await WaterBody.findOne({_id: region, active: true});
+            if (!obj) {
+                res.status(400).json({
+                    error: E.ResourceNotFound
+                });
+            } else next();
+        }
     },
     async (req: Request, res: Response): Promise<void> => {
         try {
@@ -51,8 +53,8 @@ const edit = [
                 return;
             }
             if (
-                reg.user.toString() !== userId.toString() ||
-                req.user.role >= 2
+                reg.user.toString() !== userId.toString() &&
+                req.user.role < 3
             ) {
                 res.status(403).json({
                     error: E.UnauthorizedRecordModification
