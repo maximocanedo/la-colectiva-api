@@ -17,7 +17,7 @@ router.post(
 	availabilities.createOne
 );
 router.get("/:id", availabilities.getOne);
-router.delete("/:av_id", pre.auth, pre.allow.moderator, availabilities.deleteOne);
+router.delete("/:id", pre.auth, pre.allow.moderator, availabilities.deleteOne);
 
 /* Validaciones */
 handleVotes(router, Availability);
