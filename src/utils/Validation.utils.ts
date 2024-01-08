@@ -132,7 +132,7 @@ const voteHandler = (validates: boolean, Model: Model<IValidatable>): (req: Requ
             });
         }
         await resource.save();
-        res.status(201);
+        res.status(201).end();
     } catch (err) {
         console.error(err);
         res.status(500).end();
@@ -168,6 +168,7 @@ const unvote = (router: Router, Model: Model<IValidatable>) => {
             if (index > -1) resource.validations.splice(index, 1);
             // Save the availability document
             await resource.save();
+            res.status(200).end();
         } catch (err) {
             console.error(err);
             res.status(500).end();
