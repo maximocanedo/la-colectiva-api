@@ -6,7 +6,7 @@ import E from "../../../errors";
 const list = async (req: Request, res: Response): Promise<void> => {
     try {
         const id = req.params.id;
-        const resource = await Enterprise.findOne({ _id: id, active: true });
+        const resource = await Enterprise.findOne({ _id: id, active: true }, { phones: 1 });
 
         if (!resource) {
             res.status(404).json({

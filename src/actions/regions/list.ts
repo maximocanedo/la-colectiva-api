@@ -9,7 +9,7 @@ import defaultHandler from "../../errors/handlers/default.handler";
 const list: endpoint[] = [
     async (req: Request, res: Response): Promise<void> => {
         try {
-            let resources = await WaterBody.find({ active: true });
+            let resources = await WaterBody.find({ active: true }, { validations: 0, comments: 0 });
             res.status(200).json(resources);
         } catch (err) {
             const error = defaultHandler(err as Error, E.CRUDOperationError);

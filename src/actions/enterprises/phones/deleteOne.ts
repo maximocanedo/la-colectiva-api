@@ -9,7 +9,7 @@ const deleteOne = async (req: Request, res: Response): Promise<void> => {
         const id = req.params.id;
         const { phone } = req.body;
         // Utiliza findOne para buscar un registro con ID y active: true
-        let resource = await Enterprise.findOne({ _id: id, active: true });
+        let resource = await Enterprise.findOne({ _id: id, active: true }, { phones: 1 });
 
         if (!resource) {
             res.status(404).json({

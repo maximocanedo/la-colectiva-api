@@ -14,17 +14,9 @@ import defaultHandler from "../../errors/handlers/default.handler";
 const getOne: endpoint = async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
-        // Utiliza findOne para buscar un registro con ID y active: true
         let resource = await Boat.findOne({ _id: id, active: true, status: true }, {
-            mat: 1,
-            name: 1,
-            status: 1,
-            _id: 1,
-            active: 1,
-            enterprise: 1,
-            user: 1,
-            uploadDate: 1,
-            pictures: 1
+            validations: 0,
+            comments: 0
         })
             .populate("user", "name _id")
             .populate("enterprise", "name _id");
@@ -37,22 +29,7 @@ const getOne: endpoint = async (req: Request, res: Response): Promise<void> => {
         }
 
         // @ts-ignore
-        res.status(200).json({
-            user: {
-                name: ((resource as IBoat).user as IUser).name,
-                _id: (resource.user as IUser)._id,
-            },
-            mat: resource.mat,
-            name: resource.name,
-            enterprise: {
-                // @ts-ignore
-                _id: resource.enterprise._id,
-                // @ts-ignore
-                name: resource.enterprise.name,
-            },
-            status: resource.status,
-            uploadDate: resource.uploadDate,
-        });
+        res.status(200).json(resource);
     } catch (err) {
         const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
         res.status(500).json({ error });

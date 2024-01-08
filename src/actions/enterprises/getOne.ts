@@ -8,7 +8,7 @@ const getOne = async (req: Request, res: Response) => {
     try {
         const id = req.params.id;
         // Utiliza findOne para buscar un registro con ID y active: true
-        let resource = await Enterprise.findOne({ _id: id, active: true });
+        let resource = await Enterprise.findOne({ _id: id, active: true }, { validations: 0, comments: 0 });
         if (!resource) {
             res.status(404).json({
                 error: E.ResourceNotFound
