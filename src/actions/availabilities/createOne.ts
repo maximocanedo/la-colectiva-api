@@ -11,6 +11,7 @@ import {IError} from "../../interfaces/responses/Error.interfaces";
 import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import Mongoose from "mongoose";
+import defaultHandler from "../../errors/handlers/default.handler";
 
 const createOne = [
     pre.expect({
@@ -28,24 +29,19 @@ const createOne = [
         try {
             const { path, condition, available } = req.body;
             const user = req.user._id;
-            await Availability.create({
+            const reg = await Availability.create({
                 path,
                 condition,
                 available,
                 user,
             });
-            res.status(201).end();
+            res.status(201).json({
+                id: reg._id,
+                message: "The file was successfully saved. ",
+            }).end();
         } catch (err: Error | any) {
-            if (err instanceof MongoError) {
-                const finalError: IError = mongoErrorMiddleware(err as MongoError);
-                res.status(500).json({error: finalError});
-            } else if(err instanceof mongoose.Error) {
-                const finalError: IError = mongooseErrorMiddleware(err as Mongoose.Error);
-                res.status(502).json({error: finalError}).end();
-            } else {
-                res.status(500).json({error: E.InternalError});
-            }
-            res.end();
+            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({ error });
         }
     }
 ];

@@ -15,36 +15,7 @@ const getOne = async (req: Request, res: Response) => {
             });
             return;
         }
-        const totalValidations = resource.validations.filter(
-            (validation) => validation.validation
-        ).length;
-        const totalInvalidations = resource.validations.filter(
-            (validation) => !validation.validation
-        ).length;
-
-        const {
-            _id,
-            cuit,
-            name,
-            user,
-            description,
-            foundationDate,
-            phones,
-            active,
-        } = resource;
-        // Envía la imagen como respuesta
-        res.status(200).json({
-            _id,
-            user,
-            cuit,
-            name,
-            description,
-            foundationDate,
-            phones,
-            active,
-            validations: totalValidations,
-            invalidations: totalInvalidations,
-        });
+        res.status(200).json(resource);
     } catch (err) {
         const error = defaultHandler(err as Error, E.CRUDOperationError);
         res.status(500).json({error});

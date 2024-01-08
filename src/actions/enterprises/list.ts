@@ -14,41 +14,8 @@ const list = async (req: Request, res: Response): Promise<void> => {
             });
         }
 
-        const responseData = resources.map((resource) => {
-            const totalValidations = resource.validations.filter(
-                (validation) => validation.validation
-            ).length;
-            const totalInvalidations = resource.validations.filter(
-                (validation) => !validation.validation
-            ).length;
-
-            const {
-                _id,
-                cuit,
-                name,
-                user,
-                description,
-                foundationDate,
-                phones,
-                active,
-            } = resource;
-
-            return {
-                _id,
-                user,
-                cuit,
-                name,
-                description,
-                foundationDate,
-                phones,
-                active,
-                validations: totalValidations,
-                invalidations: totalInvalidations,
-            };
-        });
-
         // Envía los registros como respuesta
-        res.status(200).json(responseData);
+        res.status(200).json(resources);
     } catch (err) {
         const error = defaultHandler(err as Error, E.CRUDOperationError);
         res.status(500).json({error});

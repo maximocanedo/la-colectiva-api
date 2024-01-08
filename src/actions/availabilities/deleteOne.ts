@@ -8,6 +8,7 @@ import * as Mongoose from "mongoose";
 import mongoose from "mongoose";
 import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
+import defaultHandler from "../../errors/handlers/default.handler";
 
 const deleteOne = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -23,15 +24,8 @@ const deleteOne = async (req: Request, res: Response): Promise<void> => {
             message: "Deleted",
         }).end();
     } catch (err) {
-        if(err instanceof MongoError) {
-            const finalError: IError = mongoErrorMiddleware(err as MongoError);
-            res.status(502).json({error: finalError}).end();
-        } else if(err instanceof mongoose.Error) {
-            const finalError: IError = mongooseErrorMiddleware(err as Mongoose.Error);
-            res.status(502).json({error: finalError}).end();
-        } else {
-            res.status(500).json({error: E.InternalError}).end();
-        }
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({ error });
     }
 };
 

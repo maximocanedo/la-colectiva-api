@@ -17,12 +17,6 @@ const getOne = [async (req: Request, res: Response): Promise<void> => {
             });
             return;
         }
-        const totalValidations = resource.validations.filter(
-            (validation) => validation.validation
-        ).length;
-        const totalInvalidations = resource.validations.filter(
-            (validation) => !validation.validation
-        ).length;
 
         const { user, boat, title, description, notes } = resource;
         // Envía la imagen como respuesta
@@ -31,9 +25,7 @@ const getOne = [async (req: Request, res: Response): Promise<void> => {
             boat,
             title,
             description,
-            notes,
-            validations: totalValidations,
-            invalidations: totalInvalidations,
+            notes
         });
     } catch (err) {
         const error = defaultHandler(err as Error, E.CRUDOperationError);
