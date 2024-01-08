@@ -30,6 +30,19 @@ const edit: endpoint[] = [
         } else next();
     },
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { mat } = req.body;
+        const { id } = req.params;
+        if(!mat) next();
+        else {
+            const reg = await Boat.findOne({ mat });
+            if(!reg || reg._id === id) next();
+            else res.status(409).json({
+                    error: E.DuplicationError
+                }).end();
+        }
+        return;
+    },
+    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { enterprise } = req.body;
         if(enterprise) {
             const enterprise_obj = await Enterprise.findOne({ _id: enterprise, active: true });

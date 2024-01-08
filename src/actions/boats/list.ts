@@ -15,7 +15,7 @@ const list: endpoint = async (req: Request, res: Response): Promise<void> => {
         const itemsPerPage: number = parseInt(req.query.itemsPerPage as string) || 10;
         let query = {
             $and: [
-                { name: { $regex: q || "", $options: "i" } },
+                { name: { $regex: q || "", $options: "i" }, active: true },
             ],
         };
         if (enterprise) {
