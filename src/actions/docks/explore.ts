@@ -18,7 +18,7 @@ const explore = async (req: Request, res: Response): Promise<void> => {
             }).end();
             return;
         }
-        const prefer: string = req.query.prefer as string || "1";
+        const prefer: number = parseInt(req.query.prefer as string || "-1");
         const q: string = req.query.q as string || "";
         let coordinates: number[] = [lat, lng];
         const page: number = parseInt(req.query.p as string) || 0;
@@ -27,7 +27,7 @@ const explore = async (req: Request, res: Response): Promise<void> => {
             status: prefer,
             name: { $regex: q || "", $options: "i" },
         };
-        if (parseInt(prefer as string) === -1) {
+        if (prefer === -1) {
             preferObj = {
                 status: { $gt: -1 },
                 name: { $regex: q || "", $options: "i" },

@@ -9,15 +9,14 @@ import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handl
 import E from "../../errors";
 const list = async (req: Request, res: Response): Promise<void> => {
     try {
-        console.log(34);
-        const { prefer, q } = req.query;
+        const prefer: number = parseInt(req.query.prefer as string || "-1");
+        const q: string = req.query.q as string || "";
         const page: number = parseInt((req.query.p?? 0) as string) || 0;
         const itemsPerPage: number = parseInt((req.query.itemsPerPage?? 10) as string) || 10;
         let preferObj = {
             status: prefer || -1,
         };
-        if (parseInt(prefer as string) === -1) {
-
+        if (prefer === -1) {
             preferObj = {
                 // @ts-ignore
                 status: { $gt: -1 },
