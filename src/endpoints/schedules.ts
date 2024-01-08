@@ -2,6 +2,8 @@
 import dotenv from "dotenv";
 import express, { Router, Request, Response, NextFunction } from "express";
 import Schedule from "../schemas/Schedule";
+import Path from "../schemas/Path";
+import Dock from "../schemas/Dock";
 import pre from "./pre";
 import { Types } from "mongoose";
 import { handleComments } from "../utils/Comment.utils";
@@ -28,6 +30,26 @@ router.post(
 		dock: V.schedule.dock.required(),
 		time: V.schedule.time.required()
 	}),
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		const { path } = req.body;
+		const reg = await Path.findOne({ _id: path, active: true });
+		if(!reg) {
+			res.status(404).json({
+				error: E.ResourceNotFound
+			}).end();
+			return;
+		} else next();
+	},
+	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+		const { dock } = req.body;
+		const reg = await Dock.findOne({ _id: dock, active: true });
+		if(!reg) {
+			res.status(404).json({
+				error: E.ResourceNotFound
+			}).end();
+			return;
+		} else next();
+	},
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const { path, dock, time } = req.body;
@@ -52,7 +74,7 @@ router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 	try {
 		const id = req.params.id;
 		// Utiliza findOne para buscar un registro con ID y active: true
-		let resource = await Schedule.findById({ "_id": new Types.ObjectId(id), "active": true })
+		let resource = await Schedule.findOne({ _id: id, active: true })
 			.populate({
 				path: "path",
 				model: "Path",
@@ -69,12 +91,6 @@ router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 			res.status(404).json(E.ResourceNotFound);
 			return;
 		}
-		const totalValidations = resource.validations.filter(
-			(validation) => validation.validation === true
-		).length;
-		const totalInvalidations = resource.validations.filter(
-			(validation) => validation.validation === false
-		).length;
 
 		const { path, dock, user, time, active } = resource;
 		// Envía la imagen como respuesta
@@ -83,9 +99,7 @@ router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 			dock,
 			time,
 			user,
-			active,
-			validations: totalValidations,
-			invalidations: totalInvalidations,
+			active
 		});
 	} catch (err) {
 		console.error(err);
