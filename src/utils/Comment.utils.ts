@@ -61,6 +61,15 @@ async function listCommentsForModel(
 }
 async function addCommentForModel(Model: Model<any> | any, resId: string, content: string, userId: Schema.Types.ObjectId | string) {
     try {
+        const doc = await Model.findOne({ _id: resId, active: true });
+        if(!doc) {
+            return {
+                comment: [],
+                status: 404,
+                error: null,
+                msg: "Resource not found.",
+            };
+        }
         // Crear el comentario y guardarlo
         const newComment = await Comment.create({
             user: userId,

@@ -4,6 +4,8 @@ import { Router, Request, Response } from "express";
 import pre from "./../endpoints/pre";
 import IValidation from "../interfaces/models/IValidation";
 import IValidatable from "../interfaces/models/IValidatable";
+import defaultHandler from "../errors/handlers/default.handler";
+import E from "../errors";
 
 const getValidations = (router: Router, Model: Model<IValidatable>): void => {
     router.get("/:id/votes", pre.auth, async (req: Request, res: Response): Promise<void> => {
@@ -48,29 +50,8 @@ const getValidations = (router: Router, Model: Model<IValidatable>): void => {
                         },
                         userVote: {
                             $cond: {
-                                if: {
-                                    $ne: [
-                                        {
-                                            $indexOfArray: [
-                                                "$validations.user",
-                                                new mongoose.Types.ObjectId(userId),
-                                            ],
-                                        },
-                                        -1,
-                                    ],
-                                },
-                                then: {
-                                    $cond: {
-                                        if: {
-                                            $eq: [
-                                                "$validations.validation",
-                                                true,
-                                            ],
-                                        },
-                                        then: true,
-                                        else: false,
-                                    },
-                                },
+                                if: { $ne: ["$validations.validation", null] },
+                                then: "$validations.validation",
                                 else: null,
                             },
                         },
@@ -79,7 +60,9 @@ const getValidations = (router: Router, Model: Model<IValidatable>): void => {
             ]);
 
             if (aggregationResult.length === 0) {
-                res.status(404).end();
+                res.status(404).json({
+                    error: E.ResourceNotFound
+                }).end();
             }
 
             const { inFavorCount, againstCount, userVote } = aggregationResult[0];
@@ -89,13 +72,11 @@ const getValidations = (router: Router, Model: Model<IValidatable>): void => {
                 message: "Validations retrieved",
                 up: inFavorCount,
                 down: againstCount,
-                userVote,
+                userVote: userVote.length == 0? null : userVote[0],
             }).end();
         } catch (err) {
-            console.error(err);
-            res.status(500).json({
-                message: "Internal error",
-            });
+            const error = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({error});
         }
     }); // Get validations
 };
@@ -106,7 +87,9 @@ const voteHandler = (validates: boolean, Model: Model<IValidatable>): (req: Requ
 
         const resource = await Model.findById(id);
         if(!resource) {
-            res.status(400).end();
+            res.status(400).json({
+                error: E.ResourceNotFound
+            }).end();
             return;
         }
         const existingValidation = resource.validations.find((validation: IValidation): boolean => {
@@ -134,8 +117,8 @@ const voteHandler = (validates: boolean, Model: Model<IValidatable>): (req: Requ
         await resource.save();
         res.status(201).end();
     } catch (err) {
-        console.error(err);
-        res.status(500).end();
+        const error = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(500).json({error});
     }
 }
 const vote = (router: Router, Model: Model<IValidatable>) => {
@@ -157,9 +140,11 @@ const unvote = (router: Router, Model: Model<IValidatable>) => {
         try {
             const { id } = req.params;
             const userId = req.user._id;
-            const resource = await Model.findById(id);
+            const resource = await Model.findOne({_id:id,active:true});
             if(!resource) {
-                res.status(404).end();
+                res.status(404).json({
+                    error: E.ResourceNotFound
+                }).end();
                 return;
             }
             const index = resource.validations.findIndex(
@@ -170,8 +155,8 @@ const unvote = (router: Router, Model: Model<IValidatable>) => {
             await resource.save();
             res.status(200).end();
         } catch (err) {
-            console.error(err);
-            res.status(500).end();
+            const error = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({error});
         }
     });
 };
