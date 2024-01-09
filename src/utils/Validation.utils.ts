@@ -11,6 +11,7 @@ const getVotes = (id: string, userId: string) => ([
         { $match: { _id: new mongoose.Types.ObjectId(id) } },
         {
             $project: {
+                allValidations: "$validations", // Conservamos todos los datos de validaciones
                 userValidation: {
                     $filter: {
                         input: "$validations",
@@ -28,7 +29,7 @@ const getVotes = (id: string, userId: string) => ([
                 inFavorCount: {
                     $size: {
                         $filter: {
-                            input: "$userValidation",
+                            input: "$allValidations",
                             as: "validation",
                             cond: { $eq: ["$$validation.validation", true] },
                         },
@@ -37,7 +38,7 @@ const getVotes = (id: string, userId: string) => ([
                 againstCount: {
                     $size: {
                         $filter: {
-                            input: "$userValidation",
+                            input: "$allValidations",
                             as: "validation",
                             cond: { $eq: ["$$validation.validation", false] },
                         },
@@ -55,6 +56,7 @@ const getVotes = (id: string, userId: string) => ([
             },
         },
     ]
+
 );
 
 const getValidations = (router: Router, Model: Model<IValidatable>): void => {
