@@ -143,7 +143,7 @@ const verifyInput = (requiredProps: string[]) => (req: Request, res: Response, n
 const imageFileTypes: string[] = ["image/jpeg", "image/png", "image/gif"]; // Tipos de archivos de imagen permitidos
 const storage: StorageEngine = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb) => {
-        const destinationPath = path.join(__dirname, "../data/photos/");
+        const destinationPath = path.join(__dirname, "../../data/photos/");
         cb(null, destinationPath);
     },
     filename: (req, file, cb): void => {
@@ -172,12 +172,13 @@ const upload: Multer = multer({
     },
 });
 const uploadPhoto = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    upload.single("file")(req, res, function (err) {
+    upload.single("file")(req, res, function (err): void {
+        if(err) console.log(err);
         if(err instanceof multer.MulterError) {
             const finalError: IError = handlers.multerErrorMiddleware(err);
-            res.status(400).json(finalError);
+            res.status(400).json({error: finalError});
         } else if(err) {
-            res.status(500).json(E.UploadError);
+            res.status(500).json({ error: E.UploadError});
         } else next();
     });
 };

@@ -4,6 +4,9 @@ import Photo from "../schemas/Photo";
 import {Router, Response, Request, NextFunction} from "express";
 import { Model } from "mongoose";
 import IPictureable from "../interfaces/models/IPictureable";
+import {IError} from "../interfaces/responses/Error.interfaces";
+import defaultHandler from "../errors/handlers/default.handler";
+import E from "../errors";
 
 
 
@@ -26,7 +29,9 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
                 })
                 .exec();
             if (!resource) {
-                res.status(404).end();
+                res.status(404).json({
+                    error: E.ResourceNotFound
+                }).end();
             }
             res.status(200).json(resource);
         } catch (err) {
@@ -54,7 +59,9 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
                 const { id } = req.params;
                 const dock = await model.findById(id);
                 if (!dock) {
-                    res.status(404).end();
+                    res.status(404).json({
+                        error: E.ResourceNotFound
+                    }).end();
                 }
                 const photoId = await Photo.saveUploaded(
                     archivo,
@@ -67,8 +74,8 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
                     message: "The file was successfully saved. ",
                 });
             } catch (err) {
-                console.log(err);
-                res.status(500).end();
+                const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+                res.status(500).json({ error });
             }
         }
     ); // Subir imagen
@@ -80,23 +87,27 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
             try {
                 const { id, photoId } = req.params;
                 const dock = model.findById(id);
-                if (!dock)
-                    res.status(404).end();
+                if (!dock) {
+                    res.status(404).json({
+                        error: E.ResourceNotFound
+                    }).end();
+                    return;
+                }
                 await model.updateOne({ _id: id }, { $pull: { pictures: photoId } });
                 // Eliminar foto en sí.
                 let status = await Photo.deletePhotoById(photoId);
-                if (status.success)
+                if (status.success) {
                     res.status(200).json({
                         message: "Photo removed from resource",
-                    });
+                    }).end();
+                    return;
+                }
                 res.status(200).json({
                     message: "Photo unlinked from resource, but still exists. ",
                 });
             } catch (err) {
-                console.log(err);
-                res.status(500).json({
-                    message: "Internal error",
-                });
+                const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+                res.status(500).json({ error });
             }
         }
     ); // Eliminar foto

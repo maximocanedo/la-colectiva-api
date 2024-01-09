@@ -41,7 +41,7 @@ router.post(
 			});
 		} catch (err) {
 			console.log(err);
-			res.status(500).json(E.InternalError);
+			res.status(500).json({error: E.InternalError});
 		}
 	}
 ); // Subir imagen
@@ -50,13 +50,13 @@ router.get("/:id", async (req: Request, res: Response): Promise<void> => {
 		const id = req.params.id;
 		const photoDetails = await Photo.getPhotoDetailsById(id);
 		if (!photoDetails) {
-			res.status(404).json(E.ResourceNotFound);
+			res.status(404).json({error: E.ResourceNotFound});
 			return;
 		}
 		res.status(200).json(photoDetails);
 	} catch (err) {
 		console.error(err);
-		res.status(500).json(E.InternalError);
+		res.status(500).json({error: E.InternalError});
 	}
 }); // Ver detalles de imagen
 router.get("/:id/view", async (req: Request, res: Response): Promise<void> => {
@@ -65,17 +65,17 @@ router.get("/:id/view", async (req: Request, res: Response): Promise<void> => {
 		let pic = await Photo.findById(id);
 
 		if (!pic) {
-			res.status(404).json(E.ResourceNotFound);
+			res.status(404).json({error: E.ResourceNotFound});
 			return;
 		}
 
-		let fullRoute: string = path.join(__dirname, "../data/photos/", pic.filename);
+		let fullRoute: string = path.join(__dirname, "../../data/photos/", pic.filename);
 
 		// Envía la imagen como respuesta
 		res.sendFile(fullRoute);
 	} catch (err) {
 		console.error(err);
-		res.status(500).json(E.InternalError);
+		res.status(500).json({error: E.InternalError});
 	}
 }); // Ver imagen
 router.patch(
@@ -91,15 +91,15 @@ router.patch(
 			const username: string = req.user.username;
 			const pic = await Photo.findOne({ _id: id, active: 1 });
 			if (!pic) {
-				res.status(404).json(E.ResourceNotFound);
+				res.status(404).json({error: E.ResourceNotFound});
 				return;
 			}
 			if (pic.user != req.user._id) {
-				res.status(403).json(E.UnauthorizedRecordModification);
+				res.status(403).json({error: E.UnauthorizedRecordModification});
 				return;
 			}
 			if (!req.body.description) {
-				res.status(400).json(E.MissingRequiredFieldError);
+				res.status(400).json({ error: E.MissingRequiredFieldError});
 				return;
 			}
 			pic.description = req.body.description;
@@ -109,7 +109,7 @@ router.patch(
 			});
 		} catch (err) {
 			console.error(err);
-			res.status(500).json(E.InternalError);
+			res.status(500).json({error: E.InternalError});
 		}
 	}
 ); // Editar pie de imagen
@@ -120,11 +120,11 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 		const username = req.user.username;
 		const isAdmin = req.user.role >= 3;
 		if (!pic) {
-			res.status(404).json(E.ResourceNotFound);
+			res.status(404).json({error: E.ResourceNotFound});
 			return;
 		}
 		if (pic.user != req.user._id && !isAdmin) {
-			res.status(403).json(E.AttemptedUnauthorizedOperation);
+			res.status(403).json({error: E.AttemptedUnauthorizedOperation});
 			return;
 		}
 		pic.active = false;
@@ -136,7 +136,7 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 		fs.unlink(fullRoute, (err) => {
 			if (err) {
 				console.error("Error al eliminar el archivo:", err);
-				res.status(500).json(E.CRUDOperationError);
+				res.status(500).json({error: E.CRUDOperationError});
 			} else {
 				res.status(200).json({
 					message: "File was deleted and data was disabled. ",
@@ -145,7 +145,7 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 		});
 	} catch (err) {
 		console.error(err);
-		res.status(500).json(E.InternalError);
+		res.status(500).json({error: E.InternalError});
 	}
 }); // Eliminar imagen
 
