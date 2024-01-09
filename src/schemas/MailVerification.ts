@@ -27,6 +27,11 @@ const MailVerificationSchema: Schema<IMailVerification, IMailVerificationModel> 
         required: true,
         default: Date.now() + 1000 * 60 * 60 * 24,
     },
+    canUpdatePassword: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     mail: {
         type: String,
         required: true,

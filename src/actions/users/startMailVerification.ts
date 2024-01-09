@@ -12,6 +12,7 @@ import {mail} from "../../validators/user.v";
 import User from "../../schemas/User";
 import {Schema} from "mongoose";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
+import V from "../../validators";
 
 dotenv.config();
 
@@ -56,6 +57,40 @@ const sendCode = async (user: any, mail: string): Promise<ISendCodeResponse> => 
     }
 }
 
+const sendCodeForRecoverPassword = async (user: string): Promise<ISendCodeResponse> => {
+    try {
+        const reqUser = await User.findOne({ username: user });
+        if(!reqUser) {
+            return {validationId: null, error: E.ResourceNotFound, code: 404};
+        }
+        const mail = reqUser.email;
+
+        let randomNumSixDigits: number = Math.floor(Math.random() * 1000000);
+        let hash: string = crypto.createHash('sha256').update(randomNumSixDigits.toString()).digest('hex');
+
+        let data = {
+            code: hash,
+            user: reqUser._id,
+            mail,
+            expirationDate: Date.now() + 1000 * 60 * 60 * 24,
+            canUpdatePassword: true,
+            active: false
+        };
+        const mailStatus = await transporter.sendMail({
+            from: `La Colectiva <${process.env.MAIL_SMTP_IDENTIFIER as string}>`,
+            to: mail,
+            subject: "¡Verificá tu cuenta!",
+            html: "Usá el siguiente código para cambiar tu contraseña: <b>" + randomNumSixDigits + "</b>. <br /><br /><i>Si no solicitaste un código, o si no tenés cuenta en La Colectiva, ignorá este mail.</i>"
+        });
+        let mailVerification = new MailVerification(data);
+        const result = await mailVerification.save();
+        return { validationId: result._id, error: null, code: 200 };
+    } catch(err) {
+        console.log(err);
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+        return { validationId: null, error, code: 500 };
+    }
+}
 
 const mailContent = {
     def: [
@@ -79,11 +114,18 @@ const startMailVerification = [
     }
 ];
 
+const startPasswordRecovering = [
+    async (req: Request, res: Response): Promise<void> => {
+        const {code, validationId, error } = await sendCodeForRecoverPassword(req.params.username);
+        res.status(code).json(!validationId ? {error} : {validationId});
+    }
+];
+
 const validateMail = [
     pre.auth,
     async (req: Request, res: Response): Promise<void> => {
         try {
-            const {code} = req.body;
+            const {code, password} = req.body;
             const {validationId} = req.params;
             const mailVerification = await MailVerification.findOne({_id: validationId, active: false});
 
@@ -93,11 +135,18 @@ const validateMail = [
                 }).end();
                 return;
             }
-            const user = await User.findOne({ _id: mailVerification.user, active: true });
+            if(mailVerification.canUpdatePassword && !password) {
+                res.status(400).json({
+                    error: {...E.MissingRequiredFieldError, details: "Falta la propiedad 'password' con la nueva contraseña del usuario. "}
+                }).end();
+                return;
+            }
+
+            const user = await User.findOne({ _id: mailVerification.user });
             if(!user) {
-                res.status(403).json({
-                    error: E.InternalError // User does not exist anymore.
-                });
+                res.status(404).json({
+                    error: E.ResourceNotFound // User does not exist anymore.
+                }).end();
                 return;
             }
             let mailTitle: string = mailContent.def[0],
@@ -112,6 +161,11 @@ const validateMail = [
                 }
                 if(!user.active) {
                     user.active = true;
+                    mailTitle = mailContent.res[0];
+                    mailBody = mailContent.res[1];
+                }
+                if(mailVerification.canUpdatePassword) {
+                    user.password = password;
                     mailTitle = mailContent.res[0];
                     mailBody = mailContent.res[1];
                 }
@@ -135,4 +189,4 @@ const validateMail = [
     }
 ]
 
-export {startMailVerification, sendCode, validateMail};
+export {startMailVerification, startPasswordRecovering, sendCode, validateMail};

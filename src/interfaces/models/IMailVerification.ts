@@ -6,6 +6,7 @@ export default interface IMailVerification {
     user: Schema.Types.ObjectId | string;
     active: boolean;
     expirationDate: Date;
+    canUpdatePassword: boolean;
     mail: string;
 
 }

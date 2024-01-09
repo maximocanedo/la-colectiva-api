@@ -7,6 +7,7 @@ import V from "../validators/index";
 import {IError} from "../interfaces/responses/Error.interfaces";
 import defaultHandler from "../errors/handlers/default.handler";
 import E from "../errors";
+import {startPasswordRecovering} from "../actions/users/startMailVerification";
 const router: Router = express.Router();
 dotenv.config();
 
@@ -65,6 +66,7 @@ router.post("/", pre.expect({
 }),  users.signup);
 
 router.post("/me/mail", users.startMailVerification);
+router.post("/:username/recover", startPasswordRecovering);
 router.post("/validate/:validationId", users.validateMail);
 
 
