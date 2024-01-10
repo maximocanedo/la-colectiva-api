@@ -277,6 +277,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/GeneralError"
+                "401":
+                    description: No inició sesión.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
+                "403":
+                    description: No dispone de los permisos suficientes para realizar esta acción.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
                 "404":
                     description: Usuario no encontrado. 
                     content:
@@ -302,6 +314,18 @@ paths:
             responses:
                 "200":
                     description: Usuario dado de baja exitosamente.
+                "401":
+                    description: No inició sesión.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
+                "403":
+                    description: No dispone de los permisos suficientes para realizar esta acción.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
                 "404":
                     description: Usuario no encontrado. 
                     content:
@@ -339,6 +363,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/GeneralError"
+                "401":
+                    description: No inició sesión.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
+                "403":
+                    description: No dispone de los permisos suficientes para realizar esta acción.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
                 "404":
                     description: Usuario no encontrado. 
                     content:
@@ -361,6 +397,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/User"
+                "401":
+                    description: No inició sesión.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
                 "404":
                     description: Usuario no encontrado.
                     content:
@@ -392,6 +434,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/GeneralError"
+                "401":
+                    description: No inició sesión.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
                 "404":
                     description: Usuario no encontrado. 
                     content:
@@ -411,6 +459,12 @@ paths:
             responses:
                 "200":
                     description: Usuario dado de baja exitosamente.
+                "401":
+                    description: No inició sesión.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
                 "404":
                     description: Usuario no encontrado. 
                     content:
@@ -444,6 +498,12 @@ paths:
                     description: Se cambió exitosamente el rol o la contraseña del usuario.
                 "400": 
                     description: Se requiere al menos un campo para actualizar.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
+                "401":
+                    description: No inició sesión.
                     content:
                         application/json:
                             schema:
@@ -482,6 +542,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: "#/components/schemas/MailVerificationResponse"
+                "401":
+                    description: No inició sesión.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
+                "500":
+                    description: Error interno.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GeneralError"
     /users/{username}/recover:
         post:
             parameters:
