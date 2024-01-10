@@ -6,6 +6,7 @@ import pre from "./../endpoints/pre";
 import Comment from "../schemas/Comment";
 import ICommentable from "../interfaces/models/ICommentable";
 import {CommentFetchResponse} from "../interfaces/responses/Comment.interfaces";
+import E from "../errors";
 
 dotenv.config();
 
@@ -39,7 +40,7 @@ async function listCommentsForModel(
             return {
                 comments: [],
                 status: 404,
-                error: null,
+                error: E.ResourceNotFound,
                 msg: "Resource not found.",
             };
         }
@@ -54,7 +55,7 @@ async function listCommentsForModel(
         return {
             comments: [],
             status: 500,
-            error: err,
+            error: E.CRUDOperationError,
             msg: "Could not fetch the comments.",
         };
     }

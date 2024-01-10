@@ -31,11 +31,16 @@
 		"schemas": {
 			"allOf": [
 				{ "$ref": "./api/schemas/schemas.json" },
-				{ "$ref": "./api/schemas/users.json" }
+				{ "$ref": "./api/schemas/users.json" },
+				{ "$ref": "./api/schemas/regions.json" },
+				{ "$ref": "./api/schemas/comments.json" }
 			]
 		}
 	},
 	"paths": {
-		"$ref": "./api/paths/users.json"
+		"allOf": [
+			{ "$ref": "./api/paths/users.json" },
+			{ "$ref": "./api/paths/regions.json" }
+		]
 	}
 }
