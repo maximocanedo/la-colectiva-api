@@ -2,6 +2,7 @@
   "/regions/": {
     "get": {
       "description": "Listar recursos. ",
+      "operationId": "getRegions",
       "responses": {
         "200": {
           "description": "Recursos encontrados.",
@@ -27,6 +28,7 @@
     },
     "post": {
       "description": "Crear un nuevo recurso. ",
+      "operationId": "createRegion",
       "security": [
         {
           "bearerAuth": []
@@ -82,6 +84,7 @@
   "/regions/{regionId}": {
     "get": {
       "description": "Ver recurso. ",
+      "operationId": "getRegion",
       "parameters": [
         {
           "name": "regionId",
@@ -120,6 +123,7 @@
     },
     "patch": {
       "description": "Editar recurso. ",
+      "operationId": "editRegion",
       "security": [
         {
           "bearerAuth": []
@@ -203,6 +207,7 @@
     },
     "delete": {
       "description": "Eliminar recurso. ",
+      "operationId": "deleteRegion",
       "parameters": [
         {
           "name": "regionId",
@@ -260,7 +265,6 @@
       }
     }
   },
-
   "/regions/{id}/comments": {
     "get": {
       "description": "Obtener comentarios. ",
