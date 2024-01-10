@@ -7,7 +7,7 @@
 				"content": {
 					"application/json": {
 						"schema": {
-							"$ref": "#/components/schemas/AuthReq"
+							"$ref": "./../schemas/schemas.json#/AuthReq"
 						}
 					}
 				}
@@ -35,7 +35,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -45,7 +45,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -61,7 +61,7 @@
 				"content": {
 					"application/json": {
 						"schema": {
-							"$ref": "#/components/schemas/UserSignUp"
+							"$ref": "./../schemas/schemas.json#/UserSignUp"
 						}
 					}
 				}
@@ -98,7 +98,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/User"
+								"$ref": "./../schemas/schemas.json#/User"
 							}
 						}
 					}
@@ -108,7 +108,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -118,7 +118,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -171,7 +171,7 @@
 				"content": {
 					"application/json": {
 						"schema": {
-							"$ref": "#/components/schemas/UserEdit"
+							"$ref": "./../schemas/schemas.json#/UserEdit"
 						}
 					}
 				}
@@ -185,7 +185,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -195,7 +195,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -205,7 +205,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -215,7 +215,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -225,7 +225,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -258,7 +258,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -268,7 +268,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -278,7 +278,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -288,7 +288,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -317,7 +317,7 @@
 				"content": {
 					"application/json": {
 						"schema": {
-							"$ref": "#/components/schemas/UserUpdatePassOrRole"
+							"$ref": "./../schemas/schemas.json#/UserUpdatePassOrRole"
 						}
 					}
 				}
@@ -331,7 +331,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -341,7 +341,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -351,7 +351,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -361,7 +361,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -371,7 +371,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -388,7 +388,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/User"
+								"$ref": "./../schemas/schemas.json#/User"
 							}
 						}
 					}
@@ -398,7 +398,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -408,7 +408,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -418,7 +418,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -437,7 +437,7 @@
 				"content": {
 					"application/json": {
 						"schema": {
-							"$ref": "#/components/schemas/UserEdit"
+							"$ref": "./../schemas/schemas.json#/UserEdit"
 						}
 					}
 				}
@@ -451,7 +451,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -461,7 +461,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -471,7 +471,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -481,7 +481,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -504,7 +504,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -514,7 +514,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -524,7 +524,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -548,7 +548,7 @@
 							"properties": {
 								"password": {
 									"schema": {
-										"$ref": "#/components/schemas/User_Password"
+										"$ref": "./../schemas/users.json#/User_Password"
 									}
 								}
 							}
@@ -565,7 +565,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -575,7 +575,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -585,7 +585,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -595,7 +595,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -620,7 +620,7 @@
 							"properties": {
 								"mail": {
 									"schema": {
-										"$ref": "#/components/schemas/User_Email"
+										"$ref": "./../schemas/users.json#/User_Email"
 									}
 								}
 							}
@@ -634,7 +634,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/MailVerificationResponse"
+								"$ref": "./../schemas/schemas.json#/MailVerificationResponse"
 							}
 						}
 					}
@@ -644,7 +644,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -654,7 +654,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -681,7 +681,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/MailVerificationResponse"
+								"$ref": "./../schemas/schemas.json#/MailVerificationResponse"
 							}
 						}
 					}
@@ -691,7 +691,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/MailVerificationResponse"
+								"$ref": "./../schemas/schemas.json#/MailVerificationResponse"
 							}
 						}
 					}
@@ -701,7 +701,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/MailVerificationResponse"
+								"$ref": "./../schemas/schemas.json#/MailVerificationResponse"
 							}
 						}
 					}
@@ -717,7 +717,7 @@
 					"in": "path",
 					"required": true,
 					"schema": {
-						"$ref": "#/components/schemas/OID"
+						"$ref": "./../schemas/users.json#/OID"
 					}
 				}
 			],
@@ -734,7 +734,7 @@
 							},
 							"password": {
 								"schema": {
-									"$ref": "#/components/schemas/User_Password"
+									"$ref": "./../schemas/users.json#/User_Password"
 								}
 							}
 						}
@@ -750,7 +750,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -763,7 +763,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}
@@ -773,7 +773,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/GeneralError"
+								"$ref": "./../schemas/schemas.json#/GeneralError"
 							}
 						}
 					}

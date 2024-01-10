@@ -1,31 +1,4 @@
 {
-	"OID": {
-		"type": "string"
-	},
-	"Version": {
-		"type": "integer"
-	},
-	"User_Username": {
-		"type": "string"
-	},
-	"User_Name": {
-		"type": "string"
-	},
-	"User_Bio": {
-		"type": "string"
-	},
-	"User_Email": {
-		"type": "string"
-	},
-	"User_Birth": {
-		"type": "date"
-	},
-	"User_Password": {
-		"type": "string"
-	},
-	"User_Role": {
-		"type": "integer"
-	},
 	"Error": {
 		"type": "object",
 		"properties": {
@@ -45,7 +18,7 @@
 		"properties": {
 			"error": null,
 			"schema": {
-				"$ref": "#/components/schemas/Error"
+				"$ref": "#/Error"
 			}
 		}
 	},
@@ -56,33 +29,33 @@
 		"properties": {
 			"username": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Username"
+					"$ref": "#/User_Username"
 				}
 			},
 			"name": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Name"
+					"$ref": "#/User_Name"
 				}
 			},
 			"bio": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Bio"
+					"$ref": "#/User_Bio"
 				}
 			},
 			"email": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Email"
+					"$ref": "#/User_Email"
 				}
 			},
 			"birth": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Birth"
+					"$ref": "#/User_Birth"
 				}
 			}
 		},
 		"password": {
 			"schema": {
-				"$ref": "#/components/schemas/User_Password"
+				"$ref": "#/User_Password"
 			}
 		}
 	},
@@ -91,42 +64,42 @@
 		"properties": {
 			"_id": {
 				"schema": {
-					"$ref": "#/components/schemas/OID"
+					"$ref": "#/OID"
 				}
 			},
 			"username": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Username"
+					"$ref": "#/User_Username"
 				}
 			},
 			"name": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Name"
+					"$ref": "#/User_Name"
 				}
 			},
 			"bio": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Bio"
+					"$ref": "#/User_Bio"
 				}
 			},
 			"email": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Email"
+					"$ref": "#/User_Email"
 				}
 			},
 			"birth": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Birth"
+					"$ref": "#/User_Birth"
 				}
 			},
 			"role": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Role"
+					"$ref": "#/User_Role"
 				}
 			},
 			"__v": {
 				"schema": {
-					"$ref": "#/components/schemas/Version"
+					"$ref": "#/Version"
 				}
 			}
 		}
@@ -137,22 +110,22 @@
 		"properties": {
 			"name": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Name"
+					"$ref": "#/User_Name"
 				}
 			},
 			"bio": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Bio"
+					"$ref": "#/User_Bio"
 				}
 			},
 			"email": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Email"
+					"$ref": "#/User_Email"
 				}
 			},
 			"birth": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Birth"
+					"$ref": "#/User_Birth"
 				}
 			}
 		}
@@ -163,11 +136,11 @@
 		"properties": {
 			"password": null,
 			"schema": {
-				"$ref": "#/components/schemas/User_Password"
+				"$ref": "#/User_Password"
 			},
 			"role": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Role"
+					"$ref": "#/User_Role"
 				}
 			}
 		}
@@ -181,7 +154,7 @@
 			},
 			"error": {
 				"schema": {
-					"$ref": "#/components/schemas/Error"
+					"$ref": "#/Error"
 				}
 			}
 		}
@@ -193,17 +166,17 @@
 		"properties": {
 			"username": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Username"
+					"$ref": "#/User_Username"
 				}
 			},
 			"password": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Password"
+					"$ref": "#/User_Password"
 				}
 			},
 			"mail": {
 				"schema": {
-					"$ref": "#/components/schemas/User_Email"
+					"$ref": "#/User_Email"
 				}
 			}
 		}

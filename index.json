@@ -29,7 +29,10 @@
 			}
 		},
 		"schemas": {
-			"$ref": "./api/schemas/schemas.json"
+			"allOf": [
+				{ "$ref": "./api/schemas/schemas.json" },
+				{ "$ref": "./api/schemas/users.json" }
+			]
 		}
 	},
 	"paths": {
