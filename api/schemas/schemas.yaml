@@ -1,7 +1,0 @@
-schemas:
-    OID:
-      type: string
-    Version:
-      type: integer
-    $ref: "./user/schema.yaml"
-

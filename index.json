@@ -1,0 +1,38 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "La Colectiva",
+		"version": "1.0.0-oas3.1",
+		"contact": {
+			"name": "Máximo Canedo",
+			"url": "http://maximocanedo.com.ar/",
+			"email": "maximotomascanedo@gmail.com"
+		},
+		"description": "Realizar consultas y administrar horarios, y registros de La Colectiva."
+	},
+	"servers": [
+		{
+			"url": "https://colectiva.com.ar:5050",
+			"description": "Servidor en línea de La Colectiva."
+		},
+		{
+			"url": "http://localhost",
+			"description": "Servidor local para pruebas."
+		}
+	],
+	"components": {
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		},
+		"schemas": {
+			"$ref": "./api/schemas/schemas.json"
+		}
+	},
+	"paths": {
+		"$ref": "./api/paths/users.json"
+	}
+}

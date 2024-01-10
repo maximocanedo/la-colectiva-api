@@ -1,6 +1,0 @@
-code:
-  type: string
-message:
-  type: string
-details:
-  type: string
