@@ -19,7 +19,12 @@ const editPersonalInfo = (me = false) => (async (req: Request, res: Response): P
         if(bio) user.bio = bio;
         if(email) user.email = email;
         if(birth) user.birth = birth;
-        if(!name && !bio && !email && !birth) res.status(400).end();
+        if(!name && !bio && !email && !birth) {
+            res.status(400).json({
+                error: E.AtLeastOneFieldRequiredError
+            }).end();
+            return;
+        }
 
         const updatedUser = await user.save();
         res.status(200).end();

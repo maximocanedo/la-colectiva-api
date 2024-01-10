@@ -17,7 +17,7 @@ const signup = async (req: Request, res: Response): Promise<void> => {
         }
         const _u = await User.findOne({email: email});
         if(_u) {
-            res.status(4090).json({ error: E.DuplicationError }).end();
+            res.status(409).json({ error: E.DuplicationError }).end();
             return;
         }
         const data = { username, name, bio, birth, password };

@@ -43,7 +43,7 @@ router.patch("/:username", pre.auth, pre.allow.admin, pre.expect({
 });
 
 /* Saber si un usuario existe o está deshabilitado */
-router.head("/me", users.getOne(true));
+router.head("/me", pre.auth, users.getOne(true));
 router.head("/:username", users.getOne(false));
 
 /* Actualizar información, como nombre y biografía. */
