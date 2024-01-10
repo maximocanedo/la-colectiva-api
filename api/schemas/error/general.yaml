@@ -1,0 +1,10 @@
+Error:
+  type: object
+  properties:
+    $ref: "./properties.yaml"
+GeneralError:
+  type: object
+  properties:
+    error:
+    schema:
+      $ref: "#/schemas/Error"

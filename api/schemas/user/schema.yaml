@@ -1,0 +1,27 @@
+User:
+  type: object
+  properties:
+    _id:
+      schema:
+        $ref: "./../schemas.yaml/schemas/OID"
+    username:
+      schema:
+        $ref: "./properties.yaml/schemas/User_Username"
+    name:
+      schema:
+        $ref: "./properties.yaml/schemas/User_Name"
+    bio:
+      schema:
+        $ref: "./properties.yaml/schemas/User_Bio"
+    email:
+      schema:
+        $ref: "./properties.yaml/schemas/User_Email"
+    birth:
+      schema:
+        $ref: "./properties.yaml/schemas/User_Birth"
+    role:
+      schema:
+        $ref: "./properties.yaml/schemas/User_Role"
+    __v:
+      schema:
+        $ref: "./../schemas.yaml/schemas/Version"

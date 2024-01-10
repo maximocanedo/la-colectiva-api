@@ -1,0 +1,9 @@
+MailVerificationResponse:
+  description: Respuesta al solicitar código de verificación.
+  type: object
+  properties:
+    validationId:
+      type: integer
+    error:
+      schema:
+        $ref: "./../../../schemas/error/general.yaml#/Error"

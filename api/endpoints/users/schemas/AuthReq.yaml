@@ -1,0 +1,15 @@
+AuthReq:
+  description: Campos requeridos para iniciar sesión.
+  type: object
+  required:
+    - "password"
+  properties:
+    username:
+      schema:
+        $ref: "./../../../schemas/user/properties.yaml#/schemas/User_Username"
+    password:
+      schema:
+        $ref: "./../../../schemas/user/properties.yaml#/schemas/User_Password"
+    mail:
+      schema:
+        $ref: "./../../../schemas/user/properties.yaml#/schemas/User_Email"

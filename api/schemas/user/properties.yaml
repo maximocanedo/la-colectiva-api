@@ -1,0 +1,15 @@
+schemas:
+  User_Username:
+    type: string
+  User_Name:
+    type: string
+  User_Bio:
+    type: string
+  User_Email:
+    type: string
+  User_Birth:
+    type: date
+  User_Password:
+    type: string
+  User_Role:
+    type: integer
