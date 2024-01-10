@@ -1,0 +1,188 @@
+{
+	"info": {
+		"_postman_id": "2aa7f880-7f50-4d86-9cbc-431d956d62a2",
+		"name": "Horarios",
+		"description": "Los horarios son registros que almacenan la hora en la que una embarcación, en su recorrido, se cruza, pasa, o se detiene en un muelle.\n\nTodo horario pertenece a un recorrido. Su disponibilidad está sujeta a la del recorrido al que pertenece.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-2aa7f880-7f50-4d86-9cbc-431d956d62a2"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Ver horario",
+					"id": "43abbff5-9111-4749-a8a9-d90b58916643",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/schedules/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"schedules",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "3facc476-8365-4aba-ac9a-88a7e0ab302b",
+									"key": "id",
+									"value": "{{R1 Horario 10:10}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Próxima lancha",
+					"id": "b023a752-a493-42ac-a365-8e0974e9f631",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/query/next?departure=659b498347fd84058a4036ba&arrival=659bf3c3e09cdd14fe39f745&time=09:44&conditions[]=MONDAY&conditions[]=TUESDAY",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"query",
+								"next"
+							],
+							"query": [
+								{
+									"key": "departure",
+									"value": "659b498347fd84058a4036ba"
+								},
+								{
+									"key": "arrival",
+									"value": "659bf3c3e09cdd14fe39f745"
+								},
+								{
+									"key": "time",
+									"value": "09:44"
+								},
+								{
+									"key": "conditions[]",
+									"value": "MONDAY"
+								},
+								{
+									"key": "conditions[]",
+									"value": "TUESDAY"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "927d00d0-711f-4d16-ab0f-d4f6e4397e70"
+		},
+		{
+			"name": "Actualizar información",
+			"item": [
+				{
+					"name": "Deshabilitar horario",
+					"id": "c7902fe9-0a4b-412d-b204-a1cf0c1961fe",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/schedules/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"schedules",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "8bc56555-946e-48a6-93a9-bd3761b451d8",
+									"key": "id",
+									"value": "{{R1 Horario 10:10}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "8baf0cf2-74ed-4b8d-afba-bf67f330ac0e"
+		},
+		{
+			"name": "Registrar horario",
+			"id": "5480e90e-f201-4c08-a140-b2228548a31f",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"path\": \"{{Recorrido matutino 1}}\",\r\n    \"dock\": \"{{Muelle Oklahoma}}\",\r\n    \"time\": \"1990-01-01T11:10:00.000+00:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base}}/schedules/",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"schedules",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{clientToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0ccb3f53-cb55-4792-8ec6-2646b64ef936",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f57c14a4-9431-4ecf-b13c-e9d2adacff36",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

@@ -1,0 +1,62 @@
+{
+	"info": {
+		"_postman_id": "dac183d1-1358-4fbd-a48f-269c4ee1bdef",
+		"name": "Imágenes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-dac183d1-1358-4fbd-a48f-269c4ee1bdef"
+	},
+	"item": [
+		{
+			"name": "Ver detalles de imagen",
+			"id": "7fb58ad0-9230-41f0-9071-36e07a4de9a4",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Base}}/photos/659c7511e9a8ca262d537e28",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"photos",
+						"659c7511e9a8ca262d537e28"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ver imagen",
+			"id": "a0917d58-f8ba-4ed3-918f-4e653b44b12e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Base}}/photos/:id/view",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"photos",
+						":id",
+						"view"
+					],
+					"variable": [
+						{
+							"id": "01c3d4db-2aa4-44b6-a304-3b7dde8104a0",
+							"key": "id",
+							"value": "659cb1a28d991d1f78f57db9"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

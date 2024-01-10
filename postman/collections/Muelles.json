@@ -1,0 +1,519 @@
+{
+	"info": {
+		"_postman_id": "c30f12b5-0f45-4d1f-b46a-01d34956c076",
+		"name": "Muelles",
+		"description": "En La Colectiva, los muelles se tratan de la misma forma que en tierra se trataría a una parada de colectivo, o estación de tren.\n\nSe recolectan datos como sus coordenadas, su estatus (Si es público, privado), su nombre, altura y demás datos que sean necesarios.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-c30f12b5-0f45-4d1f-b46a-01d34956c076"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Ver muelle",
+					"id": "82c227fb-49d1-4d82-ad7a-d0bb12ca177d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/docks/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"docks",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "d7d04ac9-423c-4f92-b7c8-518508869bb9",
+									"key": "id",
+									"value": "{{Muelle Wiegenlied}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Explorar muelles cercanos",
+					"id": "de9b3b2f-9d55-4c94-bf44-95e15e4ec092",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/docks/@-34.6037185,-58.3815457,300",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"docks",
+								"@-34.6037185,-58.3815457,300"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar",
+					"id": "4ade47b7-602f-4510-9b75-23aee36a5cc5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/docks",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"docks"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "df3cfb3f-ed99-446b-a870-6e4ce18178ae"
+		},
+		{
+			"name": "Actualizar información",
+			"item": [
+				{
+					"name": "Edición rápida",
+					"id": "0e392802-5dcc-465c-bcac-6abcfdbd53f6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Obelisco\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/docks/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"docks",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "4d004d5c-5194-4455-9e66-5c4d988a4515",
+									"key": "id",
+									"value": "{{Muelle Wiegenlied}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deshabilitar",
+					"id": "ac866eed-b12a-4f87-bf55-e86619fc870d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/docks/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"docks",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "dcc9c96e-b807-476d-876c-f93310ca3490",
+									"key": "id",
+									"value": "{{Muelle Wiegenlied}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "c84cf133-223c-4f53-872e-52cf42f9345b"
+		},
+		{
+			"name": "Reseñas",
+			"item": [
+				{
+					"name": "Votos",
+					"item": [
+						{
+							"name": "Ver votos",
+							"id": "ca4b72de-b9c0-407e-94af-55df130ae31a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/docks/:id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"docks",
+										":id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "07b071eb-dfcf-4f07-a7f0-56952766a9da",
+											"key": "id",
+											"value": "{{Muelle Wiegenlied}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Upvote",
+							"id": "4259c204-76ad-4fee-aa23-3b1b88cbda13",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/docks/:id/votes/upvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"docks",
+										":id",
+										"votes",
+										"upvote"
+									],
+									"variable": [
+										{
+											"id": "241e0e7d-20d6-44d7-a59a-dc1a9e8ad1aa",
+											"key": "id",
+											"value": "{{Muelle Wiegenlied}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Downvote",
+							"id": "b4871108-84fb-4f0b-8085-e35d88f041b7",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/docks/:id/votes/downvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"docks",
+										":id",
+										"votes",
+										"downvote"
+									],
+									"variable": [
+										{
+											"id": "04ca1897-8c66-43e2-a67c-45f29990fb47",
+											"key": "id",
+											"value": "{{Muelle Wiegenlied}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Eliminar voto",
+							"id": "f0e895d0-651d-483c-add5-70c43cb0ef9c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/docks/:id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"docks",
+										":id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "9ed23e75-ac49-4884-b7fd-62618b3e7ce9",
+											"key": "id",
+											"value": "{{Arroyo Libertad}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "a59a7f50-127d-45af-bad5-5cde791d4ad3",
+					"description": "Ver, emitir y eliminar votos."
+				},
+				{
+					"name": "Comentarios",
+					"item": [
+						{
+							"name": "Ver comentarios",
+							"id": "4c5149e2-b8b4-460d-96d7-f46d8902348e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/docks/:id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"docks",
+										":id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "90d2e6d8-d9fa-47ea-a851-8e3dced987d5",
+											"key": "id",
+											"value": "{{Muelle Wiegenlied}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Publicar comentario",
+							"id": "8a13baf5-dfcf-42ba-a2cf-2d82a65b8378",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Comentario de prueba. \"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Base}}/docks/:id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"docks",
+										":id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "f04aa18e-517d-4126-ba43-c273cb43fd01",
+											"key": "id",
+											"value": "{{Arroyo Libertad}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "6cf62efc-c1c0-44ca-b385-76ec7fafcd1e"
+				}
+			],
+			"id": "82e7afb9-2f20-45c2-b8a1-f85ae0bfa28f"
+		},
+		{
+			"name": "Imágenes",
+			"item": [
+				{
+					"name": "Ver imágenes",
+					"id": "ff7ce500-da59-4789-b500-b0a7a88414e2",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/docks/:id/pictures",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"docks",
+								":id",
+								"pictures"
+							],
+							"variable": [
+								{
+									"id": "e5912e3c-33e8-4272-8df1-cd95eb941af3",
+									"key": "id",
+									"value": "{{Muelle Oklahoma}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publicar una imagen",
+					"id": "9802be8d-da63-4368-bab9-bc1c4f025c1a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"fileNotInWorkingDirectoryWarning": "This file isn't in your working directory. Teammates you share this request with won't be able to use this file. To make collaboration easier you can setup your working directory in Settings.",
+									"filesNotInWorkingDirectory": [
+										"/F:/Downloads/1648665964_0f4a2912.jpeg"
+									],
+									"src": "/F:/Downloads/1648665964_0f4a2912.jpeg"
+								},
+								{
+									"key": "description",
+									"value": "Muelle Oklahoma.",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Base}}/docks/:id/pictures",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"docks",
+								":id",
+								"pictures"
+							],
+							"variable": [
+								{
+									"id": "605a1f81-73bb-40d0-b61b-f998480b36b8",
+									"key": "id",
+									"value": "{{Muelle Oklahoma}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "a8eb213b-a8ca-49ff-843c-b6df05762d54"
+		},
+		{
+			"name": "Registrar muelle",
+			"id": "17bd96ba-3741-4cb7-8156-20b0756c5d71",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Oklahoma\",\r\n    \"address\": 70,\r\n    \"region\": \"{{Arroyo Libertad}}\",\r\n    \"notes\": \"Muelle municipal de libre acceso. \",\r\n    \"status\": 1,\r\n    \"coordinates\": [\r\n        -34.600235,\r\n        -58.3809224\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base}}/docks",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"docks"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{clientToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f2b564b3-45e7-46d1-be73-183ed0e0ec63",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "5ad27484-8161-41f4-87f7-83873b8105bf",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

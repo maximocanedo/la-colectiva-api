@@ -1,0 +1,641 @@
+{
+	"info": {
+		"_postman_id": "82e6bf2b-abe4-4b5a-bb82-5e277b9c6d26",
+		"name": "Usuarios",
+		"description": "Todo lo relacionado con el manejo de usuarios e inicio de sesión.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-82e6bf2b-abe4-4b5a-bb82-5e277b9c6d26"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Ver cuenta",
+					"id": "1a24e1ef-32d5-4118-8045-f6c342a2ed57",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/users/:username",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								":username"
+							],
+							"variable": [
+								{
+									"id": "bb60d1fe-de07-4a3e-8383-722919a14a61",
+									"key": "username",
+									"value": "",
+									"description": "Nombre de usuario"
+								}
+							]
+						},
+						"description": "Devuelve un JSON con los detalles de una cuenta de usuario."
+					},
+					"response": []
+				},
+				{
+					"name": "Comprobar existencia",
+					"id": "fdedf121-6b20-4037-bea6-ea12f43db3a1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "HEAD",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/users/:username",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								":username"
+							],
+							"variable": [
+								{
+									"id": "73c32cf2-ff13-4408-abc6-851dae4764e5",
+									"key": "username",
+									"value": "",
+									"description": "Nombre de usuario"
+								}
+							]
+						},
+						"description": "Devuelve un código 200 si el usuario especificado existe y está habilitado."
+					},
+					"response": []
+				},
+				{
+					"name": "Ver cuenta activa",
+					"id": "77904ec3-f1b7-4ee6-abe4-3932c7848105",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/users/me",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						},
+						"description": "Devuelve un JSON con los datos de la cuenta activa."
+					},
+					"response": []
+				}
+			],
+			"id": "2b4de15b-c6de-4128-94ea-7c9b52df67f5"
+		},
+		{
+			"name": "Autenticación",
+			"item": [
+				{
+					"name": "Iniciar sesión",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2daf0e3f-c68d-4813-90eb-7050efddb3db",
+								"exec": [
+									"// Verificar si la respuesta tiene el formato esperado\r",
+									"if (pm.response.code === 200) {\r",
+									"    try {\r",
+									"        // Parsear el body de la respuesta a JSON\r",
+									"        const responseBody = pm.response.json();\r",
+									"\r",
+									"        // Obtener el token del body de la respuesta\r",
+									"        const clientToken = responseBody.token;\r",
+									"\r",
+									"        // Guardar el token como variable de entorno\r",
+									"        pm.globals.set(\"clientToken\", clientToken);\r",
+									"    } catch (error) {\r",
+									"        console.error(\"Error al procesar la respuesta:\", error);\r",
+									"    }\r",
+									"} else {\r",
+									"    console.error(\"La solicitud no tuvo éxito. Código de respuesta:\", pm.response.code);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "972e3ef2-72ce-4828-803a-a453dcb75256",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"id": "2a29019d-08dd-4f85-a07a-959013ae2394",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"your_username\",\r\n    \"password\": \"your-password\",\r\n    \"maxAge\": \"8h\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/auth",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"auth"
+							]
+						},
+						"description": "Comprueba las credenciales ingresadas, y si son correctas, devuelve un token que deberá ser adjuntado en cada solicitud que requira autenticación."
+					},
+					"response": [
+						{
+							"id": "a6b00812-872f-489b-8d3c-af757a510830",
+							"name": "Ejemplo de uso",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"your_username\",\r\n    \"password\": \"your-password\",\r\n    \"maxAge\": \"8h\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Base}}/auth",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"auth"
+									]
+								},
+								"description": "Comprueba las credenciales ingresadas, y si son correctas, devuelve un token que deberá ser adjuntado en cada solicitud que requira autenticación."
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjU3YjE0ZjAxYTQ1NzE0ZmE3NmI1ZjNhIiwiaWF0IjoxNzA0NTY1MjQyLCJleHAiOjE3MDQ2NTE2NDJ9.3hs_7uFthPCI1ePAlpXNP071M4PPaFyExSaEwERKugk"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "192"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"c0-riznXCv/usU3OAHbk4bUlJKG0ig\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 06 Jan 2024 18:20:42 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"id": "1a9f9386-5d39-48df-81ef-33a65d2fad84",
+							"name": "Héctor",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"your_username\",\r\n    \"password\": \"your-password\",\r\n    \"maxAge\": \"8h\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Base}}/auth",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"auth"
+									]
+								},
+								"description": "Comprueba las credenciales ingresadas, y si son correctas, devuelve un token que deberá ser adjuntado en cada solicitud que requira autenticación."
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Authorization",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjU5OWU3ZWI0NTBlOGY2NGEzMjU2OWU5IiwiaWF0IjoxNzA0NjQ2NDA5LCJleHAiOjE3Njc3NjE2MDl9.yI9wFHkN7o8INJVUNdpttmvIXcNoaFP14OXxL8Q74NU"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "192"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"c0-rJtKpSoLERKXsG/hj/LA458uUVM\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 07 Jan 2024 16:53:29 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"token\": \"Your token will appear here\"\n}"
+						}
+					]
+				}
+			],
+			"id": "5405812b-a84d-46ce-be49-534d67136a3d",
+			"description": "Relacionado al inicio de sesión y la cuenta activa."
+		},
+		{
+			"name": "Actualizar información",
+			"item": [
+				{
+					"name": "Cambiar contraseña",
+					"id": "5297fee8-66a0-47dd-81d8-01521c225a92",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"m42684627\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/users/me",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						},
+						"description": "Cambia la contraseña del usuario actual."
+					},
+					"response": []
+				},
+				{
+					"name": "Cambiar rol",
+					"id": "345f7625-f839-4f14-b957-467b4eeddef8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"role\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/users/:username",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								":username"
+							],
+							"variable": [
+								{
+									"id": "d2fca2df-bdad-4639-a119-9ffb9b6c050e",
+									"key": "username",
+									"value": "",
+									"description": "Nombre de usuario."
+								}
+							]
+						},
+						"description": "Cambia el rol de un usuario. Sólo accesible para usuarios administradores."
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar información",
+					"id": "08bcac96-d205-4fcc-9f8a-057b2f4c9e53",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"bio\": \"Usuario ficticio. \"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/users/me",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						},
+						"description": "Actualiza otra información del usuario, como su nombre, biografía, o fecha de nacimiento."
+					},
+					"response": []
+				},
+				{
+					"name": "Deshabilitar",
+					"id": "54039e6f-ca77-4e3c-82cc-46731eae4246",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/users/me",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						},
+						"description": "Deshabilita la cuenta de un usuario."
+					},
+					"response": []
+				}
+			],
+			"id": "89efe8d3-ee0a-4d17-87b1-91599d61f404",
+			"description": "Relacionado con la edición de cuentas."
+		},
+		{
+			"name": "Verificación de cuenta",
+			"item": [
+				{
+					"name": "Solicitar código de verificación",
+					"id": "347524a3-8072-44ee-ae5a-d72317b4e997",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mail\": \"42684627.canedo@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/users/me/mail",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								"me",
+								"mail"
+							]
+						},
+						"description": "Crea un código aleatorio de seis dígitos y lo envía al correo electrónico especificado.\n\nSi la operación no presenta ningún error, la respuesta incluirá un `validationId` que se deberá usar para validar el código una vez recibido."
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar mail",
+					"id": "1f9a0ba7-5fab-4204-b53f-abf55b0cb703",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\": 928313,\r\n    \"password\": \"hector1984\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/users/validate/:validationId",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								"validate",
+								":validationId"
+							],
+							"variable": [
+								{
+									"id": "36dc980a-6f91-4cd2-968e-6627e5badf30",
+									"key": "validationId",
+									"value": "659cad3e5dee837327353862",
+									"description": "Código de solicitud de verificación."
+								}
+							]
+						},
+						"description": "Recibe el código introducido por el usuario, y de ser correcto, valida la cuenta y actualiza la dirección de correo electrónico. Si es la primera verificación de la cuenta, actualiza su rol a \"Normal\"."
+					},
+					"response": []
+				},
+				{
+					"name": "Recuperar cuenta",
+					"id": "ae46865f-0ea9-428d-88de-d7dba31c7115",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/users/hector/recover",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"users",
+								"hector",
+								"recover"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "f4d11ad2-830f-4c80-a2e3-7d3b4557c716"
+		},
+		{
+			"name": "Crear cuenta de usuario",
+			"id": "f49b7f95-9549-4ac9-9558-c45aec0af940",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Diego González\",\r\n    \"birth\": \"1995-06-08T00:00:00.000Z\",\r\n    \"username\": \"diego.gonzalez\",\r\n    \"bio\": \"Usuario ficticio. Lorem ipsum dolor sit amet. \",\r\n    \"password\": \"Dl3g0.G0n24I32$95\",\r\n    \"email\": \"diego.gonzalez@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base}}/users",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"users"
+					]
+				},
+				"description": "Crea una cuenta de usuario."
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{clientToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "69cc7f8b-67c9-46a6-b5bd-f864543f6609",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "fe262aaf-baf0-4d18-aa31-eacc65a56cbc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

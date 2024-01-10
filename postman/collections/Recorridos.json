@@ -1,0 +1,412 @@
+{
+	"info": {
+		"_postman_id": "83db5eda-805b-489d-ae41-01418961b395",
+		"name": "Recorridos",
+		"description": "Todas las embarcaciones realizan recorridos, y la mayoría de ellos son recorridos diarios.\n\nUn recorrido es un conjunto de horarios que se da en ciertas condiciones.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-83db5eda-805b-489d-ae41-01418961b395"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Listar",
+					"id": "68b77a51-09bf-4ad4-91d9-fcbe12bf1563",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/paths",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"paths"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ver recorrido",
+					"id": "d8fea472-8f6b-4ada-ad4c-9e5a08609f38",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/paths/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"paths",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "9f155ff8-eb97-4e5c-a70c-555d7ccd9b53",
+									"key": "id",
+									"value": "{{Recorrido matutino 1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "6e6d1acb-f253-4cfe-9929-d3f64ff7f187"
+		},
+		{
+			"name": "Actualizar información",
+			"item": [
+				{
+					"name": "Edición rápida",
+					"id": "4a7abb2e-9e2f-4290-94b2-a7432b3be1f9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Recorrido ficticio. \"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/paths/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"paths",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "61383a64-f18e-4316-a1a1-a79e21169524",
+									"key": "id",
+									"value": "{{Recorrido matutino 1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deshabilitar",
+					"id": "1afe77dc-f076-46e0-bd56-b7cc4ff82c8d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/paths/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"paths",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "501ac64c-1e4f-4822-a96d-f54986acfa3e",
+									"key": "id",
+									"value": "{{Recorrido matutino 1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "9aa15076-1f05-4349-b31d-b1165cba965a"
+		},
+		{
+			"name": "Reseñas",
+			"item": [
+				{
+					"name": "Votos",
+					"item": [
+						{
+							"name": "Ver votos",
+							"id": "72f291ce-ad17-4e8d-abac-6ae9d194975e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/paths/:id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"paths",
+										":id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "7470586b-d965-4ef9-b2cb-8f48762d1ab4",
+											"key": "id",
+											"value": "{{Recorrido matutino 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Upvote",
+							"id": "b5371dfd-aeb7-4d63-92bd-0128f04d3805",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/paths/:id/votes/upvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"paths",
+										":id",
+										"votes",
+										"upvote"
+									],
+									"variable": [
+										{
+											"id": "c700bc00-e459-4706-b21b-72a1cce7b586",
+											"key": "id",
+											"value": "{{Recorrido matutino 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Downvote",
+							"id": "b9719474-9c53-4cf1-a033-35de3813aa85",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/paths/:id/votes/downvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"paths",
+										":id",
+										"votes",
+										"downvote"
+									],
+									"variable": [
+										{
+											"id": "7a3c6d9d-9fec-4ad2-ac4c-95ac84c9b2b9",
+											"key": "id",
+											"value": "{{Recorrido matutino 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Eliminar voto",
+							"id": "9211c8b5-c3ef-4b22-921f-b06dca12a262",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/paths/:id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"paths",
+										":id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "bb849ebc-f448-4cd9-991a-a9e07e4a64fb",
+											"key": "id",
+											"value": "{{Recorrido matutino 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "5df94179-771e-4fe5-996d-0371b3b21fe6",
+					"description": "Ver, emitir y eliminar votos."
+				},
+				{
+					"name": "Comentarios",
+					"item": [
+						{
+							"name": "Ver comentarios",
+							"id": "c52e53cc-b3e6-4e01-af24-7756d976aef9",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/paths/:id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"paths",
+										":id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "79881b59-a62e-49c2-96bd-59d7cfb455ef",
+											"key": "id",
+											"value": "{{Recorrido matutino 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Publicar comentario",
+							"id": "6ad15107-c640-44cb-9d96-c2ca66ccacb1",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Comentario de prueba. \"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Base}}/paths/:id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"paths",
+										":id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "60e342a7-ca54-4525-b943-5e858d2710a7",
+											"key": "id",
+											"value": "{{Recorrido matutino 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "ebbdd69a-a5d6-43ad-bf8e-3e691bb2ffda"
+				}
+			],
+			"id": "6d8e1356-d92b-4477-8f63-7c2fc319a3a2"
+		},
+		{
+			"name": "Registrar nuevo recorrido",
+			"id": "e32c1c85-c1ea-4464-949a-60ef3334fc3e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"boat\": \"{{Embarcación Apple Pie}}\",\r\n    \"title\": \"Recorrido matutino de Arr. Libertad\",\r\n    \"description\": \"Desde Arroyo Libertad hasta Tigre. \",\r\n    \"notes\": \"Recorrido rutinario que comienza a las 06:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base}}/paths",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"paths"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{clientToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "95a923e7-495e-42c5-b8df-a63821a8ec76",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f107f67b-0b26-4187-8c69-e40134e26b04",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
