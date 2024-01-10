@@ -1,0 +1,17 @@
+{
+  "VoteStatus": {
+    "type": "object",
+    "properties": {
+      "up": {
+        "type": "number"
+      },
+      "down": {
+        "type": "number"
+      },
+      "userVote": {
+        "type": ["number", "null"],
+        "nullable": true
+      }
+    }
+  }
+}
