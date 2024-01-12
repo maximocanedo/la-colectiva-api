@@ -33,6 +33,7 @@
 				{ "$ref": "./api/schemas/schemas.json" },
 				{ "$ref": "./api/schemas/users.json" },
 				{ "$ref": "./api/schemas/regions.json" },
+				{ "$ref": "./api/schemas/enterprises.json" },
 				{ "$ref": "./api/schemas/comments.json" },
 				{ "$ref": "./api/schemas/vote.json" }
 			]
@@ -41,7 +42,8 @@
 	"paths": {
 		"allOf": [
 			{ "$ref": "./api/paths/users.json" },
-			{ "$ref": "./api/paths/regions.json" }
+			{ "$ref": "./api/paths/regions.json" },
+			{ "$ref": "./api/paths/enterprises.json" }
 		]
 	}
 }

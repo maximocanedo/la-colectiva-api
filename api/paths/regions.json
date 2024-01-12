@@ -48,6 +48,16 @@
         "201": {
           "description": "El recurso se creó correctamente. "
         },
+        "400": {
+          "description": "Error de validación.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
         "401": {
           "description": "No inició sesión.",
           "content": {
@@ -97,7 +107,14 @@
       ],
       "responses": {
         "200": {
-          "description": "Los datos fueron actualizados correctamente."
+          "description": "Datos obtenidos correctamente.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/regions.json#/Region"
+              }
+            }
+          }
         },
         "404": {
           "description": "El recurso no existe.",
@@ -154,7 +171,7 @@
           "description": "Los datos fueron actualizados correctamente."
         },
         "400": {
-          "description": "Se requiere al menos un campo para editar.",
+          "description": "Error de validación.",
           "content": {
             "application/json": {
               "schema": {
@@ -329,6 +346,11 @@
     },
     "post": {
       "description": "Publicar un comentario. ",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -381,6 +403,36 @@
             }
           }
         },
+        "400": {
+          "description": "Error de validación.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "No inició sesión.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "No dispone de los permisos suficientes para realizar esta acción.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
         "404": {
           "description": "El recurso no existe. ",
           "content": {
@@ -417,6 +469,11 @@
           }
         }
       ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "responses": {
         "200": {
           "description": "Operación exitosa. ",
@@ -424,6 +481,26 @@
             "application/json": {
               "schema": {
                 "$ref": "./../schemas/vote.json#/VoteStatus"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "No inició sesión.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "No dispone de los permisos suficientes para realizar esta acción.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
               }
             }
           }
@@ -452,6 +529,11 @@
     },
     "delete": {
       "description": "Eliminar voto emitido. ",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "parameters": [
         {
           "name": "id",
@@ -529,6 +611,11 @@
           }
         }
       ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
       "responses": {
         "200": {
           "description": "Operación exitosa. ",
@@ -594,6 +681,11 @@
           "schema": {
             "$ref": "./../schemas/users.json#/OID"
           }
+        }
+      ],
+      "security": [
+        {
+          "bearerAuth": []
         }
       ],
       "responses": {
