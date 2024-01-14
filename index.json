@@ -37,6 +37,7 @@
 				{ "$ref": "./api/schemas/enterprises.json" },
 				{ "$ref": "./api/schemas/paths.json" },
 				{ "$ref": "./api/schemas/regions.json" },
+				{ "$ref": "./api/schemas/schedules.json" },
 				{ "$ref": "./api/schemas/schemas.json" },
 				{ "$ref": "./api/schemas/users.json" },
 				{ "$ref": "./api/schemas/vote.json" }
@@ -51,6 +52,7 @@
 			{ "$ref": "./api/paths/enterprises.json" },
 			{ "$ref": "./api/paths/paths.json" },
 			{ "$ref": "./api/paths/regions.json" },
+			{ "$ref": "./api/paths/schedules.json" },
 			{ "$ref": "./api/paths/users.json" }
 		]
 	}

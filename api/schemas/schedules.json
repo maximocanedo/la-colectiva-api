@@ -1,0 +1,82 @@
+{
+  "Schedule": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "$ref": "./users.json#/OID"
+          },
+          "boat": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "$ref": "./users.json#/OID"
+              },
+              "name": {
+                "$ref": "./boats.json#/Boat_Name"
+              }
+            }
+          }
+        }
+      },
+      "dock": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "$ref": "./users.json#/OID"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 3
+          }
+        }
+      },
+      "time": {
+        "type": "string"
+      },
+      "user": {
+        "$ref": "./users.json#/OID"
+      },
+      "active": {
+        "type": "boolean"
+      }
+    }
+  },
+  "Schedule_Post": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "$ref": "./users.json#/OID"
+      },
+      "dock": {
+        "$ref": "./users.json#/OID"
+      },
+      "time": {
+        "type": "string"
+      },
+      "user": {
+        "$ref": "./users.json#/OID"
+      }
+    }
+  },
+  "Schedule_Edit": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "$ref": "./users.json#/OID"
+      },
+      "dock": {
+        "$ref": "./users.json#/OID"
+      },
+      "time": {
+        "type": "string"
+      },
+      "user": {
+        "$ref": "./users.json#/OID"
+      }
+    }
+  }
+}
