@@ -30,25 +30,26 @@
 		},
 		"schemas": {
 			"allOf": [
-				{ "$ref": "./api/schemas/schemas.json" },
 				{ "$ref": "./api/schemas/boats.json" },
-				{ "$ref": "./api/schemas/docks.json" },
-				{ "$ref": "./api/schemas/users.json" },
-				{ "$ref": "./api/schemas/regions.json" },
-				{ "$ref": "./api/schemas/enterprises.json" },
 				{ "$ref": "./api/schemas/comments.json" },
+				{ "$ref": "./api/schemas/docks.json" },
+				{ "$ref": "./api/schemas/enterprises.json" },
+				{ "$ref": "./api/schemas/paths.json" },
+				{ "$ref": "./api/schemas/regions.json" },
+				{ "$ref": "./api/schemas/schemas.json" },
+				{ "$ref": "./api/schemas/users.json" },
 				{ "$ref": "./api/schemas/vote.json" }
 			]
 		}
 	},
 	"paths": {
 		"allOf": [
-			{ "$ref": "./api/paths/users.json" },
 			{ "$ref": "./api/paths/boats.json" },
 			{ "$ref": "./api/paths/docks.json" },
-			{ "$ref": "./api/paths/docks.json" },
+			{ "$ref": "./api/paths/enterprises.json" },
+			{ "$ref": "./api/paths/paths.json" },
 			{ "$ref": "./api/paths/regions.json" },
-			{ "$ref": "./api/paths/enterprises.json" }
+			{ "$ref": "./api/paths/users.json" }
 		]
 	}
 }
