@@ -1,0 +1,504 @@
+{
+	"info": {
+		"_postman_id": "47faa11c-b67a-4889-b489-fe86abbea543",
+		"name": "Embarcaciones",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-47faa11c-b67a-4889-b489-fe86abbea543"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Listar",
+					"id": "e90b555a-caa0-464e-a328-a0aec2dc73f4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/boats/",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"boats",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ver embarcación",
+					"id": "13a11d86-1385-489e-afbc-9ed96c5ab06c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/boats/:boat_id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"boats",
+								":boat_id"
+							],
+							"variable": [
+								{
+									"id": "101ce2de-00f7-43ee-8fcb-5327ab67fc24",
+									"key": "boat_id",
+									"value": "{{Embarcación Apple Pie}}",
+									"description": "ID de la embarcación"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "91959289-b1ca-49aa-b869-627bf9bbe5ff"
+		},
+		{
+			"name": "Actualizar información",
+			"item": [
+				{
+					"name": "Edición rápida",
+					"id": "4ac0b1fd-73be-4cd4-9c85-34a29febae06",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Velero Libertad\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/boats/:boat_id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"boats",
+								":boat_id"
+							],
+							"variable": [
+								{
+									"id": "1bd5b35d-2652-49fe-95a2-35693172f87c",
+									"key": "boat_id",
+									"value": "{{Embarcación Apple Pie}}",
+									"description": "ID de la embarcación"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deshabilitar",
+					"id": "71aa901a-a9f3-48ff-b98f-3abd001797d3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/boats/:boat_id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"boats",
+								":boat_id"
+							],
+							"variable": [
+								{
+									"id": "203920fa-3c50-4530-92e7-169ae5088602",
+									"key": "boat_id",
+									"value": "{{Embarcación Apple Pie}}",
+									"description": "ID de la embarcación"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "3d86a2b1-9f82-4813-b5fe-6988040b4d72"
+		},
+		{
+			"name": "Reseñas",
+			"item": [
+				{
+					"name": "Comentarios",
+					"item": [
+						{
+							"name": "Ver comentarios",
+							"id": "d0b3f3d8-31e6-404e-acd5-6710f2125943",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/boats/:boat_id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"boats",
+										":boat_id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "bbeefb75-de53-475f-857f-e2fcbfd196fa",
+											"key": "boat_id",
+											"value": "{{Embarcación Apple Pie}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Publicar comentario",
+							"id": "acb63ea5-03a8-43db-af6e-a5c19bbc99e4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Comentario de prueba. \"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Base}}/boats/:boat_id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"boats",
+										":boat_id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "02aea0c3-1bf6-4d58-b0e0-94ad403bce35",
+											"key": "boat_id",
+											"value": "{{Embarcación Apple Pie}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "f887f1e3-f2ec-4341-bcd6-6980602f7060"
+				},
+				{
+					"name": "Votos",
+					"item": [
+						{
+							"name": "Ver votos",
+							"id": "8b987c22-7b2b-4fb9-9991-8b99c747a8c0",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/boats/:boat_id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"boats",
+										":boat_id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "ed4c230a-6fce-4203-805a-dbb84a719ae2",
+											"key": "boat_id",
+											"value": "{{Embarcación Apple Pie}}",
+											"description": "ID de la embarcación"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Upvote",
+							"id": "aa4a3c51-1c9d-4eb3-b188-9ae130327c44",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/boats/:boat_id/votes/upvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"boats",
+										":boat_id",
+										"votes",
+										"upvote"
+									],
+									"variable": [
+										{
+											"id": "dfa0b500-6a2e-4e1f-8624-a1f56e17923b",
+											"key": "boat_id",
+											"value": "{{Embarcación Apple Pie}}",
+											"description": "ID de la embarcación"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Downvote",
+							"id": "53b55d3f-cf44-48ec-9e1e-4a35174ddb9b",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/boats/:boat_id/votes/downvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"boats",
+										":boat_id",
+										"votes",
+										"downvote"
+									],
+									"variable": [
+										{
+											"id": "befff9d1-2e74-4ba8-9c46-2f8c179de4d6",
+											"key": "boat_id",
+											"value": "{{Embarcación Apple Pie}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Eliminar voto",
+							"id": "26b3c575-e7c9-4d10-8053-a1d58fe7c97b",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/boats/:boat_id/votes/",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"boats",
+										":boat_id",
+										"votes",
+										""
+									],
+									"variable": [
+										{
+											"id": "5a2a8d38-fef7-4523-bd6c-c68586142a3d",
+											"key": "boat_id",
+											"value": "{{Embarcación Apple Pie}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "14d87a8a-f1b4-4e34-a305-1dcd81dc91b6",
+					"description": "Ver, emitir y eliminar votos."
+				}
+			],
+			"id": "9bc29fef-3068-4718-bbae-78bc7bc1f4b4"
+		},
+		{
+			"name": "Imágenes",
+			"item": [
+				{
+					"name": "Ver imágenes",
+					"id": "f16e3a51-fbc0-4782-a876-4eb9c4b182a3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/boats/:boat_id/pictures",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"boats",
+								":boat_id",
+								"pictures"
+							],
+							"variable": [
+								{
+									"id": "40c815fb-4ee8-472f-ad95-b59f944dbf3b",
+									"key": "boat_id",
+									"value": "{{Embarcación Apple Pie}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publicar una imagen",
+					"id": "db0cf750-ce11-42fa-b896-c782d8b22bce",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"fileNotInWorkingDirectoryWarning": "This file isn't in your working directory. Teammates you share this request with won't be able to use this file. To make collaboration easier you can setup your working directory in Settings.",
+									"filesNotInWorkingDirectory": [
+										"/F:/Downloads/Austin_A_6_03.jpg"
+									],
+									"src": "/F:/Downloads/Austin_A_6_03.jpg"
+								},
+								{
+									"key": "description",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{Base}}/boats/:boat_id/pictures",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"boats",
+								":boat_id",
+								"pictures"
+							],
+							"variable": [
+								{
+									"id": "88801bc2-7e8e-48a7-9d45-18811ec67051",
+									"key": "boat_id",
+									"value": "{{Embarcación Apple Pie}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "f7f617c2-8fd5-462a-9783-8416f1aab9c5"
+		},
+		{
+			"name": "Registrar embarcación",
+			"id": "a4f6fefd-c333-4b1f-9cc1-9b4ef75ded8e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"mat\": \"FAKE-01\",\r\n    \"name\": \"Apple Pie\",\r\n    \"status\": true,\r\n    \"enterprise\": \"{{Interislander F.S.A.}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base}}/boats/",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"boats",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{clientToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0fbc1848-3049-4058-8f89-63f84c3f9744",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "18134770-03bd-4a5b-976b-27e0623fc4af",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

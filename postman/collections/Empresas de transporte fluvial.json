@@ -1,0 +1,583 @@
+{
+	"info": {
+		"_postman_id": "e5f7567f-ba40-4b0d-9ea4-d56c8d8c74bf",
+		"name": "Empresas de transporte fluvial",
+		"description": "Todo lo relacionado al manejo de registros de empresas de transporte fluvial.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-e5f7567f-ba40-4b0d-9ea4-d56c8d8c74bf"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Ver empresa",
+					"id": "7ed9d9a5-5524-412a-b034-247373df1759",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/enterprises/:enterprise_id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"enterprises",
+								":enterprise_id"
+							],
+							"variable": [
+								{
+									"id": "0c3da19c-6486-4f3b-a2c7-4f28cb779363",
+									"key": "enterprise_id",
+									"value": "659b2198d7c57b99f8498643",
+									"description": "ID de la empresa."
+								}
+							]
+						},
+						"description": "Devuelve un JSON con los datos de la empresa.\n\nSi no hay empresa con el ID especificado, devuelve HTTP 404."
+					},
+					"response": []
+				},
+				{
+					"name": "Listar",
+					"id": "b3434034-3a88-45d1-b986-ec62a860fcff",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/enterprises/",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"enterprises",
+								""
+							]
+						},
+						"description": "Lista todos los registros de empresa."
+					},
+					"response": []
+				}
+			],
+			"id": "54da631c-a207-471b-a80d-7ea51f728982"
+		},
+		{
+			"name": "Actualizar información",
+			"item": [
+				{
+					"name": "Editar registro",
+					"id": "ba63325f-dd4e-4ac8-ba26-3acb9a8e4830",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cuit\": 10101001007,\r\n    \"name\": \"Interislander F.S.A.\",\r\n    \"description\": \"Empresa ficticia de transporte fluvial de pasajeros. \",\r\n    \"foundationDate\": \"2000-01-01\",\r\n    \"phones\": [\r\n        \"+541130304041\",\r\n        \"03484447001\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/enterprises/:enterprise_id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"enterprises",
+								":enterprise_id"
+							],
+							"variable": [
+								{
+									"id": "3559a3e4-a088-492e-a7f2-2e137539cdb1",
+									"key": "enterprise_id",
+									"value": "659b2198d7c57b99f8498643",
+									"description": "ID de la empresa."
+								}
+							]
+						},
+						"description": "Edita todos los datos de la empresa."
+					},
+					"response": []
+				},
+				{
+					"name": "Edición rápida",
+					"id": "61ce5352-00aa-44bb-8ee0-e6707c7e4772",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Interislander F.S.A.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/enterprises/:enterprise_id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"enterprises",
+								":enterprise_id"
+							],
+							"variable": [
+								{
+									"id": "bfce3fb7-57d9-4fdc-83e8-00c746a38171",
+									"key": "enterprise_id",
+									"value": "659b2198d7c57b99f8498643",
+									"description": "ID de la empresa."
+								}
+							]
+						},
+						"description": "Permite hacer ediciones rápidas. No requiere que se envíen todas las propiedades."
+					},
+					"response": []
+				},
+				{
+					"name": "Deshabilitar",
+					"id": "5012ba9b-06fd-42f3-88c2-df03acf95037",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/enterprises/:enterprise_id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"enterprises",
+								":enterprise_id"
+							],
+							"variable": [
+								{
+									"id": "17773d23-d650-4afd-8a99-9cfe9f36c205",
+									"key": "enterprise_id",
+									"value": "659b2198d7c57b99f8498643"
+								}
+							]
+						},
+						"description": "Deshabilita un registro de empresa."
+					},
+					"response": []
+				}
+			],
+			"id": "36a03d0e-53de-442c-b24b-9c9acb0b5bdb"
+		},
+		{
+			"name": "Teléfonos",
+			"item": [
+				{
+					"name": "Listar teléfonos",
+					"id": "d5454c6c-41e5-4ac4-b4a1-48b8a51784b0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/enterprises/:enterprise_id/phones",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"enterprises",
+								":enterprise_id",
+								"phones"
+							],
+							"variable": [
+								{
+									"id": "46e3a27b-b510-40fa-a510-f193717d10c0",
+									"key": "enterprise_id",
+									"value": "659b2198d7c57b99f8498643",
+									"description": "ID de la empresa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Agregar teléfono",
+					"id": "db20e7fd-c1aa-4c8b-be72-3d9e4fc84fc5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\": \"1130355154\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/enterprises/:enterprise_id/phones",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"enterprises",
+								":enterprise_id",
+								"phones"
+							],
+							"variable": [
+								{
+									"id": "4211592d-4d49-4f49-8a1b-353f2b3b7a33",
+									"key": "enterprise_id",
+									"value": "659b2198d7c57b99f8498643",
+									"description": "ID de la empresa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Borrar teléfono",
+					"id": "a8e2a139-6fbd-4126-8914-4361aefeb4aa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"phone\": \"1130355154\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/enterprises/:enterprise_id/phones",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"enterprises",
+								":enterprise_id",
+								"phones"
+							],
+							"variable": [
+								{
+									"id": "4211592d-4d49-4f49-8a1b-353f2b3b7a33",
+									"key": "enterprise_id",
+									"value": "659b2198d7c57b99f8498643",
+									"description": "ID de la empresa"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "c1e793e6-2c87-4704-8af5-f0984795a5e6"
+		},
+		{
+			"name": "Reseñas",
+			"item": [
+				{
+					"name": "Votos",
+					"item": [
+						{
+							"name": "Ver votos",
+							"id": "30ed146e-52ee-4188-844a-a200818b5688",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/enterprises/:enterprise_id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"enterprises",
+										":enterprise_id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "4190fe8c-fafd-414d-b246-ac226b4ceec2",
+											"key": "enterprise_id",
+											"value": "659b2198d7c57b99f8498643",
+											"description": "ID de la empresa"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Upvote",
+							"id": "e5da0c89-1731-4b79-8fc0-b378f9bc8cb8",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/enterprises/:enterprise_id/votes/upvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"enterprises",
+										":enterprise_id",
+										"votes",
+										"upvote"
+									],
+									"variable": [
+										{
+											"id": "7d18d609-176e-4785-acd6-d2c78f11fd4c",
+											"key": "enterprise_id",
+											"value": "659b2198d7c57b99f8498643",
+											"description": "ID de la empresa"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Downvote",
+							"id": "0316a4ea-1080-4cd9-8f75-4e3da906d136",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/enterprises/:enterprise_id/votes/downvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"enterprises",
+										":enterprise_id",
+										"votes",
+										"downvote"
+									],
+									"variable": [
+										{
+											"id": "7d18d609-176e-4785-acd6-d2c78f11fd4c",
+											"key": "enterprise_id",
+											"value": "659b2198d7c57b99f8498643",
+											"description": "ID de la empresa"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Eliminar voto",
+							"id": "33d8f479-ff06-40ca-8c55-a57a017fa52d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/enterprises/:enterprise_id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"enterprises",
+										":enterprise_id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "7d18d609-176e-4785-acd6-d2c78f11fd4c",
+											"key": "enterprise_id",
+											"value": "659b2198d7c57b99f8498643",
+											"description": "ID de la empresa"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "3a1bd005-e1dc-4d47-b49e-2dbbe7998cdf",
+					"description": "Ver, emitir y eliminar votos."
+				},
+				{
+					"name": "Comentarios",
+					"item": [
+						{
+							"name": "Ver comentarios",
+							"id": "7b2a17bf-585b-4a7a-9118-680bf5625fef",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/enterprises/:enterprise_id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"enterprises",
+										":enterprise_id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "6ca3552e-ca9e-4918-b244-104fd5ae62a3",
+											"key": "enterprise_id",
+											"value": "{{Interislander F.S.A.}}",
+											"description": "ID de la empresa"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Publicar comentario",
+							"id": "90b70c05-6d09-4211-ba7a-abdfadcdd9f0",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Comentario de prueba. \"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Base}}/enterprises/:enterprise_id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"enterprises",
+										":enterprise_id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "8f706145-e443-4eb1-bbfa-ecd11038974d",
+											"key": "enterprise_id",
+											"value": "659b2198d7c57b99f8498643",
+											"description": "ID de la empresa"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "ac0ad3a7-52fd-41d2-b304-fc725f48b42e"
+				}
+			],
+			"id": "3d57fd58-a7fe-4a59-8c68-71d2f7658b5f"
+		},
+		{
+			"name": "Registrar empresa",
+			"id": "e26e956b-6f56-441c-9b1a-a17c5bb549fe",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"cuit\": 10101001005,\r\n    \"name\": \"Interislander F.S.A.\",\r\n    \"description\": \"Empresa ficticia de transporte fluvial de pasajeros. \",\r\n    \"foundationDate\": \"2000-01-01\",\r\n    \"phones\": [\r\n        \"+541130304040\",\r\n        \"03484447000\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base}}/enterprises/",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"enterprises",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{clientToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "bb9ec90e-d5d6-4ad0-b518-4ce883f905c1",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "25e12752-505a-4005-9643-ec7b975c7f0a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

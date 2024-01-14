@@ -1,0 +1,414 @@
+{
+	"info": {
+		"_postman_id": "783a6fa7-74f0-4438-8734-2b2ca1a5ea74",
+		"name": "Regiones",
+		"description": "En La Colectiva, las regiones son cuerpos de agua en dónde se agrupan muelles.\n\nEstos pueden ser ríos, arroyos, o hasta canales.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-783a6fa7-74f0-4438-8734-2b2ca1a5ea74"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Listar",
+					"id": "f2103349-7501-42cc-8113-d5169fec075f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/regions/",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"regions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ver región",
+					"id": "f61e92b2-c2f8-425d-b9fc-143b25773038",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/regions/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"regions",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "721cc112-bcf1-4510-b554-31bd842fa951",
+									"key": "id",
+									"value": "{{Arroyo Libertad}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "fa165bf6-3999-4a1a-aefa-02d1bcbc96cf"
+		},
+		{
+			"name": "Actualizar información",
+			"item": [
+				{
+					"name": "Edición rápida",
+					"id": "12470664-5390-4b22-8a5b-9a2240122213",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{Base}}/regions/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"regions",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "5b7c76bb-de6b-4b2a-961b-93c14c84c3d2",
+									"key": "id",
+									"value": "659b43f30a1cbf6c9347e3fb"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deshabilitar",
+					"id": "68fa1e82-37b9-463d-afd5-d5e1a148aaef",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/regions/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"regions",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "808dd805-903e-488c-bd98-56db184443ee",
+									"key": "id",
+									"value": "659b43f30a1cbf6c9347e3fb"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "d49ae6d2-f39f-4474-a9c3-31f4b678ac9f"
+		},
+		{
+			"name": "Reseñas",
+			"item": [
+				{
+					"name": "Votos",
+					"item": [
+						{
+							"name": "Ver votos",
+							"id": "c73360da-95c2-4984-b5a9-6765e8517e3b",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/regions/:id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"regions",
+										":id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "1690182b-c632-4280-b254-58e8a34f291e",
+											"key": "id",
+											"value": "{{Arroyo Libertad}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Upvote",
+							"id": "64a08ab4-441d-474e-8dd7-a8d4a3d6a36a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/regions/:id/votes/upvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"regions",
+										":id",
+										"votes",
+										"upvote"
+									],
+									"variable": [
+										{
+											"id": "6c04be93-9512-4472-8f29-03a23220cd41",
+											"key": "id",
+											"value": "{{Arroyo Libertad}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Downvote",
+							"id": "00171c6d-1c3b-455b-9738-4ee9e0853aee",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/regions/:id/votes/downvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"regions",
+										":id",
+										"votes",
+										"downvote"
+									],
+									"variable": [
+										{
+											"id": "208ead7a-cffe-4642-aba4-61d6c6a7dc47",
+											"key": "id",
+											"value": "{{Arroyo Libertad}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Eliminar voto",
+							"id": "dd3102ce-2a6a-47b6-84e7-5a2ab2e9be31",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/regions/:id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"regions",
+										":id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "18730b13-75c5-4a27-b4f1-b594378cc8f0",
+											"key": "id",
+											"value": "{{Arroyo Libertad}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "e4eb4b54-d711-42eb-a591-6ebfad75704b",
+					"description": "Ver, emitir y eliminar votos."
+				},
+				{
+					"name": "Comentarios",
+					"item": [
+						{
+							"name": "Ver comentarios",
+							"id": "19294d52-5be1-434e-bc1c-a5c3505d1483",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/regions/:id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"regions",
+										":id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "2a7d0d18-f2ee-44c8-9b37-ab7ba2badb7a",
+											"key": "id",
+											"value": "{{Arroyo Libertad}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Publicar comentario",
+							"id": "0e64f2d1-cd0b-4036-ae37-3b2df1dbd00c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"Comentario de prueba. \"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{Base}}/regions/:id/comments",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"regions",
+										":id",
+										"comments"
+									],
+									"variable": [
+										{
+											"id": "43bcb2a9-d444-4cbb-9b3e-d0f5be94a4ea",
+											"key": "id",
+											"value": "{{Arroyo Libertad}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "5d70f092-a77d-4f23-9498-461ef53f8a7a"
+				}
+			],
+			"id": "35ceb9b3-2b92-47a2-8a4b-e45783db2c34"
+		},
+		{
+			"name": "Registrar región",
+			"id": "ef482746-0a52-4837-8d51-a833c0004a0e",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Libertad\",\r\n    \"type\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base}}/regions/",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"regions",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{clientToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f0bb4225-b364-4d3a-a447-bc684596be9b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "002688f6-ba1a-4e75-9dfa-384d7d71d2b3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

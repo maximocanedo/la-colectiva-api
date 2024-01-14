@@ -1,0 +1,278 @@
+{
+	"info": {
+		"_postman_id": "5cce4483-9c5d-4243-b96a-d508f813429e",
+		"name": "Disponibilidad",
+		"description": "Los recorridos tienen disponibilidades, que definen las condiciones en las que un recorrido se realiza.\n\nAlgunos recorridos ocurren los días de semana, otros, en fines de semana. Algunos pasan una vez por semana, y otros, todos los días.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "27731665-5cce4483-9c5d-4243-b96a-d508f813429e"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Ver disponibilidad",
+					"id": "78a01c83-40c2-45a9-b120-58f7afae0354",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/availabilities/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"availabilities",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "27b04c6c-30f6-484d-b40b-1c9c3b6abe1e",
+									"key": "id",
+									"value": "{{Disponibilidad LUNES R.M. 1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "979ff9d9-4509-4f5a-97d0-721a03c3660a"
+		},
+		{
+			"name": "Actualizar información",
+			"item": [
+				{
+					"name": "Deshabilitar disponibilidad",
+					"id": "02442bc2-4237-4fb7-a22f-245760b0ad89",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{Base}}/availabilities/:id",
+							"host": [
+								"{{Base}}"
+							],
+							"path": [
+								"availabilities",
+								":id"
+							],
+							"variable": [
+								{
+									"id": "27a2dd86-6b20-4438-838c-8f370e0993f3",
+									"key": "id",
+									"value": "{{Disponibilidad LUNES R.M. 1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "808b29d3-d4eb-4479-a550-8862e8992b78"
+		},
+		{
+			"name": "Reseñas",
+			"item": [
+				{
+					"name": "Votos",
+					"item": [
+						{
+							"name": "Ver votos",
+							"id": "6c5fe9ae-0c94-4f44-a499-8d7202c37e3e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/availabilities/:id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"availabilities",
+										":id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "9adced97-de41-47b6-be82-f3a7cac25c62",
+											"key": "id",
+											"value": "{{Disponibilidad LUNES R.M. 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Upvote",
+							"id": "4c33f1c1-07db-4012-abfa-b9322969c65b",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/availabilities/:id/votes/upvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"availabilities",
+										":id",
+										"votes",
+										"upvote"
+									],
+									"variable": [
+										{
+											"id": "ada61528-cd25-4076-9213-68d67e4e519d",
+											"key": "id",
+											"value": "{{Disponibilidad LUNES R.M. 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Dar Downvote",
+							"id": "219f8558-c363-4815-bd74-ec24a5ea8286",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/availabilities/:id/votes/downvote",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"availabilities",
+										":id",
+										"votes",
+										"downvote"
+									],
+									"variable": [
+										{
+											"id": "c2e5792d-485a-4cc5-a55e-f1cb5c4cb145",
+											"key": "id",
+											"value": "{{Disponibilidad LUNES R.M. 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Eliminar voto",
+							"id": "5cd8b4e7-a161-452d-aaf1-d7f391316f84",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{Base}}/availabilities/:id/votes",
+									"host": [
+										"{{Base}}"
+									],
+									"path": [
+										"availabilities",
+										":id",
+										"votes"
+									],
+									"variable": [
+										{
+											"id": "dbf1bba5-a37c-4b88-bcef-4fd4693a4138",
+											"key": "id",
+											"value": "{{Disponibilidad LUNES R.M. 1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "db8f5818-a26e-45be-a54d-1f7f573df306",
+					"description": "Ver, emitir y eliminar votos."
+				}
+			],
+			"id": "db227884-0933-4005-8fd0-ddf5fe1d1711"
+		},
+		{
+			"name": "Registrar disponibilidad",
+			"id": "cf120a4b-04d1-46ec-a2d5-960be2c79cdd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"path\": \"{{Recorrido matutino 1}}\",\r\n    \"condition\": \"FRIDAY\",\r\n    \"available\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base}}/availabilities",
+					"host": [
+						"{{Base}}"
+					],
+					"path": [
+						"availabilities"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{clientToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "de3340e0-79d1-4203-acbf-d9c37f0cef63",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "8b512fad-b4cf-44fa-be46-258fed44d9bf",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
