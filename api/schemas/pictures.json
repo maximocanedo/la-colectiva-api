@@ -18,11 +18,51 @@
       }
     }
   },
+  "pictureDetailsView": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "$ref": "./../schemas/users.json#/OID"
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "$ref": "./../schemas/users.json#/OID"
+          },
+          "name": {
+            "$ref": "./../schemas/users.json#/User_Name"
+          }
+        }
+      },
+      "description": {
+        "type": "string"
+      },
+      "uploadDate": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
   "pictureEdit": {
     "type": "object",
     "properties": {
       "description": {
         "type": "string"
+      }
+    }
+  },
+  "pictureList": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "$ref": "./users.json#/OID"
+      },
+      "pictures": {
+        "type": "array",
+        "items": {
+          "$ref": "#/pictureDetailsView"
+        }
       }
     }
   }

@@ -372,6 +372,153 @@
       }
     }
   },
+  "/docks/{id}/pictures": {
+    "post": {
+      "description": "Subir una imagen. ",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "./../schemas/users.json#/OID"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "file"
+              ]
+            },
+            "encoding": {
+              "file": {
+                "contentType": "image/*"
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Imagen subida con éxito. "
+        },
+        "400": {
+          "description": "Error de validación.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "No inició sesión.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "No dispone de los permisos suficientes para realizar esta acción.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "El recurso no existe.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Error interno. ",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        }
+      }
+    },
+    "get": {
+      "description": "Obtener imágenes vinculadas a este registro. ",
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "./../schemas/users.json#/OID"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Imágenes obtenidas. ",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/pictures.json#/pictureList"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "El recurso no existe.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Error interno. ",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./../schemas/schemas.json#/GeneralError"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "/docks/{id}/comments": {
     "get": {
       "description": "Obtener comentarios. ",
