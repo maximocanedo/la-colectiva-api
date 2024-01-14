@@ -1,0 +1,121 @@
+{
+  "Boat_Mat": {
+    "type": "string",
+    "min": 2,
+    "max": 16
+  },
+  "Boat_Name": {
+    "type": "string",
+    "max": 48,
+    "min": 3
+  },
+  "Boat_Status": {
+    "description": "Estado de la embarcación: Si está en servicio o no. ",
+    "type": "boolean"
+  },
+  "Boat_EnterpriseID": {
+    "$ref": "./users.json#/OID"
+  },
+  "Boat_EnterpriseView": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "$ref": "#/Boat_EnterpriseID"
+      },
+      "name": {
+        "$ref": "./enterprises.json#/Enterprise_Name"
+      }
+    }
+  },
+  "Boat_UserID": {
+    "$ref": "./users.json#/OID"
+  },
+  "Boat_UserView": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "$ref": "#/Boat_EnterpriseID"
+      },
+      "name": {
+        "$ref": "./users.json#/User_Name"
+      }
+    }
+  },
+  "Boat_Version": {
+    "type": "number"
+  },
+  "Boat_UploadDate": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Fecha de carga de la embarcación en formato ISO 8601."
+  },
+  "Boat_Active": {
+    "type": "boolean"
+  },
+  "Boat": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "$ref": "./users.json#/OID"
+      },
+      "mat": {
+        "$ref": "#/Boat_Mat"
+      },
+      "name": {
+        "$ref": "#/Boat_Name"
+      },
+      "status": {
+        "$ref": "#/Boat_Status"
+      },
+      "enterprise": {
+        "$ref": "#/Boat_EnterpriseView"
+      },
+      "user": {
+        "$ref": "#/Boat_UserView"
+      },
+      "_v": {
+        "$ref": "#/Boat_Version"
+      },
+      "pictures": {
+        "type": "array",
+        "items": {
+          "$ref": "./users.json#/OID"
+        }
+      }
+    }
+  },
+  "Boat_Post": {
+    "type": "object",
+    "properties": {
+      "mat": {
+        "$ref": "#/Boat_Mat"
+      },
+      "name": {
+        "$ref": "#/Boat_Name"
+      },
+      "status": {
+        "$ref": "#/Boat_Status"
+      },
+      "enterprise": {
+        "$ref": "#/Boat_EnterpriseView"
+      }
+    }
+  },
+  "Boat_Edit": {
+    "type": "object",
+    "properties": {
+      "mat": {
+        "$ref": "#/Boat_Mat"
+      },
+      "name": {
+        "$ref": "#/Boat_Name"
+      },
+      "status": {
+        "$ref": "#/Boat_Status"
+      },
+      "enterprise": {
+        "$ref": "#/Boat_EnterpriseView"
+      }
+    }
+  }
+}
