@@ -30,6 +30,7 @@
 		},
 		"schemas": {
 			"allOf": [
+				{ "$ref": "./api/schemas/availabilities.json" },
 				{ "$ref": "./api/schemas/boats.json" },
 				{ "$ref": "./api/schemas/comments.json" },
 				{ "$ref": "./api/schemas/docks.json" },
@@ -44,6 +45,7 @@
 	},
 	"paths": {
 		"allOf": [
+			{ "$ref": "./api/paths/availabilities.json" },
 			{ "$ref": "./api/paths/boats.json" },
 			{ "$ref": "./api/paths/docks.json" },
 			{ "$ref": "./api/paths/enterprises.json" },

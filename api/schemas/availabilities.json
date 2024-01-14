@@ -1,0 +1,67 @@
+{
+  "Availability": {
+    "type": "object",
+    "properties": {
+      "_id": {
+        "$ref": "./users.json#/OID"
+      },
+      "path": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "$ref": "./users.json#/OID"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 48,
+            "minLength": 3,
+            "description": "Título del recorrido"
+          }
+        }
+      },
+      "condition": {
+        "type": "string"
+      },
+      "available": {
+        "type": "boolean"
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "$ref": "./../schemas/users.json#/OID"
+          },
+          "name": {
+            "$ref": "./../schemas/users.json#/User_Name"
+          }
+        }
+      },
+      "uploadDate": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Fecha de carga del recorrido"
+      },
+      "active": {
+        "type": "boolean",
+        "description": "Estado activo/desactivo del recorrido"
+      },
+      "__v": {
+        "type": "number"
+      }
+    }
+  },
+  "Availability_Post": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "$ref": "./users.json#/OID"
+      },
+      "condition": {
+        "type": "string"
+      },
+      "available": {
+        "type": "boolean"
+      },
+    }
+  }
+}
