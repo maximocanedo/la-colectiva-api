@@ -32,6 +32,7 @@
 			"allOf": [
 				{ "$ref": "./api/schemas/schemas.json" },
 				{ "$ref": "./api/schemas/boats.json" },
+				{ "$ref": "./api/schemas/docks.json" },
 				{ "$ref": "./api/schemas/users.json" },
 				{ "$ref": "./api/schemas/regions.json" },
 				{ "$ref": "./api/schemas/enterprises.json" },
@@ -44,6 +45,8 @@
 		"allOf": [
 			{ "$ref": "./api/paths/users.json" },
 			{ "$ref": "./api/paths/boats.json" },
+			{ "$ref": "./api/paths/docks.json" },
+			{ "$ref": "./api/paths/docks.json" },
 			{ "$ref": "./api/paths/regions.json" },
 			{ "$ref": "./api/paths/enterprises.json" }
 		]
