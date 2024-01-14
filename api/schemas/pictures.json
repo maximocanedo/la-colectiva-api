@@ -1,0 +1,29 @@
+{
+  "pictureDetails": {
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string",
+        "format": "uri"
+      },
+      "user": {
+        "$ref": "./users.json#/OID"
+      },
+      "description": {
+        "type": "string"
+      },
+      "uploadDate": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "pictureEdit": {
+    "type": "object",
+    "properties": {
+      "description": {
+        "type": "string"
+      }
+    }
+  }
+}
