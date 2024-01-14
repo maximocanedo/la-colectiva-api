@@ -19,6 +19,7 @@
     "type": "string",
     "description": "Contenido del comentario."
   },
+
   "Comment": {
     "type": "object",
     "properties": {
@@ -46,6 +47,15 @@
       "__v": {
         "type": "integer",
         "description": "Versión interna del comentario."
+      }
+    }
+  },
+  "Comment_Edit": {
+    "type": "object",
+    "properties": {
+      "content": {
+        "type": "string",
+        "description": "Contenido del comentario."
       }
     }
   },

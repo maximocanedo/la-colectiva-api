@@ -48,6 +48,7 @@
 		"allOf": [
 			{ "$ref": "./api/paths/availabilities.json" },
 			{ "$ref": "./api/paths/boats.json" },
+			{ "$ref": "./api/paths/comments.json" },
 			{ "$ref": "./api/paths/docks.json" },
 			{ "$ref": "./api/paths/enterprises.json" },
 			{ "$ref": "./api/paths/paths.json" },
