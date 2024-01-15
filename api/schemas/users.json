@@ -1,4 +1,5 @@
 {
+  "definitions": {
     "OID": {
       "type": "string"
     },
@@ -26,4 +27,5 @@
     "User_Role": {
       "type": "integer"
     }
+  }
 }

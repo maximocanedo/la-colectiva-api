@@ -1,125 +1,127 @@
 {
-  "Dock": {
-    "type": "object",
-    "properties": {
-      "_id": {
-        "$ref": "./users.json#/OID"
-      },
-      "name": {
-        "type": "string",
-        "maxLength": 48,
-        "minLength": 3,
-        "required": true
-      },
-      "address": {
-        "type": "number"
-      },
-      "region": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "$ref": "./../schemas/users.json#/OID"
-          },
-          "name": {
-            "$ref": "./../schemas/regions.json#/Region_Name"
-          },
-          "type": {
-            "$ref": "./../schemas/regions.json#/Region_Type"
-          }
-        }
-      },
-      "notes": {
-        "type": "string",
-        "maxLength": 128
-      },
-      "status": {
-        "type": "number",
-        "required": true
-      },
-      "user": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "$ref": "./../schemas/users.json#/OID"
-          },
-          "name": {
-            "$ref": "./../schemas/users.json#/User_Name"
-          }
-        }
-      },
-      "coordinates": {
-        "type": "array",
-        "items": {
+  "definitions": {
+    "Dock": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "./users.json#/definitions/OID"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 48,
+          "minLength": 3,
+          "required": true
+        },
+        "address": {
           "type": "number"
         },
-        "required": true
-      },
-      "uploadDate": {
-        "type": "string",
-        "format": "date-time"
-      },
-      "__v": {
-        "type": "number"
+        "region": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            },
+            "name": {
+              "$ref": "./../schemas/regions.json#/definitions/Region_Name"
+            },
+            "type": {
+              "$ref": "./../schemas/regions.json#/definitions/Region_Type"
+            }
+          }
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "status": {
+          "type": "number",
+          "required": true
+        },
+        "user": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            },
+            "name": {
+              "$ref": "./../schemas/users.json#/definitions/User_Name"
+            }
+          }
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "required": true
+        },
+        "uploadDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "__v": {
+          "type": "number"
+        }
       }
-    }
-  },
-  "Dock_Post": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "type": "string",
-        "maxLength": 48,
-        "minLength": 3,
-        "required": true
-      },
-      "address": {
-        "type": "number"
-      },
-      "region": {
-        "$ref": "./users.json#/OID"
-      },
-      "notes": {
-        "type": "string",
-        "maxLength": 128
-      },
-      "status": {
-        "type": "number",
-        "required": true
-      },
-      "coordinates": {
-        "type": "array",
-        "items": {
+    },
+    "Dock_Post": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 48,
+          "minLength": 3,
+          "required": true
+        },
+        "address": {
           "type": "number"
         },
-        "required": true
+        "region": {
+          "$ref": "./users.json#/definitions/OID"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "status": {
+          "type": "number",
+          "required": true
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "required": true
+        }
       }
-    }
-  },
-  "Dock_Edit": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "type": "string",
-        "maxLength": 48,
-        "minLength": 3
-      },
-      "address": {
-        "type": "number"
-      },
-      "region": {
-        "$ref": "./users.json#/OID"
-      },
-      "notes": {
-        "type": "string",
-        "maxLength": 128
-      },
-      "status": {
-        "type": "number"
-      },
-      "coordinates": {
-        "type": "array",
-        "items": {
+    },
+    "Dock_Edit": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 48,
+          "minLength": 3
+        },
+        "address": {
           "type": "number"
+        },
+        "region": {
+          "$ref": "./users.json#/definitions/OID"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "status": {
+          "type": "number"
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
         }
       }
     }

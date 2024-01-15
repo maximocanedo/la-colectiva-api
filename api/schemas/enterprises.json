@@ -1,99 +1,101 @@
 {
-  "Enterprise": {
-    "type": "object",
-    "properties": {
-      "_id": {
-        "$ref": "./users.json#/OID"
-      },
-      "cuit": {
-        "$ref": "#/Enterprise_CUIT"
-      },
-      "name": {
-        "$ref": "#/Enterprise_Name"
-      },
-      "user": {
-        "$ref": "#/Enterprise_User"
-      },
-      "description": {
-        "$ref": "#/Enterprise_Description"
-      },
-      "uploadDate": {
-        "$ref": "#/Enterprise_UploadDate"
-      },
-      "foundationDate": {
-        "$ref": "#/Enterprise_FoundationDate"
-      },
-      "phones": {
-        "$ref": "#/Enterprise_Phones"
-      },
-      "active": {
-        "$ref": "#/Enterprise_Active"
-      },
-      "__v": {
-        "type": "number"
+  "definitions": {
+    "Enterprise": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "./users.json#/definitions/OID"
+        },
+        "cuit": {
+          "$ref": "#/definitions/Enterprise_CUIT"
+        },
+        "name": {
+          "$ref": "#/definitions/Enterprise_Name"
+        },
+        "user": {
+          "$ref": "#/definitions/Enterprise_User"
+        },
+        "description": {
+          "$ref": "#/definitions/Enterprise_Description"
+        },
+        "uploadDate": {
+          "$ref": "#/definitions/Enterprise_UploadDate"
+        },
+        "foundationDate": {
+          "$ref": "#/definitions/Enterprise_FoundationDate"
+        },
+        "phones": {
+          "$ref": "#/definitions/Enterprise_Phones"
+        },
+        "active": {
+          "$ref": "#/definitions/Enterprise_Active"
+        },
+        "__v": {
+          "type": "number"
+        }
       }
-    }
-  },
-  "Enterprise_Post": {
-    "type": "object",
-    "properties": {
-      "cuit": {
-        "$ref": "#/Enterprise_CUIT"
-      },
-      "name": {
-        "$ref": "#/Enterprise_Name"
-      },
-      "description": {
-        "$ref": "#/Enterprise_Description"
-      },
-      "foundationDate": {
-        "$ref": "#/Enterprise_FoundationDate"
-      },
-      "phones": {
-        "$ref": "#/Enterprise_Phones"
+    },
+    "Enterprise_Post": {
+      "type": "object",
+      "properties": {
+        "cuit": {
+          "$ref": "#/definitions/Enterprise_CUIT"
+        },
+        "name": {
+          "$ref": "#/definitions/Enterprise_Name"
+        },
+        "description": {
+          "$ref": "#/definitions/Enterprise_Description"
+        },
+        "foundationDate": {
+          "$ref": "#/definitions/Enterprise_FoundationDate"
+        },
+        "phones": {
+          "$ref": "#/definitions/Enterprise_Phones"
+        }
       }
+    },
+    "Enterprise_Array": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Enterprise"
+      }
+    },
+    "Enterprise_CUIT": {
+      "type": "number"
+    },
+    "Enterprise_Name": {
+      "type": "string"
+    },
+    "Enterprise_User": {
+      "schema": {
+        "$ref": "./users.json#/definitions/OID"
+      }
+    },
+    "Enterprise_Description": {
+      "type": "string"
+    },
+    "Enterprise_UploadDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de carga de la región en formato ISO 8601."
+    },
+    "Enterprise_FoundationDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de fundación de la empresa en formato ISO 8601."
+    },
+    "Enterprise_Phone": {
+      "type": ["string", "number"]
+    },
+    "Enterprise_Phones": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Enterprise_Phone"
+      }
+    },
+    "Enterprise_Active": {
+      "type": "boolean"
     }
-  },
-  "Enterprise_Array": {
-    "type": "array",
-    "items": {
-      "$ref": "#/Enterprise"
-    }
-  },
-  "Enterprise_CUIT": {
-    "type": "number"
-  },
-  "Enterprise_Name": {
-    "type": "string"
-  },
-  "Enterprise_User": {
-    "schema": {
-      "$ref": "./users.json#/OID"
-    }
-  },
-  "Enterprise_Description": {
-    "type": "string"
-  },
-  "Enterprise_UploadDate": {
-    "type": "string",
-    "format": "date-time",
-    "description": "Fecha de carga de la región en formato ISO 8601."
-  },
-  "Enterprise_FoundationDate": {
-    "type": "string",
-    "format": "date-time",
-    "description": "Fecha de fundación de la empresa en formato ISO 8601."
-  },
-  "Enterprise_Phone": {
-    "type": ["string", "number"]
-  },
-  "Enterprise_Phones": {
-    "type": "array",
-    "items": {
-      "$ref": "#/Enterprise_Phone"
-    }
-  },
-  "Enterprise_Active": {
-    "type": "boolean"
   }
 }

@@ -30,33 +30,33 @@
 		},
 		"schemas": {
 			"allOf": [
-				{ "$ref": "./api/schemas/availabilities.json" },
-				{ "$ref": "./api/schemas/boats.json" },
-				{ "$ref": "./api/schemas/comments.json" },
-				{ "$ref": "./api/schemas/docks.json" },
-				{ "$ref": "./api/schemas/enterprises.json" },
-				{ "$ref": "./api/schemas/paths.json" },
-				{ "$ref": "./api/schemas/pictures.json" },
-				{ "$ref": "./api/schemas/regions.json" },
-				{ "$ref": "./api/schemas/schedules.json" },
-				{ "$ref": "./api/schemas/schemas.json" },
-				{ "$ref": "./api/schemas/users.json" },
-				{ "$ref": "./api/schemas/vote.json" }
+				{ "$ref": "./api/schemas/availabilities.json#/definitions" },
+				{ "$ref": "./api/schemas/boats.json#/definitions" },
+				{ "$ref": "./api/schemas/comments.json#/definitions" },
+				{ "$ref": "./api/schemas/docks.json#/definitions" },
+				{ "$ref": "./api/schemas/enterprises.json#/definitions" },
+				{ "$ref": "./api/schemas/paths.json#/definitions" },
+				{ "$ref": "./api/schemas/pictures.json#/definitions" },
+				{ "$ref": "./api/schemas/regions.json#/definitions" },
+				{ "$ref": "./api/schemas/schedules.json#/definitions" },
+				{ "$ref": "./api/schemas/schemas.json#/definitions" },
+				{ "$ref": "./api/schemas/users.json#/definitions" },
+				{ "$ref": "./api/schemas/vote.json#/definitions" }
 			]
 		}
 	},
 	"paths": {
 		"allOf": [
-			{ "$ref": "./api/paths/availabilities.json" },
-			{ "$ref": "./api/paths/boats.json" },
-			{ "$ref": "./api/paths/comments.json" },
-			{ "$ref": "./api/paths/docks.json" },
-			{ "$ref": "./api/paths/enterprises.json" },
-			{ "$ref": "./api/paths/paths.json" },
-			{ "$ref": "./api/paths/pictures.json" },
-			{ "$ref": "./api/paths/regions.json" },
-			{ "$ref": "./api/paths/schedules.json" },
-			{ "$ref": "./api/paths/users.json" }
+			{ "$ref": "./api/paths/availabilities.json#/definitions" },
+			{ "$ref": "./api/paths/boats.json#/definitions" },
+			{ "$ref": "./api/paths/comments.json#/definitions" },
+			{ "$ref": "./api/paths/docks.json#/definitions" },
+			{ "$ref": "./api/paths/enterprises.json#/definitions" },
+			{ "$ref": "./api/paths/paths.json#/definitions" },
+			{ "$ref": "./api/paths/pictures.json#/definitions" },
+			{ "$ref": "./api/paths/regions.json#/definitions" },
+			{ "$ref": "./api/paths/schedules.json#/definitions" },
+			{ "$ref": "./api/paths/users.json#/definitions" }
 		]
 	}
 }

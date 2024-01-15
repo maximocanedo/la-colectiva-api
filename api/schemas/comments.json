@@ -1,86 +1,88 @@
 {
-  "Author": {
-    "type": "object",
-    "properties": {
-      "_id": {
-        "$ref": "./users.json#/OID"
-      },
-      "username": {
-        "$ref": "./users.json#/User_Username",
-        "description": "Nombre de usuario."
-      },
-      "name": {
-        "$ref": "./users.json#/User_Name",
-        "description": "Nombre completo del usuario."
-      }
-    }
-  },
-  "Comment_Content": {
-    "type": "string",
-    "description": "Contenido del comentario."
-  },
-
-  "Comment": {
-    "type": "object",
-    "properties": {
-      "_id": {
-        "type": "string",
-        "description": "ID único del comentario."
-      },
-      "user": {
-        "$ref": "#/Author",
-        "description": "Información del autor del comentario."
-      },
-      "content": {
-        "type": "string",
-        "description": "Contenido del comentario."
-      },
-      "active": {
-        "type": "boolean",
-        "description": "Estado del comentario."
-      },
-      "uploadDate": {
-        "type": "string",
-        "format": "date-time",
-        "description": "Fecha de carga del comentario en formato ISO 8601."
-      },
-      "__v": {
-        "type": "integer",
-        "description": "Versión interna del comentario."
-      }
-    }
-  },
-  "Comment_Edit": {
-    "type": "object",
-    "properties": {
-      "content": {
-        "type": "string",
-        "description": "Contenido del comentario."
-      }
-    }
-  },
-  "CommentContainer": {
-    "type": "object",
-    "properties": {
-      "comments": {
-        "type": "array",
-        "items": {
-          "$ref": "#/Comment"
+  "definitions": {
+    "Author": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "./users.json#/definitions/OID"
         },
-        "description": "Matriz de comentarios."
-      },
-      "status": {
-        "type": "integer",
-        "description": "Código de estado de la solicitud."
-      },
-      "error": {
-        "schema": {
-          "$ref": "./schemas.json#/Error"
+        "username": {
+          "$ref": "./users.json#/definitions/User_Username",
+          "description": "Nombre de usuario."
+        },
+        "name": {
+          "$ref": "./users.json#/definitions/User_Name",
+          "description": "Nombre completo del usuario."
         }
-      },
-      "msg": {
-        "type": "string",
-        "description": "Mensaje relacionado con la solicitud."
+      }
+    },
+    "Comment_Content": {
+      "type": "string",
+      "description": "Contenido del comentario."
+    },
+
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "ID único del comentario."
+        },
+        "user": {
+          "$ref": "#/definitions/Author",
+          "description": "Información del autor del comentario."
+        },
+        "content": {
+          "type": "string",
+          "description": "Contenido del comentario."
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Estado del comentario."
+        },
+        "uploadDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha de carga del comentario en formato ISO 8601."
+        },
+        "__v": {
+          "type": "integer",
+          "description": "Versión interna del comentario."
+        }
+      }
+    },
+    "Comment_Edit": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "Contenido del comentario."
+        }
+      }
+    },
+    "CommentContainer": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          },
+          "description": "Matriz de comentarios."
+        },
+        "status": {
+          "type": "integer",
+          "description": "Código de estado de la solicitud."
+        },
+        "error": {
+          "schema": {
+            "$ref": "./schemas.json#/definitions/Error"
+          }
+        },
+        "msg": {
+          "type": "string",
+          "description": "Mensaje relacionado con la solicitud."
+        }
       }
     }
   }

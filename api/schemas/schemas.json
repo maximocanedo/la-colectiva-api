@@ -1,184 +1,187 @@
 {
-	"Error": {
-		"type": "object",
-		"properties": {
-			"code": {
-				"type": "string"
-			},
-			"message": {
-				"type": "string"
-			},
-			"details": {
-				"type": "string"
-			}
-		}
-	},
-	"GeneralError": {
-		"type": "object",
-		"properties": {
-			"error": null,
-			"schema": {
-				"$ref": "#/Error"
-			}
-		}
-	},
-	"UserSignUp": {
-		"description": "Usuario a añadir al sistema.",
-		"type": "object",
-		"required": ["username", "name", "bio", "email", "birth", "password"],
-		"properties": {
-			"username": {
-				"schema": {
-					"$ref": "#/User_Username"
-				}
-			},
-			"name": {
-				"schema": {
-					"$ref": "#/User_Name"
-				}
-			},
-			"bio": {
-				"schema": {
-					"$ref": "#/User_Bio"
-				}
-			},
-			"email": {
-				"schema": {
-					"$ref": "#/User_Email"
-				}
-			},
-			"birth": {
-				"schema": {
-					"$ref": "#/User_Birth"
+	"definitions": {
+		"Error": {
+			"type": "object",
+			"properties": {
+				"code": {
+					"type": "string"
+				},
+				"message": {
+					"type": "string"
+				},
+				"details": {
+					"type": "string"
 				}
 			}
 		},
-		"password": {
-			"schema": {
-				"$ref": "#/User_Password"
-			}
-		}
-	},
-	"User": {
-		"type": "object",
-		"properties": {
-			"_id": {
+		"GeneralError": {
+			"type": "object",
+			"properties": {
+				"error": null,
 				"schema": {
-					"$ref": "#/OID"
-				}
-			},
-			"username": {
-				"schema": {
-					"$ref": "#/User_Username"
-				}
-			},
-			"name": {
-				"schema": {
-					"$ref": "#/User_Name"
-				}
-			},
-			"bio": {
-				"schema": {
-					"$ref": "#/User_Bio"
-				}
-			},
-			"email": {
-				"schema": {
-					"$ref": "#/User_Email"
-				}
-			},
-			"birth": {
-				"schema": {
-					"$ref": "#/User_Birth"
-				}
-			},
-			"role": {
-				"schema": {
-					"$ref": "#/User_Role"
-				}
-			},
-			"__v": {
-				"schema": {
-					"$ref": "#/Version"
+					"$ref": "#/definitions/Error"
 				}
 			}
-		}
-	},
-	"UserEdit": {
-		"description": "Datos actualizables",
-		"type": "object",
-		"properties": {
-			"name": {
-				"schema": {
-					"$ref": "#/User_Name"
-				}
-			},
-			"bio": {
-				"schema": {
-					"$ref": "#/User_Bio"
-				}
-			},
-			"email": {
-				"schema": {
-					"$ref": "#/User_Email"
-				}
-			},
-			"birth": {
-				"schema": {
-					"$ref": "#/User_Birth"
-				}
-			}
-		}
-	},
-	"UserUpdatePassOrRole": {
-		"description": "Datos requeridos para actualizar la contraseña o el rol de un usuario.",
-		"type": "object",
-		"properties": {
-			"password": null,
-			"schema": {
-				"$ref": "#/User_Password"
-			},
-			"role": {
-				"schema": {
-					"$ref": "#/User_Role"
-				}
-			}
-		}
-	},
-	"MailVerificationResponse": {
-		"description": "Respuesta al solicitar código de verificación.",
-		"type": "object",
-		"properties": {
-			"validationId": {
-				"type": "integer"
-			},
-			"error": {
-				"schema": {
-					"$ref": "#/Error"
-				}
-			}
-		}
-	},
-	"AuthReq": {
-		"description": "Campos requeridos para iniciar sesión.",
-		"type": "object",
-		"required": ["password"],
-		"properties": {
-			"username": {
-				"schema": {
-					"$ref": "#/User_Username"
+		},
+		"UserSignUp": {
+			"description": "Usuario a añadir al sistema.",
+			"type": "object",
+			"required": ["username", "name", "bio", "email", "birth", "password"],
+			"properties": {
+				"username": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Username"
+					}
+				},
+				"name": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Name"
+					}
+				},
+				"bio": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Bio"
+					}
+				},
+				"email": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Email"
+					}
+				},
+				"birth": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Birth"
+					}
 				}
 			},
 			"password": {
 				"schema": {
-					"$ref": "#/User_Password"
+					"$ref": "./users.json#/definitions/User_Password"
 				}
-			},
-			"mail": {
+			}
+		},
+		"User": {
+			"type": "object",
+			"properties": {
+				"_id": {
+					"schema": {
+						"$ref": "./users.json#/definitions/OID"
+					}
+				},
+				"username": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Username"
+					}
+				},
+				"name": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Name"
+					}
+				},
+				"bio": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Bio"
+					}
+				},
+				"email": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Email"
+					}
+				},
+				"birth": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Birth"
+					}
+				},
+				"role": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Role"
+					}
+				},
+				"__v": {
+					"schema": {
+						"$ref": "./users.json#/definitions/Version"
+					}
+				}
+			}
+		},
+		"UserEdit": {
+			"description": "Datos actualizables",
+			"type": "object",
+			"properties": {
+				"name": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Name"
+					}
+				},
+				"bio": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Bio"
+					}
+				},
+				"email": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Email"
+					}
+				},
+				"birth": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Birth"
+					}
+				}
+			}
+		},
+		"UserUpdatePassOrRole": {
+			"description": "Datos requeridos para actualizar la contraseña o el rol de un usuario.",
+			"type": "object",
+			"properties": {
+				"password": null,
 				"schema": {
-					"$ref": "#/User_Email"
+					"$ref": "./users.json#/definitions/User_Password"
+				},
+				"role": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Role"
+					}
+				}
+			}
+		},
+		"MailVerificationResponse": {
+			"description": "Respuesta al solicitar código de verificación.",
+			"type": "object",
+			"properties": {
+				"validationId": {
+					"type": "integer"
+				},
+				"error": {
+					"schema": {
+						"$ref": "#/definitions/Error"
+					}
+				}
+			}
+		},
+		"AuthReq": {
+			"description": "Campos requeridos para iniciar sesión.",
+			"type": "object",
+			"required": ["password"],
+			"properties": {
+				"username": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Username"
+					}
+				},
+				"password": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Password"
+					}
+				},
+				"mail": {
+					"schema": {
+						"$ref": "./users.json#/definitions/User_Email"
+					}
 				}
 			}
 		}
 	}
+
 }

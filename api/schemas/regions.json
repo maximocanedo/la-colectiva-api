@@ -1,88 +1,91 @@
 {
-  "Region_ID": {
-    "type": "string",
-    "description": "ID único de la región."
-  },
-  "Region_Name": {
-    "type": "string",
-    "description": "Nombre de la región."
-  },
-  "Region_User": {
-    "$ref": "./users.json#/OID"
-  },
-  "Region_Type": {
-    "type": "integer",
-    "description": "Tipo de región."
-  },
-  "Region_UploadDate": {
-    "type": "string",
-    "format": "date-time",
-    "description": "Fecha de carga de la región en formato ISO 8601."
-  },
-  "Region_Active": {
-    "type": "boolean",
-    "description": "Estado de activación de la región."
-  },
-  "Region_Version": {
-    "type": "integer",
-    "description": "Versión interna."
-  },
-  "Region_Post": {
-    "type": "object",
-    "required": [
-      "name",
-      "type"
-    ],
-    "properties": {
-      "name": {
-        "$ref": "#/Region_Name"
-      },
-      "type": {
-        "$ref": "#/Region_Type"
+  "definitions": {
+    "Region_ID": {
+      "type": "string",
+      "description": "ID único de la región."
+    },
+    "Region_Name": {
+      "type": "string",
+      "description": "Nombre de la región."
+    },
+    "Region_User": {
+      "$ref": "./users.json#/definitions/OID"
+    },
+    "Region_Type": {
+      "type": "integer",
+      "description": "Tipo de región."
+    },
+    "Region_UploadDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fecha de carga de la región en formato ISO 8601."
+    },
+    "Region_Active": {
+      "type": "boolean",
+      "description": "Estado de activación de la región."
+    },
+    "Region_Version": {
+      "type": "integer",
+      "description": "Versión interna."
+    },
+    "Region_Post": {
+      "type": "object",
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/Region_Name"
+        },
+        "type": {
+          "$ref": "#/definitions/Region_Type"
+        }
       }
-    }
-  },
-  "Region_Patch": {
-    "type": "object",
-    "properties": {
-      "name": {
-        "$ref": "#/Region_Name"
-      },
-      "type": {
-        "$ref": "#/Region_Type"
+    },
+    "Region_Patch": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/Region_Name"
+        },
+        "type": {
+          "$ref": "#/definitions/Region_Type"
+        }
       }
-    }
-  },
-  "Region": {
-    "type": "object",
-    "properties": {
-      "_id": {
-        "$ref": "#/Region_ID"
-      },
-      "name": {
-        "$ref": "#/Region_Name"
-      },
-      "user": {
-        "$ref": "#/Region_User"
-      },
-      "type": {
-        "$ref": "#/Region_Type"
-      },
-      "uploadDate": {
-        "$ref": "#/Region_UploadDate"
-      },
-      "active": {
-        "$ref": "#/Region_Active"
-      },
-      "__v": {
-        "$ref": "#/Region_Version"
+    },
+    "Region": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "#/definitions/Region_ID"
+        },
+        "name": {
+          "$ref": "#/definitions/Region_Name"
+        },
+        "user": {
+          "$ref": "#/definitions/Region_User"
+        },
+        "type": {
+          "$ref": "#/definitions/Region_Type"
+        },
+        "uploadDate": {
+          "$ref": "#/definitions/Region_UploadDate"
+        },
+        "active": {
+          "$ref": "#/definitions/Region_Active"
+        },
+        "__v": {
+          "$ref": "#/definitions/Region_Version"
+        }
       }
-    }
-  },
-  "RegionArray": {
-    "type": "array",
-    "items": {
-      "$ref": "#/Region"
+    },
+    "RegionArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Region"
+      }
     }
   }
+
 }

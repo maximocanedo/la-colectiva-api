@@ -1,727 +1,729 @@
 {
-  "/schedules":  {
-    "post": {
-      "description": "Crear un horario. ",
-      "operationId": "createSchedule",
-      "security": [
-        {
-          "bearerAuth": []
-        }
-      ],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "./../schemas/schedules.json#/Schedule_Post"
-            }
+  "definitions": {
+    "/schedules":  {
+      "post": {
+        "description": "Crear un horario. ",
+        "operationId": "createSchedule",
+        "security": [
+          {
+            "bearerAuth": []
           }
-        }
-      },
-      "responses": {
-        "201": {
-          "description": "Horario registrado correctamente. "
-        },
-        "400": {
-          "description": "Error de validación.",
+        ],
+        "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+                "$ref": "./../schemas/schedules.json#/definitions/Schedule_Post"
               }
             }
           }
         },
-        "401": {
-          "description": "No inició sesión.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "403": {
-          "description": "No dispone de los permisos suficientes para realizar esta acción.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/schedules/{id}": {
-    "get": {
-      "description": "Obtener horario por ID. ",
-      "operationId": "getScheduleById",
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Horario obtenido. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schedules.json#/Schedule"
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        }
-      }
-    },
-    "patch": {
-      "description": "Editar un horario por ID. ",
-      "operationId": "editScheduleById",
-      "security": [
-        {
-          "bearerAuth": []
-        }
-      ],
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
-          }
-        }
-      ],
-      "requestBody": {
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "./../schemas/schedules.json#/Schedule_Edit"
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "El recurso se modificó correctamente. "
-        },
-        "400": {
-          "description": "Error de validación.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "401": {
-          "description": "No inició sesión.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "403": {
-          "description": "No dispone de los permisos suficientes para realizar esta acción.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        }
-      }
-    },
-    "delete": {
-      "description": "Deshabilitar un horario por ID. ",
-      "operationId": "deleteScheduleById",
-      "security": [
-        {
-          "bearerAuth": []
-        }
-      ],
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "El recurso se deshabilitó correctamente. "
-        },
-        "401": {
-          "description": "No inició sesión.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "403": {
-          "description": "No dispone de los permisos suficientes para realizar esta acción.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "/schedules/{id}/comments": {
-    "get": {
-      "description": "Obtener comentarios. ",
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
-          }
-        },
-        {
-          "name": "p",
-          "in": "query",
-          "required": false,
-          "schema": {
-            "type": "number"
-          }
-        },
-        {
-          "name": "itemsPerPage",
-          "in": "query",
-          "required": false,
-          "schema": {
-            "type": "number"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Operación exitosa. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/comments.json#/CommentContainer"
-              }
-            }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/comments.json#/CommentContainer"
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/comments.json#/CommentContainer"
-              }
-            }
-          }
-        }
-      }
-    },
-    "post": {
-      "description": "Publicar un comentario. ",
-      "security": [
-        {
-          "bearerAuth": []
-        }
-      ],
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
-          }
-        },
-        {
-          "name": "p",
-          "in": "query",
-          "required": false,
-          "schema": {
-            "type": "number"
-          }
-        },
-        {
-          "name": "itemsPerPage",
-          "in": "query",
-          "required": false,
-          "schema": {
-            "type": "number"
-          }
-        }
-      ],
-      "requestBody": {
-        "description": "Contenido del comentario. ",
-        "content": {
-          "application/json": {
-            "type": "object",
-            "properties": {
-              "content": {
+        "responses": {
+          "201": {
+            "description": "Horario registrado correctamente. "
+          },
+          "400": {
+            "description": "Error de validación.",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "$ref": "./../schemas/comments.json#/Comment_Content"
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No inició sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No dispone de los permisos suficientes para realizar esta acción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El recurso no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schedules/{id}": {
+      "get": {
+        "description": "Obtener horario por ID. ",
+        "operationId": "getScheduleById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Horario obtenido. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schedules.json#/definitions/Schedule"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El recurso no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
                 }
               }
             }
           }
         }
       },
-      "responses": {
-        "201": {
-          "description": "Operación exitosa. ",
+      "patch": {
+        "description": "Editar un horario por ID. ",
+        "operationId": "editScheduleById",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            }
+          }
+        ],
+        "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "./../schemas/comments.json#/CommentContainer"
+                "$ref": "./../schemas/schedules.json#/definitions/Schedule_Edit"
               }
             }
           }
         },
-        "400": {
-          "description": "Error de validación.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+        "responses": {
+          "200": {
+            "description": "El recurso se modificó correctamente. "
+          },
+          "400": {
+            "description": "Error de validación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "401": {
-          "description": "No inició sesión.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "401": {
+            "description": "No inició sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "403": {
-          "description": "No dispone de los permisos suficientes para realizar esta acción.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "403": {
+            "description": "No dispone de los permisos suficientes para realizar esta acción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/comments.json#/CommentContainer"
+          },
+          "404": {
+            "description": "El recurso no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/comments.json#/CommentContainer"
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
           }
         }
-      }
-    }
-  },
-  "/schedules/{id}/votes": {
-    "get": {
-      "description": "Obtener votos. ",
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
+      },
+      "delete": {
+        "description": "Deshabilitar un horario por ID. ",
+        "operationId": "deleteScheduleById",
+        "security": [
+          {
+            "bearerAuth": []
           }
-        }
-      ],
-      "security": [
-        {
-          "bearerAuth": []
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Operación exitosa. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/vote.json#/VoteStatus"
-              }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
             }
           }
-        },
-        "401": {
-          "description": "No inició sesión.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+        ],
+        "responses": {
+          "200": {
+            "description": "El recurso se deshabilitó correctamente. "
+          },
+          "401": {
+            "description": "No inició sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "403": {
-          "description": "No dispone de los permisos suficientes para realizar esta acción.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "403": {
+            "description": "No dispone de los permisos suficientes para realizar esta acción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "404": {
+            "description": "El recurso no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
           }
         }
       }
     },
-    "delete": {
-      "description": "Eliminar voto emitido. ",
-      "security": [
-        {
-          "bearerAuth": []
+    "/schedules/{id}/comments": {
+      "get": {
+        "description": "Obtener comentarios. ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            }
+          },
+          {
+            "name": "p",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/comments.json#/definitions/CommentContainer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El recurso no existe. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/comments.json#/definitions/CommentContainer"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/comments.json#/definitions/CommentContainer"
+                }
+              }
+            }
+          }
         }
-      ],
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
+      },
+      "post": {
+        "description": "Publicar un comentario. ",
+        "security": [
+          {
+            "bearerAuth": []
           }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Operación exitosa. ",
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            }
+          },
+          {
+            "name": "p",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "itemsPerPage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Contenido del comentario. ",
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "./../schemas/vote.json#/VoteStatus"
+              "type": "object",
+              "properties": {
+                "content": {
+                  "schema": {
+                    "$ref": "./../schemas/comments.json#/definitions/Comment_Content"
+                  }
+                }
               }
             }
           }
         },
-        "401": {
-          "description": "No inició sesión.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+        "responses": {
+          "201": {
+            "description": "Operación exitosa. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/comments.json#/definitions/CommentContainer"
+                }
               }
             }
-          }
-        },
-        "403": {
-          "description": "No dispone de los permisos suficientes para realizar esta acción.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "400": {
+            "description": "Error de validación.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "401": {
+            "description": "No inició sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "403": {
+            "description": "No dispone de los permisos suficientes para realizar esta acción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El recurso no existe. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/comments.json#/definitions/CommentContainer"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/comments.json#/definitions/CommentContainer"
+                }
               }
             }
           }
         }
       }
-    }
-  },
-  "/schedules/{id}/votes/upvote": {
-    "post": {
-      "description": "Emitir upvote. ",
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
+    },
+    "/schedules/{id}/votes": {
+      "get": {
+        "description": "Obtener votos. ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/vote.json#/definitions/VoteStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No inició sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No dispone de los permisos suficientes para realizar esta acción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El recurso no existe. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
           }
         }
-      ],
-      "security": [
-        {
-          "bearerAuth": []
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Operación exitosa. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/vote.json#/VoteStatus"
-              }
+      },
+      "delete": {
+        "description": "Eliminar voto emitido. ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
             }
           }
-        },
-        "401": {
-          "description": "No inició sesión.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/vote.json#/definitions/VoteStatus"
+                }
               }
             }
-          }
-        },
-        "403": {
-          "description": "No dispone de los permisos suficientes para realizar esta acción.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "401": {
+            "description": "No inició sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "403": {
+            "description": "No dispone de los permisos suficientes para realizar esta acción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "404": {
+            "description": "El recurso no existe. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
           }
         }
       }
-    }
-  },
-  "/schedules/{id}/votes/downvote": {
-    "post": {
-      "description": "Emitir downvote. ",
-      "parameters": [
-        {
-          "name": "id",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "$ref": "./../schemas/users.json#/OID"
+    },
+    "/schedules/{id}/votes/upvote": {
+      "post": {
+        "description": "Emitir upvote. ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/vote.json#/definitions/VoteStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No inició sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "No dispone de los permisos suficientes para realizar esta acción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El recurso no existe. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
           }
         }
-      ],
-      "security": [
-        {
-          "bearerAuth": []
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Operación exitosa. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/vote.json#/VoteStatus"
-              }
+      }
+    },
+    "/schedules/{id}/votes/downvote": {
+      "post": {
+        "description": "Emitir downvote. ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
             }
           }
-        },
-        "401": {
-          "description": "No inició sesión.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/vote.json#/definitions/VoteStatus"
+                }
               }
             }
-          }
-        },
-        "403": {
-          "description": "No dispone de los permisos suficientes para realizar esta acción.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "401": {
+            "description": "No inició sesión.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "404": {
-          "description": "El recurso no existe. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "403": {
+            "description": "No dispone de los permisos suficientes para realizar esta acción.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
-          }
-        },
-        "500": {
-          "description": "Error interno. ",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "./../schemas/schemas.json#/GeneralError"
+          },
+          "404": {
+            "description": "El recurso no existe. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./../schemas/schemas.json#/definitions/GeneralError"
+                }
               }
             }
           }

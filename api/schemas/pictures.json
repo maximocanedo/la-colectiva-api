@@ -1,67 +1,69 @@
 {
-  "pictureDetails": {
-    "type": "object",
-    "properties": {
-      "url": {
-        "type": "string",
-        "format": "uri"
-      },
-      "user": {
-        "$ref": "./users.json#/OID"
-      },
-      "description": {
-        "type": "string"
-      },
-      "uploadDate": {
-        "type": "string",
-        "format": "date-time"
-      }
-    }
-  },
-  "pictureDetailsView": {
-    "type": "object",
-    "properties": {
-      "_id": {
-        "$ref": "./../schemas/users.json#/OID"
-      },
-      "user": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "$ref": "./../schemas/users.json#/OID"
-          },
-          "name": {
-            "$ref": "./../schemas/users.json#/User_Name"
-          }
+  "definitions": {
+    "pictureDetails": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "user": {
+          "$ref": "./users.json#/definitions/OID"
+        },
+        "description": {
+          "type": "string"
+        },
+        "uploadDate": {
+          "type": "string",
+          "format": "date-time"
         }
-      },
-      "description": {
-        "type": "string"
-      },
-      "uploadDate": {
-        "type": "string",
-        "format": "date-time"
       }
-    }
-  },
-  "pictureEdit": {
-    "type": "object",
-    "properties": {
-      "description": {
-        "type": "string"
+    },
+    "pictureDetailsView": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "./../schemas/users.json#/definitions/OID"
+        },
+        "user": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            },
+            "name": {
+              "$ref": "./../schemas/users.json#/definitions/User_Name"
+            }
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "uploadDate": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
-    }
-  },
-  "pictureList": {
-    "type": "object",
-    "properties": {
-      "_id": {
-        "$ref": "./users.json#/OID"
-      },
-      "pictures": {
-        "type": "array",
-        "items": {
-          "$ref": "#/pictureDetailsView"
+    },
+    "pictureEdit": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "pictureList": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "./users.json#/definitions/OID"
+        },
+        "pictures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pictureDetailsView"
+          }
         }
       }
     }

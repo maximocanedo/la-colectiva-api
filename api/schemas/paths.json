@@ -1,107 +1,109 @@
 {
-  "Path": {
-    "type": "object",
-    "properties": {
-      "_id": {
-        "$ref": "./../schemas/users.json#/OID"
-      },
-      "boat": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "$ref": "./../schemas/users.json#/OID"
-          },
-          "name": {
-            "$ref": "./../schemas/boats.json#/Boat_Name"
+  "definitions": {
+    "Path": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "./../schemas/users.json#/definitions/OID"
+        },
+        "boat": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            },
+            "name": {
+              "$ref": "./../schemas/boats.json#/definitions/Boat_Name"
+            }
           }
-        }
-      },
-      "title": {
-        "type": "string",
-        "maxLength": 48,
-        "minLength": 3,
-        "description": "Título del recorrido"
-      },
-      "user": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "$ref": "./../schemas/users.json#/OID"
-          },
-          "name": {
-            "$ref": "./../schemas/users.json#/User_Name"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 48,
+          "minLength": 3,
+          "description": "Título del recorrido"
+        },
+        "user": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "$ref": "./../schemas/users.json#/definitions/OID"
+            },
+            "name": {
+              "$ref": "./../schemas/users.json#/definitions/User_Name"
+            }
           }
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 3,
+          "description": "Descripción del recorrido"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Notas adicionales del recorrido"
+        },
+        "uploadDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Fecha de carga del recorrido"
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Estado activo/desactivo del recorrido"
         }
-      },
-      "description": {
-        "type": "string",
-        "maxLength": 128,
-        "minLength": 3,
-        "description": "Descripción del recorrido"
-      },
-      "notes": {
-        "type": "string",
-        "maxLength": 256,
-        "description": "Notas adicionales del recorrido"
-      },
-      "uploadDate": {
-        "type": "string",
-        "format": "date-time",
-        "description": "Fecha de carga del recorrido"
-      },
-      "active": {
-        "type": "boolean",
-        "description": "Estado activo/desactivo del recorrido"
       }
-    }
-  },
-  "Path_Post": {
-    "type": "object",
-    "properties": {
-      "boat": {
-        "$ref": "./../schemas/users.json#/OID"
-      },
-      "title": {
-        "type": "string",
-        "maxLength": 48,
-        "minLength": 3,
-        "description": "Título del recorrido"
-      },
-      "description": {
-        "type": "string",
-        "maxLength": 128,
-        "minLength": 3,
-        "description": "Descripción del recorrido"
-      },
-      "notes": {
-        "type": "string",
-        "maxLength": 256,
-        "description": "Notas adicionales del recorrido"
+    },
+    "Path_Post": {
+      "type": "object",
+      "properties": {
+        "boat": {
+          "$ref": "./../schemas/users.json#/definitions/OID"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 48,
+          "minLength": 3,
+          "description": "Título del recorrido"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 3,
+          "description": "Descripción del recorrido"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Notas adicionales del recorrido"
+        }
       }
-    }
-  },
-  "Path_Edit": {
-    "type": "object",
-    "properties": {
-      "boat": {
-        "$ref": "./../schemas/users.json#/OID"
-      },
-      "title": {
-        "type": "string",
-        "maxLength": 48,
-        "minLength": 3,
-        "description": "Título del recorrido"
-      },
-      "description": {
-        "type": "string",
-        "maxLength": 128,
-        "minLength": 3,
-        "description": "Descripción del recorrido"
-      },
-      "notes": {
-        "type": "string",
-        "maxLength": 256,
-        "description": "Notas adicionales del recorrido"
+    },
+    "Path_Edit": {
+      "type": "object",
+      "properties": {
+        "boat": {
+          "$ref": "./../schemas/users.json#/definitions/OID"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 48,
+          "minLength": 3,
+          "description": "Título del recorrido"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 3,
+          "description": "Descripción del recorrido"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 256,
+          "description": "Notas adicionales del recorrido"
+        }
       }
     }
   }
