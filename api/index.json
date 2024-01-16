@@ -1586,9 +1586,11 @@
 					}
 				],
 				"requestBody": {
-					"application/json": {
-						"schema": {
-							"$ref": "#/components/schemas/Boat_Post"
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Boat_Post"
+							}
 						}
 					}
 				},
@@ -1768,9 +1770,11 @@
 					}
 				],
 				"requestBody": {
-					"application/json": {
-						"schema": {
-							"$ref": "#/components/schemas/Boat_Edit"
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Boat_Edit"
+							}
 						}
 					}
 				},
@@ -2141,11 +2145,13 @@
 					"description": "Contenido del comentario. ",
 					"content": {
 						"application/json": {
-							"type": "object",
-							"properties": {
-								"content": {
-									"schema": {
-										"$ref": "#/components/schemas/Comment_Content"
+							"schema": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"schema": {
+											"$ref": "#/components/schemas/Comment_Content"
+										}
 									}
 								}
 							}
@@ -3273,11 +3279,13 @@
 					"description": "Contenido del comentario. ",
 					"content": {
 						"application/json": {
-							"type": "object",
-							"properties": {
-								"content": {
-									"schema": {
-										"$ref": "#/components/schemas/Comment_Content"
+							"schema": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"schema": {
+											"$ref": "#/components/schemas/Comment_Content"
+										}
 									}
 								}
 							}
@@ -3646,8 +3654,10 @@
 				"requestBody": {
 					"description": "Campos del registro a crear. ",
 					"content": {
-						"schema": {
-							"$ref": "#/components/schemas/Enterprise_Post"
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Enterprise_Post"
+							}
 						}
 					}
 				},
@@ -4118,11 +4128,13 @@
 					"description": "Contenido del comentario. ",
 					"content": {
 						"application/json": {
-							"type": "object",
-							"properties": {
-								"content": {
-									"schema": {
-										"$ref": "#/components/schemas/Comment_Content"
+							"schema": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"schema": {
+											"$ref": "#/components/schemas/Comment_Content"
+										}
 									}
 								}
 							}
@@ -4925,11 +4937,13 @@
 					"description": "Contenido del comentario. ",
 					"content": {
 						"application/json": {
-							"type": "object",
-							"properties": {
-								"content": {
-									"schema": {
-										"$ref": "#/components/schemas/Comment_Content"
+							"schema": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"schema": {
+											"$ref": "#/components/schemas/Comment_Content"
+										}
 									}
 								}
 							}
@@ -5772,11 +5786,13 @@
 					"description": "Contenido del comentario. ",
 					"content": {
 						"application/json": {
-							"type": "object",
-							"properties": {
-								"content": {
-									"schema": {
-										"$ref": "#/components/schemas/Comment_Content"
+							"schema": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"schema": {
+											"$ref": "#/components/schemas/Comment_Content"
+										}
 									}
 								}
 							}
@@ -6515,11 +6531,13 @@
 					"description": "Contenido del comentario. ",
 					"content": {
 						"application/json": {
-							"type": "object",
-							"properties": {
-								"content": {
-									"schema": {
-										"$ref": "#/components/schemas/Comment_Content"
+							"schema": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"schema": {
+											"$ref": "#/components/schemas/Comment_Content"
+										}
 									}
 								}
 							}
@@ -7245,11 +7263,13 @@
 					"description": "Contenido del comentario. ",
 					"content": {
 						"application/json": {
-							"type": "object",
-							"properties": {
-								"content": {
-									"schema": {
-										"$ref": "#/components/schemas/Comment_Content"
+							"schema": {
+								"type": "object",
+								"properties": {
+									"content": {
+										"schema": {
+											"$ref": "#/components/schemas/Comment_Content"
+										}
 									}
 								}
 							}
