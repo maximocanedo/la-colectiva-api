@@ -6,7 +6,11 @@ import { NextFunction, Request, Response } from "express";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 import V from "../../validators";
-const edit = [
+import {IHistoryEvent} from "../../schemas/HistoryEvent";
+import {endpoint} from "../../interfaces/types/Endpoint";
+
+
+const edit: endpoint[] = [
     pre.auth,
     pre.allow.moderator,
     pre.expect({
@@ -42,19 +46,26 @@ const edit = [
                 });
                 return;
             }
+            let event: IHistoryEvent = {
+                content: "Edición parcial del recurso. ",
+                time: Date.now(),
+                user: req.user._id
+            };
             const { boat, title, description, notes, } =
                 req.body;
             if(boat) reg.boat = boat;
             if(title) reg.title = title;
             if(description) reg.description = description;
             if(notes) reg.notes = notes;
+            reg.history.push(event);
             await reg.save();
             res.status(200).json({
-                message: "Resource updated. ",
+                message: "Resource updated. "
             });
         } catch (err) {
             const error = defaultHandler(err as Error, E.CRUDOperationError);
             res.status(500).json({error});
         }
-    }];
+    }
+];
 export default edit;

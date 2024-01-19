@@ -23,6 +23,11 @@ const deleteOne = [pre.auth, pre.allow.moderator, async (req: Request, res: Resp
             return;
         }
         resource.active = false;
+        resource.history.push({
+            content: "Deshabilitación del recurso. ",
+            time: Date.now(),
+            user: req.user._id
+        });
         const status = await resource.save();
         res.status(200).json({
             message: "Data was disabled. ",

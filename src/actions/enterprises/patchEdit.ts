@@ -61,7 +61,6 @@ const patchEdit = [
                 time: Date.now(),
                 user: req.user._id
             };
-            // Actualiza solo los campos que se proporcionan en la solicitud
             if (name) {
                 en.name = name;
                 event.content = `Cambio de nombre a '${name}'.`;

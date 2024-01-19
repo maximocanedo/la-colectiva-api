@@ -5,6 +5,7 @@ import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
 import IPath from "../interfaces/models/IPath";
+import HistoryEvent from "./HistoryEvent";
 
 // const properties: string[] = ["boat", "user", "title", "description", "notes"];
 
@@ -53,7 +54,11 @@ const pathSchema: Schema<IPath, IPathModel> = new Schema<IPath, IPathModel>({
             ref: "Comment",
         },
     ],
-    validations: [ValidationSchema],
+    history: {
+        type: [ HistoryEvent ],
+        select: false
+    },
+    validations: [ ValidationSchema ],
 });
 
 
