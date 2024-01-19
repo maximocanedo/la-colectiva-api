@@ -35,8 +35,7 @@ const createOne = [
                 notes,
             });
             res.status(201).json({
-                id: reg._id,
-                message: "The file was successfully saved. ",
+                id: reg._id
             });
         } catch (err) {
             const error = defaultHandler(err as Error, E.CRUDOperationError);

@@ -50,8 +50,7 @@ const createOne: endpoint[] = [
                 time,
             });
             res.status(201).json({
-                id: reg._id,
-                message: "The file was successfully saved. ",
+                id: reg._id
             });
         } catch (e) {
             const error: IError | null = defaultHandler(e as Error, E.CRUDOperationError);
