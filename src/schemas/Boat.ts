@@ -7,6 +7,7 @@ import IValidation from "../interfaces/models/IValidation";
 import {IBoatListDataResponse} from "../interfaces/responses/Boat.interfaces";
 import Photo from "./Photo";
 import IBoat from "../interfaces/models/IBoat";
+import HistoryEvent from "./HistoryEvent";
 
 
 const requiredProps: string[] = ["mat", "name", "status", "enterprise", "user"];
@@ -59,6 +60,10 @@ const boatSchema: Schema<IBoat, IBoatModel> = new Schema<IBoat, IBoatModel>({
             ref: "Comment",
         },
     ],
+    history: {
+        type: [ HistoryEvent ],
+        select: false
+    },
     validations: [ValidationSchema],
     pictures: [
         {
@@ -113,8 +118,9 @@ boatSchema.statics.listData = async function (query, { page, itemsPerPage }): Pr
  * Método para enlazar una foto a un recurso.
  * @param resId ID del recurso al que se desea enlazar la foto.
  * @param picId ID de la foto que se desea enlazar.
+ * @param userId ID del usuario que está enlazando la imagen.
  */
-boatSchema.statics.linkPhoto = async function (resId, picId) {
+boatSchema.statics.linkPhoto = async function (resId, picId, userId: string) {
     try {
         // Crear el comentario y guardarlo
         const actualPhoto = await Photo.findOne({ _id: picId });
@@ -124,7 +130,16 @@ boatSchema.statics.linkPhoto = async function (resId, picId) {
             };
         await this.updateOne(
             { _id: resId },
-            { $push: { pictures: actualPhoto._id } }
+            {
+                $push: {
+                    pictures: actualPhoto._id,
+                    history: {
+                        content: "Vincular una imagen (@" + actualPhoto._id + ")",
+                        time: Date.now(),
+                        user: userId
+                    }
+                }
+            }
         );
         return {
             status: 201,

@@ -51,6 +51,13 @@ const createOne: endpoint[] = [
                 status,
                 enterprise,
                 user,
+                history: [
+                    {
+                        content: "Creación del recurso. ",
+                        time: Date.now(),
+                        user: req.user._id
+                    }
+                ]
             });
             res.status(201).json({
                 id: reg._id

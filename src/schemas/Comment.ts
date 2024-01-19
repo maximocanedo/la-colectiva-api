@@ -3,6 +3,7 @@ import mongoose, {Model, Schema} from "mongoose";
 import {ObjectId} from "mongodb";
 import moment from "moment-timezone";
 import IComment from "../interfaces/models/IComment";
+import HistoryEvent from "./HistoryEvent";
 
 const localDate = moment.tz(Date.now(), "America/Argentina/Buenos_Aires");
 
@@ -32,7 +33,7 @@ const CommentSchema: Schema<IComment, ICommentModel> = new Schema<IComment, ICom
         type: Boolean,
         required: true,
         default: true,
-    },
+    }
 });
 CommentSchema.statics.add = async function (userId, content): Promise<IComment> {
     try {

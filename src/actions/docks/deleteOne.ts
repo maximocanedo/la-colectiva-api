@@ -27,6 +27,11 @@ const deleteOne = async (req: Request, res: Response) => {
             return;
         }
         resource.active = false;
+        resource.history.push({
+            content: "Deshabilitar registro. ",
+            time: Date.now(),
+            user: req.user._id
+        });
         const status = await resource.save();
         res.status(200).json({
             message: "Data was disabled. ",

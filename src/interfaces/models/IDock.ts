@@ -3,6 +3,7 @@ import IValidation from "./IValidation";
 import IPictureable from "./IPictureable";
 import IValidatable from "./IValidatable";
 import ICommentable from "./ICommentable";
+import {IHistoryEvent} from "../../schemas/HistoryEvent";
 
 export type DockPropertyStatus = 0 | 1 | 2;
 export default interface IDock extends ICommentable, IValidatable, IPictureable {
@@ -16,4 +17,5 @@ export default interface IDock extends ICommentable, IValidatable, IPictureable 
     uploadDate: Date | string | number,
     active: boolean,
     coordinates: number[],
+    history: IHistoryEvent[]
 }

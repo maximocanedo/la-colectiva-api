@@ -6,6 +6,7 @@ import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
 import Photo from "./Photo";
 import IDock from "../interfaces/models/IDock";
+import HistoryEvent from "./HistoryEvent";
 
 const DOCK_PROPERTY_STATUS: any = {
     PRIVATE: 0,
@@ -69,6 +70,10 @@ const dockSchema: Schema<IDock, IDockModel> = new Schema<IDock, IDockModel>({
     coordinates: {
         type: [Number], // Array de números
         required: true,
+    },
+    history: {
+      select: false,
+      type: [ HistoryEvent ]
     },
     pictures: [
         {

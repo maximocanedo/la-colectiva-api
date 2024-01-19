@@ -52,6 +52,13 @@ const createOne: endpoint[] = [
                 region,
                 notes,
                 status,
+                history: [
+                    {
+                        content: "Creación del registro. ",
+                        time: Date.now(),
+                        user
+                    }
+                ],
                 coordinates // [ latitude, longitude ]
             });
             res.status(201).json({

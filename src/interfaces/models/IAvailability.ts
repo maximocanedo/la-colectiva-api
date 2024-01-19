@@ -2,6 +2,7 @@ import {ObjectId} from "mongodb";
 import IValidation from "./IValidation";
 import {Schema} from "mongoose";
 import IValidatable from "./IValidatable";
+import {IHistoryEvent} from "../../schemas/HistoryEvent";
 
 export default interface IAvailability extends IValidatable {
     _id: Schema.Types.ObjectId | string,
@@ -11,4 +12,5 @@ export default interface IAvailability extends IValidatable {
     user: Schema.Types.ObjectId | string;
     uploadDate: Date | string | number;
     active: boolean;
+    history: IHistoryEvent[];
 }

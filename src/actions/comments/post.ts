@@ -35,7 +35,11 @@ const addCommentForModel = async (Model: Model<any> | any, resId: string, conten
 
         await Model.updateOne(
             { _id: resId },
-            { $push: { comments: newComment._id } }
+            {
+                $push: {
+                    comments: newComment._id
+                }
+            }
         );
         const resource = await Comment.findById(newComment._id)
             .select("user content uploadDate active _v _id")

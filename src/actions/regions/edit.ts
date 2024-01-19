@@ -37,6 +37,11 @@ const edit: endpoint[] = [
             }
             if(name) reg.name = name;
             if(type) reg.type = type;
+            reg.history.push({
+                content: "Edición parcial del registro. ",
+                time: Date.now(),
+                user: req.user._id
+            });
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",

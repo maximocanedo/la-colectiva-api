@@ -68,7 +68,16 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
                     userId,
                     description
                 );
-                await model.updateOne({ _id: id }, { $push: { pictures: photoId } });
+                await model.updateOne({ _id: id }, {
+                    $push: {
+                        pictures: photoId,
+                        history: {
+                            content: "Vincular imagen. ",
+                            time: Date.now(),
+                            user: req.user._id
+                        }
+                    }
+                });
                 res.status(201).json({
                     id: photoId,
                     message: "The file was successfully saved. ",
@@ -93,7 +102,16 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
                     }).end();
                     return;
                 }
-                await model.updateOne({ _id: id }, { $pull: { pictures: photoId } });
+                await model.updateOne({ _id: id }, {
+                    $pull: { pictures: photoId },
+                    $push: {
+                        history: {
+                            content: "Desvincular imagen. ",
+                            time: Date.now(),
+                            user: req.user._id
+                        }
+                    }
+                });
                 // Eliminar foto en sí.
                 let status = await Photo.deletePhotoById(photoId);
                 if (status.success) {

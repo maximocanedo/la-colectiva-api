@@ -5,6 +5,7 @@ import IPictureable from "./IPictureable";
 import IValidatable from "./IValidatable";
 import ICommentable from "./ICommentable";
 import IUser from "./IUser";
+import {IHistoryEvent} from "../../schemas/HistoryEvent";
 
 export default interface IBoat extends ICommentable, IValidatable, IPictureable {
     _id: Schema.Types.ObjectId | string,
@@ -14,5 +15,6 @@ export default interface IBoat extends ICommentable, IValidatable, IPictureable 
     enterprise: Schema.Types.ObjectId | string,
     user: IUser | Schema.Types.ObjectId | string,
     uploadDate: Date | string | number,
+    history: IHistoryEvent[],
     active: boolean
 }

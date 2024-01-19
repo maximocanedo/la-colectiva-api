@@ -4,6 +4,7 @@ import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
 import {IAvailabilityResponseSample} from "../interfaces/responses/Availability.interfaces";
 import IAvailability from "../interfaces/models/IAvailability";
+import HistoryEvent from "./HistoryEvent";
 
 // TODO: Agregar endpoint para verificar si un horario está disponible en X condiciones / Condiciones del horario en cuestión.
 /*const conditionOptions: string[] = [
@@ -55,6 +56,10 @@ const AvailabilitySchema: Schema<IAvailability, IAvailabilityModel> = new Schema
         type: Boolean,
         required: true,
         default: true,
+    },
+    history: {
+        type: [ HistoryEvent ],
+        select: false
     },
     validations: [ValidationSchema],
 });

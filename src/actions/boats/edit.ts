@@ -1,17 +1,12 @@
 'use strict';
-
-
 import pre from "../../endpoints/pre";
 import Boat from "../../schemas/Boat";
-import {MongoError, ObjectId} from "mongodb";
 import { Request, Response, NextFunction } from "express";
-import mongoose, {Schema} from "mongoose";
+import {Schema} from "mongoose";
 import E from "../../errors/index";
 import V from "../../validators";
 import Enterprise from "../../schemas/Enterprise";
 import {IError} from "../../interfaces/responses/Error.interfaces";
-import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
-import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import {endpoint} from "../../interfaces/types/Endpoint";
 import defaultHandler from "../../errors/handlers/default.handler";
 
@@ -78,6 +73,11 @@ const edit: endpoint[] = [
             if(mat) reg.mat = mat;
             if(enterprise) reg.enterprise = new Schema.Types.ObjectId(enterprise);
             if('status' in req.body) reg.status = status;
+            reg.history.push({
+                content: "Edición parcial del registro. ",
+                time: Date.now(),
+                user: req.user._id
+            });
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",

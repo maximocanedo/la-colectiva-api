@@ -30,12 +30,17 @@ const deleteOne: endpoint[] = [pre.auth, pre.allow.moderator, async (req: Reques
             return;
         }
         resource.active = false;
+        resource.history.push({
+            content: "Deshabilitación del recurso. ",
+            time: Date.now(),
+            user: req.user._id
+        });
         await resource.save();
         res.status(204).end();
     } catch (err) {
         const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
         res.status(500).json({ error });
     }
-}]; // Eliminar registro
+}];
 
 export default deleteOne;

@@ -1,17 +1,15 @@
 'use strict';
 import pre from "../../endpoints/pre";
 import Dock from "../../schemas/Dock";
-import {MongoError, ObjectId} from "mongodb";
+import { ObjectId } from "mongodb";
 import {NextFunction, Request, Response} from "express";
 import {IError} from "../../interfaces/responses/Error.interfaces";
-import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
-import mongoose from "mongoose";
-import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import E from "../../errors";
 import V from "../../validators";
 import WaterBody from "../../schemas/WaterBody";
 import defaultHandler from "../../errors/handlers/default.handler";
-const edit = [
+import {endpoint} from "../../interfaces/types/Endpoint";
+const edit: endpoint[] = [
     pre.auth,
     pre.allow.moderator,
     pre.expect({
@@ -76,6 +74,11 @@ const edit = [
             if(notes) reg.notes = notes;
             if(status) reg.status = status;
             if(coordinates) reg.coordinates = coordinates;
+            reg.history.push({
+                content: "Edición parcial del registro. ",
+                time: Date.now(),
+                user: req.user._id
+            });
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",

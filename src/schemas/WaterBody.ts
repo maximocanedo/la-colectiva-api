@@ -3,6 +3,7 @@ import mongoose, {Model, Schema} from "mongoose";
 import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
 import IWaterBody from "../interfaces/models/IWaterBody";
+import HistoryEvent from "./HistoryEvent";
 
 const WATERBODY_TYPE: any = {
     RIVER: 0, // Río
@@ -57,6 +58,10 @@ const waterBodySchema: Schema<IWaterBody, IWaterBodyModel> = new Schema<IWaterBo
             ref: "Comment",
         },
     ],
+    history: {
+        type: [ HistoryEvent ],
+        select: false
+    },
     validations: [ValidationSchema],
 });
 

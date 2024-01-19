@@ -19,6 +19,11 @@ const deleteOne = async (req: Request, res: Response): Promise<void> => {
             return;
         }
         resource.active = false;
+        resource.history.push({
+            content: "Deshabilitación del registro. ",
+            time: Date.now(),
+            user: req.user._id
+        });
         await resource.save();
         res.status(200).json({
             message: "Deleted",

@@ -3,6 +3,7 @@ import IValidation from "./IValidation";
 import {Schema} from "mongoose";
 import IValidatable from "./IValidatable";
 import ICommentable from "./ICommentable";
+import {IHistoryEvent} from "../../schemas/HistoryEvent";
 
 export default interface IWaterBody extends ICommentable, IValidatable {
     _id: Schema.Types.ObjectId | string;
@@ -11,5 +12,5 @@ export default interface IWaterBody extends ICommentable, IValidatable {
     type: number;
     uploadDate: Date;
     active: boolean;
-
+    history: IHistoryEvent[]
 }
