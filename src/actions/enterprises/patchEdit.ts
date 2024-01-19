@@ -5,6 +5,7 @@ import {NextFunction, Request, Response} from "express";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 import V from "../../validators";
+import {IHistoryEvent} from "../../schemas/HistoryEvent";
 const patchEdit = [
     pre.auth,
     pre.allow.moderator,
@@ -55,15 +56,30 @@ const patchEdit = [
                 }).end();
                 return;
             }
-
+            let event: IHistoryEvent = {
+                content: "Edición parcial del recurso. ",
+                time: Date.now(),
+                user: req.user._id
+            };
             // Actualiza solo los campos que se proporcionan en la solicitud
-            if (name) en.name = name;
-            if (cuit) en.cuit = cuit;
-            if (description) en.description = description;
-            if (foundationDate) en.foundationDate = foundationDate;
-
-            // Busca y actualiza el registro en la base de datos
-            const updatedEnterprise = await en.save();
+            if (name) {
+                en.name = name;
+                event.content = `Cambio de nombre a '${name}'.`;
+            }
+            if (cuit) {
+                en.cuit = cuit;
+                event.content = `Cambio de CUIT a '${name}'.`;
+            }
+            if (description) {
+                en.description = description;
+                event.content = `Cambio de descripción a '${name}'.`;
+            }
+            if (foundationDate) {
+                en.foundationDate = foundationDate;
+                event.content = `Cambio de fecha de fundación a '${name}'.`;
+            }
+            en.history.push(event);
+            await en.save();
 
             res.status(200).json({
                 message: "Registro actualizado correctamente."

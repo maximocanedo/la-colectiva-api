@@ -3,6 +3,7 @@ import IValidation from "./IValidation";
 import {Schema} from "mongoose";
 import ICommentable from "./ICommentable";
 import IValidatable from "./IValidatable";
+import {IHistoryEvent} from "../../schemas/HistoryEvent";
 
 export default interface IEnterprise extends IValidatable, ICommentable {
     _id: Schema.Types.ObjectId | string,
@@ -13,5 +14,6 @@ export default interface IEnterprise extends IValidatable, ICommentable {
     uploadDate: Date | string | number,
     foundationDate: Date | string | number,
     phones: string[],
+    history: IHistoryEvent[],
     active: boolean
 }

@@ -6,6 +6,7 @@ import V from "./../../validators";
 import E from "../../errors";
 import {endpoint} from "../../interfaces/types/Endpoint";
 import defaultHandler from "../../errors/handlers/default.handler";
+import HistoryEvent from "../../schemas/HistoryEvent";
 
 const createOne: endpoint[] = [
     pre.auth,
@@ -51,6 +52,13 @@ const createOne: endpoint[] = [
                 description,
                 foundationDate,
                 phones,
+                history: [
+                    {
+                        content: "Creación del registro",
+                        user: userId,
+                        time: Date.now()
+                    }
+                ]
             });
             res.status(201).json({
                 id: reg._id

@@ -1,15 +1,10 @@
 "use strict";
 import mongoose, {Model, Schema} from "mongoose";
-import Comment from "./Comment";
 import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
-import IValidation from "../interfaces/models/IValidation";
-import {
-    IEnterpriseAddPhoneResponse, IEnterpriseCommentAddedResponse,
-    IEnterpriseGetValidationsResponse, IEnterpriseListCommentsResponse
-} from "../interfaces/responses/Enterprise.interfaces";
-import {IActionPerformedCommonResponse} from "../interfaces/responses/Default.interfaces";
+import { IEnterpriseAddPhoneResponse } from "../interfaces/responses/Enterprise.interfaces";
 import IEnterprise from "../interfaces/models/IEnterprise";
+import HistoryEvent from "./HistoryEvent";
 
 interface IEnterpriseMethods {
     addPhone(phoneNumber: string): Promise<IEnterpriseAddPhoneResponse>;
@@ -68,6 +63,10 @@ const enterpriseSchema: Schema<IEnterprise, IEnterpriseModel, IEnterpriseMethods
             ref: "Comment",
         },
     ],
+    history: {
+        type: [ HistoryEvent ],
+        select: false
+    },
     validations: [ValidationSchema],
 });
 

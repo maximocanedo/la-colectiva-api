@@ -53,9 +53,14 @@ const edit = [
             reg.description = description;
             reg.foundationDate = foundationDate;
             reg.phones = phones;
+            reg.history.push({
+                content: "Edición completa del recurso. ",
+                time: Date.now(),
+                user: req.user._id
+            });
             await reg.save();
             res.status(200).json({
-                message: "Resource updated. ",
+                message: "Resource updated. "
             });
         } catch (err) {
             const error = defaultHandler(err as Error, E.CRUDOperationError);

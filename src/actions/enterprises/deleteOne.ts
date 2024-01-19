@@ -35,8 +35,13 @@ const deleteOne = [
                 }).end();
                 return;
             }
+            resource.history.push({
+                content: "Deshabilitación del recurso. ",
+                time: Date.now(),
+                user: req.user._id
+            });
             resource.active = false;
-            const status = await resource.save();
+            await resource.save();
             res.status(200).json({
                 message: "Data was disabled. ",
             }).end();
