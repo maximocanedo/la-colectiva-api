@@ -68,12 +68,12 @@ const fetch = (model: Model<any> | any): endpoint[] => [
             const resId: string = req.params.id;
             const page: number = parseInt((req.query.p?? 0) as string);
             const itemsPerPage: number = parseInt((req.query.itemsPerPage?? 10) as string);
-            const result: CommentFetchResponse = await listCommentsForModel(model, {
+            const { status, comments, error }: CommentFetchResponse = await listCommentsForModel(model, {
                 resId,
                 page,
                 itemsPerPage,
             });
-            res.status(result.status).json(result).end();
+            res.status(status).json({ comments, error }).end();
         } catch (err) {
             const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
             res.status(500).json({ error });

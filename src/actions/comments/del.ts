@@ -13,18 +13,12 @@ const del: endpoint[] = [
     async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
-            const result = await Comment.delete(id);
-            if (!result.success) {
-                // TODO Usar errores personalizados
-                console.error(result.message);
-                res.status(result.status).json({
-                    message: result.message,
-                });
+            const { success, status, message } = await Comment.delete(id);
+            if (!success) {
+                res.status(status).json({ message });
                 return;
             }
-            res.status(result.status).json({
-                message: result.message,
-            });
+            res.status(status).json({ message });
         } catch (err) {
             const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
             res.status(500).json({ error });
