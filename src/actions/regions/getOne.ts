@@ -12,7 +12,7 @@ const getOne: endpoint[] = [
             const id = req.params.id;
             let resource = await WaterBody.findOne({ _id: id, active: true }, { validations: 0, comments: 0 });
             if (!resource) {
-                res.status(404).json(E.ResourceNotFound);
+                res.status(404).json({ error: E.ResourceNotFound });
                 return;
             }
             res.status(200).json(resource);

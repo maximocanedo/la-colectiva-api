@@ -28,11 +28,11 @@ const edit: endpoint[] = [
             const userId = req.user._id;
             const reg = await WaterBody.findOne({ _id: id, active: 1 });
             if (!reg) {
-                res.status(404).json(E.ResourceNotFound);
+                res.status(404).json({ error: E.ResourceNotFound});
                 return;
             }
             if (reg.user.toString() != userId.toString()) {
-                res.status(403).json(E.UnauthorizedRecordModification);
+                res.status(403).json({ error: E.UnauthorizedRecordModification});
                 return;
             }
             if(name) reg.name = name;

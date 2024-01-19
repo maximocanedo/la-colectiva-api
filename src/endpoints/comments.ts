@@ -28,7 +28,7 @@ router.post(
 				newComment,
 			});
 		} catch (err) {
-			res.status(500).json(E.InternalError);
+			res.status(500).json({ error: E.InternalError });
 		}
 	}
 ); // Añadir un comentario
@@ -41,11 +41,11 @@ router.get("/:comment_id", async (req: Request, res: Response): Promise<void> =>
 			active: true,
 		}).populate({ path: "user", model: "User", select: "name _id" });
 		if (!comment) {
-			res.status(404).json(E.ResourceNotFound);
+			res.status(404).json({ error: E.ResourceNotFound });
 		}
 		res.status(200).json(comment);
 	} catch (err) {
-		res.status(500).json(E.InternalError);
+		res.status(500).json({ error: E.InternalError });
 	}
 }); // Ver contenido de un comentario
 
@@ -59,7 +59,7 @@ router.put("/:comment_id",
 		let comment = await Comment.findOne({ _id: comment_id, active: true });
 
 		if (!comment) {
-			res.status(404).json(E.ResourceNotFound);
+			res.status(404).json({ error: E.ResourceNotFound });
 			return;
 		}
 
@@ -70,7 +70,7 @@ router.put("/:comment_id",
 
 		res.status(200).json(updatedComment);
 	} catch (err) {
-		res.status(500).json(E.InternalError);
+		res.status(500).json({ error: E.InternalError });
 	}
 });
 

@@ -16,11 +16,11 @@ const deleteOne: endpoint[] = [
             const username = req.user._id;
             const isAdmin: boolean = req.user.role >= 3;
             if (!resource) {
-                res.status(404).json(E.ResourceNotFound);
+                res.status(404).json({ error: E.ResourceNotFound});
                 return;
             }
             if (resource.user != username && !isAdmin) {
-                res.status(403).json(E.AttemptedUnauthorizedOperation);
+                res.status(403).json({ error: E.AttemptedUnauthorizedOperation});
                 return;
             }
             resource.active = false;

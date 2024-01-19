@@ -30,13 +30,13 @@ router.get(
 				[ ...(conditions as any[]) ]
 			));
 			if (!result) {
-				res.status(404).json(E.ResourceNotFound);
+				res.status(404).json({ error: E.ResourceNotFound});
 				return;
 			}
 			res.status(200).json(result);
 		} catch (err) {
 			console.error(err);
-			res.status(500).json(E.InternalError);
+			res.status(500).json({ error: E.InternalError});
 		}
 	}
 );
