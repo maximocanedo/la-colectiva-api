@@ -5,6 +5,7 @@ import {Request, Response} from "express";
 import {Model, Schema} from "mongoose";
 import {endpoint} from "../../interfaces/types/Endpoint";
 import Comment from "../../schemas/Comment";
+import V from "../../validators";
 
 async function addCommentForModel(Model: Model<any> | any, resId: string, content: string, userId: Schema.Types.ObjectId | string) {
     try {
@@ -59,12 +60,14 @@ async function addCommentForModel(Model: Model<any> | any, resId: string, conten
 const post = (model: Model<any> | any): endpoint[] => [
     pre.auth,
     pre.allow.normal,
-    pre.verifyInput(["content"]),
+    pre.expect({
+        content: V.comment.content.required()
+    }),
     async (req: Request, res: Response): Promise<void> => {
         try {
             const resId: string = req.params.id;
-            const content = req.body.content;
-            const userId = req.user._id;
+            const content: string = req.body.content;
+            const userId: string = req.user._id;
 
             const result = await addCommentForModel(model, resId, content, userId);
             if (result.error) {

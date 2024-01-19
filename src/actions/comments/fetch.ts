@@ -1,9 +1,9 @@
 'use strict';
 
-import {endpoint} from "../../interfaces/types/Endpoint";
-import {Request, Response} from "express";
-import {CommentFetchResponse} from "../../interfaces/responses/Comment.interfaces";
-import {Model} from "mongoose";
+import { endpoint } from "../../interfaces/types/Endpoint";
+import { Request, Response } from "express";
+import { CommentFetchResponse } from "../../interfaces/responses/Comment.interfaces";
+import { Model } from "mongoose";
 import E from "../../errors";
 
 interface CommentFetchPaginatorDetails {
