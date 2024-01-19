@@ -6,16 +6,25 @@ import {Model, Schema} from "mongoose";
 import {endpoint} from "../../interfaces/types/Endpoint";
 import Comment from "../../schemas/Comment";
 import V from "../../validators";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
+import E from "../../errors";
+import IComment from "../../interfaces/models/IComment";
 
-async function addCommentForModel(Model: Model<any> | any, resId: string, content: string, userId: Schema.Types.ObjectId | string) {
+interface CommentCreationResponse {
+    comment: IComment[],
+    status: number,
+    error: IError | null
+}
+
+const addCommentForModel = async (Model: Model<any> | any, resId: string, content: string, userId: Schema.Types.ObjectId | string): Promise<CommentCreationResponse> => {
     try {
         const doc = await Model.findOne({ _id: resId, active: true });
         if(!doc) {
             return {
                 comment: [],
                 status: 404,
-                error: null,
-                msg: "Resource not found.",
+                error: E.ResourceNotFound
             };
         }
         // Crear el comentario y guardarlo
@@ -42,16 +51,14 @@ async function addCommentForModel(Model: Model<any> | any, resId: string, conten
             return {
                 comment: [],
                 status: 404,
-                error: null,
-                msg: "Resource not found.",
+                error: E.ResourceNotFound
             };
         }
 
         return {
-            comment: resource,
+            comment: [resource],
             status: 201,
-            error: null,
-            msg: "",
+            error: null
         };
     } catch (error) {
         throw error;
@@ -65,27 +72,14 @@ const post = (model: Model<any> | any): endpoint[] => [
     }),
     async (req: Request, res: Response): Promise<void> => {
         try {
-            const resId: string = req.params.id;
-            const content: string = req.body.content;
+            const { id } = req.params;
+            const { content } = req.body;
             const userId: string = req.user._id;
-
-            const result = await addCommentForModel(model, resId, content, userId);
-            if (result.error) {
-                console.error(result.error);
-                res.status(500).json({
-                    message: result.msg,
-                });
-            }
-
-            res.status(201).json({
-                comment: result.comment,
-                message: "Comment added",
-            });
+            const { comment, error, status }: CommentCreationResponse = await addCommentForModel(model, id, content, userId);
+            res.status(status).json({ comment, error }).end();
         } catch (err) {
-            console.error(err);
-            res.status(500).json({
-                message: "Internal error",
-            });
+            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({ error });
         }
     }
 ];

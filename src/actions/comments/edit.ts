@@ -5,6 +5,8 @@ import V from "../../validators";
 import {Request, Response} from "express";
 import Comment from "../../schemas/Comment";
 import E from "../../errors";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
 
 const edit: endpoint[] = [
     pre.expect({
@@ -37,7 +39,8 @@ const edit: endpoint[] = [
 
             res.status(200).json(updatedComment);
         } catch (err) {
-            res.status(500).json({ error: E.InternalError });
+            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({ error });
         }
     }
 ];

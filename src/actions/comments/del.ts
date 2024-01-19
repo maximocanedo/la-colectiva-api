@@ -4,6 +4,8 @@ import pre from "../../endpoints/pre";
 import {Request, Response} from "express";
 import Comment from "../../schemas/Comment";
 import E from "../../errors";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
 
 const del: endpoint[] = [
     pre.auth,
@@ -24,8 +26,8 @@ const del: endpoint[] = [
                 message: result.message,
             });
         } catch (err) {
-            console.error(err);
-            res.status(500).json({ error: E.InternalError });
+            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({ error });
         }
     }
 ];

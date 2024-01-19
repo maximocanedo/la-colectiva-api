@@ -5,6 +5,8 @@ import { Request, Response } from "express";
 import { CommentFetchResponse } from "../../interfaces/responses/Comment.interfaces";
 import { Model } from "mongoose";
 import E from "../../errors";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
 
 interface CommentFetchPaginatorDetails {
     resId: string,
@@ -71,12 +73,10 @@ const fetch = (model: Model<any> | any): endpoint[] => [
                 page,
                 itemsPerPage,
             });
-            res.status(result.status).json(result);
+            res.status(result.status).json(result).end();
         } catch (err) {
-            console.error(err);
-            res.status(500).json({
-                message: "Internal error",
-            });
+            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(500).json({ error });
         }
     }
 ];
