@@ -66,6 +66,11 @@ const edit: endpoint[] = [
             if(path) reg.path = path;
             if(dock) reg.dock = dock;
             if(time) reg.time = time;
+            reg.history.push({
+                content: "Edición del registro. ",
+                time: Date.now(),
+                user: req.user._id
+            });
             await reg.save();
             res.status(200).json({
                 message: "Resource updated. ",

@@ -6,10 +6,7 @@ import Comment from "./Comment";
 import ValidationSchema from "./Validation";
 import moment from "moment-timezone";
 import ISchedule from "../interfaces/models/ISchedule";
-
-
-// const rp = ["path", "dock", "time"];
-// const localDate = moment.tz(Date.now(), "America/Argentina/Buenos_Aires");
+import HistoryEvent from "./HistoryEvent";
 
 interface IScheduleModel extends mongoose.Model<ISchedule> {
     listData(query: any, { page, itemsPerPage }: { page: number; itemsPerPage: number }): Promise<any>;
@@ -51,6 +48,10 @@ const scheduleSchema: Schema<ISchedule, IScheduleModel> = new Schema<ISchedule, 
             ref: "Comment",
         },
     ],
+    history: {
+        type: [ HistoryEvent ],
+        select: false
+    },
     validations: [ValidationSchema],
 });
 

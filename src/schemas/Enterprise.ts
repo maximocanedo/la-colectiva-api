@@ -7,8 +7,8 @@ import IEnterprise from "../interfaces/models/IEnterprise";
 import HistoryEvent from "./HistoryEvent";
 
 interface IEnterpriseMethods {
-    addPhone(phoneNumber: string): Promise<IEnterpriseAddPhoneResponse>;
-    deletePhone(phoneNumber: string): Promise<IEnterpriseAddPhoneResponse>;
+    addPhone(phoneNumber: string, user: string): Promise<IEnterpriseAddPhoneResponse>;
+    deletePhone(phoneNumber: string, user: string): Promise<IEnterpriseAddPhoneResponse>;
 }
 interface IEnterpriseModel extends Model<IEnterprise, {}, IEnterpriseMethods> { }
 
@@ -71,9 +71,14 @@ const enterpriseSchema: Schema<IEnterprise, IEnterpriseModel, IEnterpriseMethods
 });
 
 
-enterpriseSchema.methods.addPhone = async function (phoneNumber: string): Promise<IEnterpriseAddPhoneResponse> {
+enterpriseSchema.methods.addPhone = async function (phoneNumber: string, user: string): Promise<IEnterpriseAddPhoneResponse> {
     try {
         this.phones.push(phoneNumber);
+        this.history.push({
+            content: "Agregar número de teléfono. ",
+            time: Date.now(),
+            user
+        });
         await this.save();
         return {
             phones: this.phones,
@@ -89,9 +94,14 @@ enterpriseSchema.methods.addPhone = async function (phoneNumber: string): Promis
         };
     }
 };
-enterpriseSchema.methods.deletePhone = async function (phoneNumber: string): Promise<IEnterpriseAddPhoneResponse> {
+enterpriseSchema.methods.deletePhone = async function (phoneNumber: string, user: string): Promise<IEnterpriseAddPhoneResponse> {
     try {
         this.phones = this.phones.filter((phone: string): boolean => phone !== phoneNumber);
+        this.history.push({
+            content: "Eliminar número de teléfono. ",
+            time: Date.now(),
+            user
+        });
         await this.save();
         return {
             phones: this.phones,

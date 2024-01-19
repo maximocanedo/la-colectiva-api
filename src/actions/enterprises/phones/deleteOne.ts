@@ -22,7 +22,7 @@ const deleteOne = async (req: Request, res: Response): Promise<void> => {
             res.status(403).json({ error: E.UnauthorizedRecordModification });
             return;
         }
-        const result: IEnterpriseAddPhoneResponse = await resource.deletePhone(phone);
+        const result: IEnterpriseAddPhoneResponse = await resource.deletePhone(phone, req.user._id);
         res.status(result.status).json({msg: result.msg});
 
     } catch (err) {

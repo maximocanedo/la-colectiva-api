@@ -23,6 +23,11 @@ const deleteOne: endpoint[] = [pre.auth, async (req: Request, res: Response): Pr
             return;
         }
         resource.active = false;
+        resource.history.push({
+            content: "Deshabilitación del registro. ",
+            time: Date.now(),
+            user: req.user._id
+        });
         const status = await resource.save();
         res.status(200).json({
             message: "Data was disabled. ",

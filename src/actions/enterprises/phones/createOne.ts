@@ -21,7 +21,7 @@ const createOne = async (req: Request, res: Response): Promise<void> => {
             res.status(403).json({ error: E.UnauthorizedRecordModification });
             return;
         }
-        const result = await resource.addPhone(phone);
+        const result = await resource.addPhone(phone, req.user._id);
         res.status(result.status).json({msg: result.msg});
 
     } catch (err) {

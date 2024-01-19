@@ -48,6 +48,13 @@ const createOne: endpoint[] = [
                 path,
                 dock,
                 time,
+                history: [
+                    {
+                        content: "Creación del registro. ",
+                        time: Date.now(),
+                        user: req.user._id
+                    }
+                ]
             });
             res.status(201).json({
                 id: reg._id
