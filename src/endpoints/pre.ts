@@ -143,7 +143,7 @@ const verifyInput = (requiredProps: string[]) => (req: Request, res: Response, n
 const imageFileTypes: string[] = ["image/jpeg", "image/png", "image/gif"]; // Tipos de archivos de imagen permitidos
 const storage: StorageEngine = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb) => {
-        const destinationPath = path.join(__dirname, "../../data/photos/");
+        const destinationPath = path.join(__dirname, "../.." + process.env.PIC_ROOT_FOLDER);
         cb(null, destinationPath);
     },
     filename: (req, file, cb): void => {

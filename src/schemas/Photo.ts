@@ -7,6 +7,8 @@ import Comment from "./Comment";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
 import IPicture from "../interfaces/models/IPicture";
+import dotenv from "dotenv";
+dotenv.config();
 
 
 interface IPictureModel extends Model<IPicture> {
@@ -345,7 +347,7 @@ photoSchema.statics.deletePhotoById = async function (id): Promise<ActionPerform
         // Eliminar el archivo del sistema
         const filePath: string = path.join(
             __dirname,
-            "../data/photos/",
+            ".." + process.env.PIC_ROOT_FOLDER,
             photo.filename
         );
         fs.unlink(filePath, (err: NodeJS.ErrnoException | null): void => {

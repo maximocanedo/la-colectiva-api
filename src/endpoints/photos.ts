@@ -69,7 +69,7 @@ router.get("/:id/view", async (req: Request, res: Response): Promise<void> => {
 			return;
 		}
 
-		let fullRoute: string = path.join(__dirname, "../../data/photos/", pic.filename);
+		let fullRoute: string = path.join(__dirname, "../.." + process.env.PIC_ROOT_FOLDER, pic.filename);
 
 		// Envía la imagen como respuesta
 		res.sendFile(fullRoute);
@@ -130,7 +130,7 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 		pic.active = false;
 		const status = await pic.save();
 
-		let fullRoute = path.join(__dirname, "../data/photos/", pic.filename);
+		let fullRoute = path.join(__dirname, ".." + process.env.PIC_ROOT_FOLDER, pic.filename);
 
 		// Elimina el archivo
 		fs.unlink(fullRoute, (err) => {
