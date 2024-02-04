@@ -156,7 +156,8 @@ const validateMail = [
                 res.status(401).end();
             } else {
                 mailVerification.active = true;
-                if(!user.email || typeof user.email === 'undefined') {
+
+                if(user.email.endsWith("@colectiva.com.ar")) {
                     user.role = 1;
                 }
                 if(!user.active) {
@@ -170,9 +171,10 @@ const validateMail = [
                     mailBody = mailContent.res[1];
                 }
                 user.email = mailVerification.mail;
+
                 await mailVerification.save();
                 await user.save();
-                const mailStatus: SMTPTransport.SentMessageInfo = await transporter.sendMail({
+                await transporter.sendMail({
                     from: `La Colectiva <${process.env.MAIL_SMTP_IDENTIFIER as string}>`,
                     to: mailVerification.mail,
                     subject: mailTitle,

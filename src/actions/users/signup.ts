@@ -20,9 +20,8 @@ const signup = async (req: Request, res: Response): Promise<void> => {
             res.status(409).json({ error: E.DuplicationError }).end();
             return;
         }
-        const data = { username, name, bio, birth, password };
         // Validar datos.
-        let newUser = new User(data);
+        const newUser = new User({ username, name, bio, birth, email: `${username}@colectiva.com.ar`, password });
         // Guardar.
         const savedStatus = await newUser.save();
         const mailSend = await sendCode(savedStatus, email);
