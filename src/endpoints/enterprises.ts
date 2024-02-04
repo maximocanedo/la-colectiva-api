@@ -7,6 +7,7 @@ import { handleComments } from "../utils/Comment.utils";
 import enterprises from "../actions/enterprises";
 import { handleVotes } from "../utils/Validation.utils";
 import pre from "./pre";
+import boats from "../actions/boats";
 
 
 dotenv.config();
@@ -24,6 +25,7 @@ handleComments(router, Enterprise);
 /* Acciones básicas */
 router.post("/", enterprises.createOne); // Crear un registro
 router.get("/", enterprises.list); // Listar recursos
+router.get("/:id/boats", boats.list(false));
 
 /* Acciones individuales */
 router.patch("/:id", enterprises.patchEdit); // Editar recurso

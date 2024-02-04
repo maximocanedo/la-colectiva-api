@@ -9,7 +9,7 @@ export default interface ISchedule extends ICommentable, IValidatable {
     _id: Schema.Types.ObjectId | string;
     path: Schema.Types.ObjectId | string;
     dock: Schema.Types.ObjectId | string;
-    time: Date;
+    time: Date | string;
     user: Schema.Types.ObjectId | string;
     uploadDate: Date;
     active: boolean;

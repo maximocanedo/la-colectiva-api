@@ -12,22 +12,28 @@ import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import Mongoose from "mongoose";
 import defaultHandler from "../../errors/handlers/default.handler";
+import {endpoint} from "../../interfaces/types/Endpoint";
 
-const createOne = [
-    pre.expect({
+const createOne = (isPathInBody: boolean = true): endpoint[] => [
+    pre.expect(isPathInBody ? {
         path: V.availability.path.required(),
+        condition: V.availability.condition.required(),
+        available: V.availability.available.required().default(true)
+    } : {
         condition: V.availability.condition.required(),
         available: V.availability.available.required().default(true)
     }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const resource = Path.findOne({ _id: req.path, active: true });
+        const pathId = isPathInBody ? req.body.path : req.params.id;
+        const resource = Path.findOne({ _id: pathId, active: true });
         if (!resource)
             res.status(404).json({error: E.ResourceNotFound}).end();
         else next();
     },
     async (req: Request, res: Response): Promise<void> => {
         try {
-            const { path, condition, available } = req.body;
+            const { condition, available } = req.body;
+            const path = isPathInBody ? req.body.path : req.params.id;
             const user = req.user._id;
             const reg = await Availability.create({
                 path,

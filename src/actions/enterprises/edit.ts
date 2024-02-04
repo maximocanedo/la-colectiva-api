@@ -12,8 +12,7 @@ const edit = [
         cuit: V.enterprise.cuit.required(),
         name: V.enterprise.name.required(),
         description: V.enterprise.description.required(),
-        foundationDate: V.enterprise.foundationDate.required(),
-        phones: V.enterprise.phones.required()
+        foundationDate: V.enterprise.foundationDate.required()
     }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { cuit } = req.body;
@@ -52,7 +51,7 @@ const edit = [
             reg.name = name;
             reg.description = description;
             reg.foundationDate = foundationDate;
-            reg.phones = phones;
+            // reg.phones = phones;
             reg.history.push({
                 content: "Edición completa del recurso. ",
                 time: Date.now(),

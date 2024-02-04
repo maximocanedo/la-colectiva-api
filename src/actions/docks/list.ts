@@ -1,5 +1,5 @@
 'use strict';
-import Dock from "../../schemas/Dock";
+import Dock, {IDockView} from "../../schemas/Dock";
 import { Request, Response } from "express";
 import {MongoError} from "mongodb";
 import {IError} from "../../interfaces/responses/Error.interfaces";
@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import E from "../../errors";
 import defaultHandler from "../../errors/handlers/default.handler";
+import FetchResult from "../../interfaces/responses/FetchResult";
 const list = async (req: Request, res: Response): Promise<void> => {
     try {
         const prefer: number = parseInt(req.query.prefer as string || "-1");
@@ -35,9 +36,8 @@ const list = async (req: Request, res: Response): Promise<void> => {
                 },
             ],
         };
-        let result = await Dock.listData(query, { page, itemsPerPage });
-
-        res.status(result.status).json(result.items);
+        const { status, ...result }: FetchResult<IDockView> = await Dock.listData(query, { page, itemsPerPage });
+        res.status(status).json(result);
     } catch (err) {
         const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
         res.status(500).json({ error });

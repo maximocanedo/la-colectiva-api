@@ -11,16 +11,21 @@ import Schedule from "../../schemas/Schedule";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 
-const createOne: endpoint[] = [
+const createOne = (isPathInBody: boolean = true): endpoint[] => [
     pre.auth,
     pre.allow.moderator,
-    pre.expect({
-        path: V.schedule.path.required(),
-        dock: V.schedule.dock.required(),
-        time: V.schedule.time.required()
-    }),
+    pre.expect(
+        isPathInBody ? {
+            path: V.schedule.path.required(),
+            dock: V.schedule.dock.required(),
+            time: V.schedule.time.required()
+        } : {
+            dock: V.schedule.dock.required(),
+            time: V.schedule.time.required()
+        }
+    ),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { path } = req.body;
+        const path = isPathInBody ? req.body.path : req.params.id;
         const reg = await Path.findOne({ _id: path, active: true });
         if(!reg) {
             res.status(404).json({
@@ -41,7 +46,8 @@ const createOne: endpoint[] = [
     },
     async (req: Request, res: Response): Promise<void> => {
         try {
-            const { path, dock, time } = req.body;
+            const { dock, time } = req.body;
+            const path = isPathInBody ? req.body.path : req.params.id;
             const userId = req.user._id;
             let reg = await Schedule.create({
                 user: userId,

@@ -16,7 +16,7 @@ handleComments(router, Schedule);
 handleVotes(router, Schedule);
 
 /* Acciones básicas */
-router.post("/", schedules.createOne); // Crear un registro
+router.post("/", schedules.createOne(true)); // Crear un registro
 router.get("/:id", schedules.getOne); // Ver recurso
 router.patch("/:id", schedules.edit); // Editar recurso
 router.delete("/:id", schedules.deleteOne); // Eliminar registro

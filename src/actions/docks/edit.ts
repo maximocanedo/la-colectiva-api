@@ -29,15 +29,24 @@ const edit: endpoint[] = [
         } else next();
     },
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { region } = req.body;
-        if(!region) next();
-        else {
-            const obj = await WaterBody.findOne({_id: region, active: true});
-            if (!obj) {
-                res.status(400).json({
-                    error: E.ResourceNotFound
-                });
-            } else next();
+        const { region, address } = req.body;
+        const obj = await WaterBody.findOne({ _id: region, active: true });
+        if (!obj) {
+            res.status(400).json({
+                error: E.ResourceNotFound
+            });
+        } else {
+            const file = await Dock.findOne({ region, address });
+            if(!file || req.params.id.toString() === file._id.toString()) next();
+            else {
+                res.status(409).json({
+                    error: {
+                        ...E.DuplicationError,
+                        details: "Ya existe un muelle con esa dirección. "
+                    }
+                }).end();
+                return;
+            }
         }
     },
     async (req: Request, res: Response): Promise<void> => {

@@ -14,10 +14,10 @@ router.post(
 	"/",
 	pre.auth,
 	pre.allow.moderator,
-	availabilities.createOne
+	availabilities.createOne(true)
 );
 router.get("/:id", availabilities.getOne);
-router.delete("/:id", pre.auth, pre.allow.moderator, availabilities.deleteOne);
+router.delete("/:avid", pre.auth, pre.allow.moderator, availabilities.deleteOne);
 
 /* Validaciones */
 handleVotes(router, Availability);

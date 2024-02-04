@@ -1,5 +1,5 @@
 'use strict';
-import Dock from "../../schemas/Dock";
+import Dock, {IDockView} from "../../schemas/Dock";
 import { Request, Response } from "express";
 import IValidation from "../../interfaces/models/IValidation";
 import {MongoError} from "mongodb";
@@ -9,25 +9,25 @@ import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import E from "../../errors";
 import defaultHandler from "../../errors/handlers/default.handler";
+import FetchResult from "../../interfaces/responses/FetchResult";
 const getOne = async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
-        // Utiliza findOne para buscar un registro con ID y active: true
-        let resource: any = await Dock.findOne({ _id: id, active: true }, { comments: 0, validations: 0 })
-            .populate("user", "name _id")
-            .populate("region", "name type");
-
-        if (!resource) {
+        const { status, ...result }: FetchResult<IDockView> = await Dock.listData(
+            { active: true, _id: id },
+            { page: 0, itemsPerPage: 1 }
+        );
+        if (result.data.length === 0) {
             res.status(404).json({
                 error: E.ResourceNotFound
             }).end();
             return;
         }
 
-        res.status(200).json(resource).end();
+        res.status(status).json(result).end();
     } catch (err) {
         const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        res.status(500).json({ error, data: [] });
     }
 };
 export default getOne;

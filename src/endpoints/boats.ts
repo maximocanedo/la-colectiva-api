@@ -16,7 +16,7 @@ handleComments(router, Boat);
 
 /* Acciones básicas */
 router.post("/", boats.createOne); // Ver recurso
-router.get("/", boats.list); // Listar recursos
+router.get("/", boats.list(true)); // Listar recursos
 router.get("/:id", boats.getOne); // Ver recurso
 router.patch("/:id", boats.edit); // Editar recurso
 router.delete("/:id", boats.deleteOne); // Eliminar registro

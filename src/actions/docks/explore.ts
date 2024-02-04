@@ -1,13 +1,15 @@
 'use strict';
-import Dock from "../../schemas/Dock";
+import Dock, {IDockView} from "../../schemas/Dock";
 import { Request, Response } from "express";
 import {MongoError} from "mongodb";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
-import mongoose from "mongoose";
+import mongoose, {FilterQuery} from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import E from "../../errors";
 import defaultHandler from "../../errors/handlers/default.handler";
+import FetchResult from "../../interfaces/responses/FetchResult";
+import IDock from "../../interfaces/models/IDock";
 const explore = async (req: Request, res: Response): Promise<void> => {
     try {
         const lat: number = parseFloat(req.params.lat as string);
@@ -38,7 +40,7 @@ const explore = async (req: Request, res: Response): Promise<void> => {
             ...preferObj,
             active: true
         }
-        const query = {
+        const query: FilterQuery<IDock> = {
             $and: [
                 {
                     coordinates: {
@@ -54,15 +56,14 @@ const explore = async (req: Request, res: Response): Promise<void> => {
                 preferObj,
             ],
         };
-        let result = await Dock.listData(query, {
+        const { status, ...result }: FetchResult<IDockView> = await Dock.listData(query, {
             page,
             itemsPerPage,
         });
-
-        res.status(result.status).json(result.items).end();
+        res.status(status).json(result).end();
     } catch (err) {
         const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        res.status(500).json({ error, data: [] });
     }
 };
 export default explore;

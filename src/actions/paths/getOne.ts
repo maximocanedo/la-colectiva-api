@@ -1,35 +1,22 @@
 'use strict';
-import Path from "../../schemas/Path";
+import Path, {IPathView} from "../../schemas/Path";
 import {Request, Response} from "express";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
+import FetchResult from "../../interfaces/responses/FetchResult";
 const getOne = [async (req: Request, res: Response): Promise<void> => {
     try {
-        const id = req.params.id;
-        // Utiliza findOne para buscar un registro con ID y active: true
-        let resource = await Path.findOne({ _id: id, active: true })
-            .populate("user", "name _id")
-            .populate("boat", "name _id");
-
-        if (!resource) {
-            res.status(404).json({
-                error: E.ResourceNotFound
-            });
+        const _id: string = req.params.id;
+        const query = { active: true, _id };
+        const { status, ...result }: FetchResult<IPathView> = await Path.listData(query, { page: 0, size: 1 });
+        if(result.data.length === 0) {
+            res.status(404).json({ data: [], error: E.ResourceNotFound }).end();
             return;
         }
-
-        const { user, boat, title, description, notes } = resource;
-        // Envía la imagen como respuesta
-        res.status(200).json({
-            user,
-            boat,
-            title,
-            description,
-            notes
-        });
+        res.status(status).json(result).end();
     } catch (err) {
         const error = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({error});
+        res.status(500).json({ data: [], error });
     }
 }];
 export default getOne;
