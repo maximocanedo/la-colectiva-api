@@ -1,5 +1,5 @@
 "use strict";
-import mongoose, {Model, Schema, Types} from "mongoose";
+import mongoose, {FilterQuery, Model, Schema, Types} from "mongoose";
 import Comment from "./Comment";
 import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
@@ -8,12 +8,38 @@ import {IBoatListDataResponse} from "../interfaces/responses/Boat.interfaces";
 import Photo from "./Photo";
 import IBoat from "../interfaces/models/IBoat";
 import HistoryEvent from "./HistoryEvent";
+import FetchResult from "../interfaces/responses/FetchResult";
+import {OID} from "./Dock";
+import {IError} from "../interfaces/responses/Error.interfaces";
+import defaultHandler from "../errors/handlers/default.handler";
+import E from "../errors";
 
 
 const requiredProps: string[] = ["mat", "name", "status", "enterprise", "user"];
 
+
+
+export interface IBoatView {
+    _id: OID;
+    mat: string;
+    name: string;
+    status: boolean;
+    enterprise: {
+        _id: OID;
+        name: string;
+    };
+    user: {
+        _id: OID;
+        name: string;
+        username: string;
+    };
+    uploadDate: Date | string;
+    active: boolean;
+    __v: number;
+}
+
 interface IBoatModel extends Model<IBoat> {
-    listData(query: any, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<IBoatListDataResponse>;
+    listData(query: FilterQuery<IBoat>, { page, size }: {page: number, size: number}): Promise<FetchResult<IBoatView>>;
     linkPhoto(resId: string, picId: string): Promise<{status: number}>;
 }
 
@@ -78,42 +104,37 @@ const boatSchema: Schema<IBoat, IBoatModel> = new Schema<IBoat, IBoatModel>({
  * @param page Número de página.
  * @param itemsPerPage Número de elementos por página.
  */
-boatSchema.statics.listData = async function (query, { page, itemsPerPage }): Promise<IBoatListDataResponse> {
+boatSchema.statics.listData = async function (query: FilterQuery<IBoat>, { page, size }: {page: number, size: number}): Promise<FetchResult<IBoatView>> {
     try {
-        const resource = await this.find(query, {comments: 0, validations: 0})
-            .sort({ name: 1 })
-            .skip(page * itemsPerPage)
-            .limit(itemsPerPage)
-            .populate("user", "name _id")
-            .populate("enterprise", "name _id")
-            .exec();
-
-        if (!resource) {
-            return {
-                items: [],
-                status: 404,
-                error: null,
-                msg: "Resource not found.",
-            };
-        }
-
+        const skip: number = page * size;
+        const files = await this.find(query)
+            .select({ comments: 0, validations: 0, pictures: 0 })
+            .populate({
+                path: "enterprise",
+                model: "Enterprise",
+                select: "_id name"
+            })
+            .populate({
+                path: "user",
+                model: "User",
+                select: "_id name username"
+            })
+            .skip(skip)
+            .limit(size);
         return {
-            items: resource,
             status: 200,
-            error: null,
-            msg: "OK",
+            data: files as unknown as IBoatView[],
+            error: null
         };
-    } catch (err) {
-        console.log(err);
+    } catch(err) {
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
         return {
-            items: [],
-            status: 500,
-            error: err,
-            msg: "Could not fetch the data.",
+            error,
+            data: [],
+            status: 500
         };
     }
-};
-
+}
 /**
  * Método para enlazar una foto a un recurso.
  * @param resId ID del recurso al que se desea enlazar la foto.

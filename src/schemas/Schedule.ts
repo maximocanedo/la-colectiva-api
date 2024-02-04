@@ -1,5 +1,5 @@
 "use strict";
-import mongoose, { Schema } from "mongoose";
+import mongoose, {FilterQuery, Schema } from "mongoose";
 import { ObjectId } from "mongodb";
 import IValidation from "../interfaces/models/IValidation";
 import Comment from "./Comment";
@@ -7,9 +7,21 @@ import ValidationSchema from "./Validation";
 import moment from "moment-timezone";
 import ISchedule from "../interfaces/models/ISchedule";
 import HistoryEvent from "./HistoryEvent";
+import FetchResult from "../interfaces/responses/FetchResult";
+import IScheduleView from "../interfaces/views/IScheduleView";
+import defaultHandler from "../errors/handlers/default.handler";
+import E from "../errors";
+
+interface IExtra {
+    q: string,
+    p: number,
+    itemsPerPage: number
+}
 
 interface IScheduleModel extends mongoose.Model<ISchedule> {
     listData(query: any, { page, itemsPerPage }: { page: number; itemsPerPage: number }): Promise<any>;
+    formatTime(): void;
+    findFormatted(query: FilterQuery<ISchedule>, extra: IExtra): Promise<FetchResult<IScheduleView>>;
 }
 
 const scheduleSchema: Schema<ISchedule, IScheduleModel> = new Schema<ISchedule, IScheduleModel>({
@@ -102,5 +114,64 @@ scheduleSchema.statics.listData = async function (
         };
     }
 };
+
+
+scheduleSchema.methods.formatTime = function(): void {
+    this.time = this.time.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+};
+
+scheduleSchema.statics.findFormatted = async function(query: FilterQuery<ISchedule>, extra: IExtra = {
+    q: "",
+    p: 0,
+    itemsPerPage: 10
+}): Promise<FetchResult<IScheduleView>> {
+    try {
+        const skip: number = extra.p * extra.itemsPerPage;
+        const found = await this.find(query)
+            .populate({
+                path: "path",
+                model: "Path",
+                select: "_id boat title description notes",
+                populate: {
+                    path: "boat",
+                    model: "Boat",
+                    select: "_id mat name",
+                },
+            })
+            .populate({
+                path: "dock",
+                model: "Dock",
+                select: "_id name address region coordinates"
+            })
+            .populate({
+                path: "user",
+                model: "User",
+                select: "_id name username"
+            })
+            .select({ comments: 0, validations: 0 })
+            .skip(skip)
+            .limit(extra.itemsPerPage)
+            .exec();
+        const data: IScheduleView[] = [];
+        found.forEach(resource => {
+            const { _id, path, dock, user, uploadDate, active } = resource;
+            data.push({
+                _id, path, dock, user, uploadDate, active,
+                time: new Date(resource.time).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            } as IScheduleView);
+        });
+        return {
+            status: 200,
+            data
+        }
+    } catch (err) {
+        const error = defaultHandler(err as Error, E.CRUDOperationError);
+        return {
+            error,
+            data: [],
+            status: 500
+        };
+    }
+}
 
 export default mongoose.model<ISchedule, IScheduleModel>("Schedule", scheduleSchema);

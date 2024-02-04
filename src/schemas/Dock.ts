@@ -1,5 +1,5 @@
 "use strict";
-import mongoose, {Model, Schema} from "mongoose";
+import mongoose, {FilterQuery, Model, Schema} from "mongoose";
 import Comment from "./Comment";
 import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
@@ -7,6 +7,11 @@ import IValidation from "../interfaces/models/IValidation";
 import Photo from "./Photo";
 import IDock from "../interfaces/models/IDock";
 import HistoryEvent from "./HistoryEvent";
+import FetchResult from "../interfaces/responses/FetchResult";
+import {RegionType} from "./WaterBody";
+import defaultHandler from "../errors/handlers/default.handler";
+import {IError} from "../interfaces/responses/Error.interfaces";
+import E from "../errors";
 
 const DOCK_PROPERTY_STATUS: any = {
     PRIVATE: 0,
@@ -14,8 +19,58 @@ const DOCK_PROPERTY_STATUS: any = {
     BUSINESS: 2,
 };
 
+export enum PropertyStatus {
+    /**
+     * Muelle de uso privado.
+     */
+    PRIVATE = 0,
+    /**
+     * Muelle de uso público.
+     */
+    PUBLIC = 1,
+    /**
+     * Muelle de uso comercial.
+     */
+    BUSINESS = 2,
+    /**
+     * Muelle de uso gubernamental.
+     */
+    GOVERNMENT = 3,
+    /**
+     * Otro tipo de muelle.
+     */
+    OTHER = 4,
+    /**
+     * Se desconoce el tipo de muelle.
+     */
+    UNLISTED = 5
+}
+
+export type OID = Schema.Types.ObjectId | string;
+
+export interface IDockView {
+    _id: OID;
+    name: string;
+    address: number;
+    notes: string;
+    status: PropertyStatus;
+    region: {
+        _id: OID;
+        name: string;
+        type: RegionType;
+    };
+    user: {
+        _id: OID;
+        name: string;
+        username: string;
+    };
+    uploadDate: Date | string;
+    active: boolean;
+    __v: number;
+}
+
 interface IDockModel extends Model<IDock> {
-    listData(query: any, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<IDockListDataResponse>;
+    listData(query: FilterQuery<IDock>, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<FetchResult<IDockView>>;
     linkPhoto(resId: string, picId: string): Promise<any>;
 }
 
@@ -43,7 +98,8 @@ const dockSchema: Schema<IDock, IDockModel> = new Schema<IDock, IDockModel>({
     status: {
         type: Number,
         required: true,
-        default: DOCK_PROPERTY_STATUS.PRIVATE,
+        default: PropertyStatus.PRIVATE,
+        enum: Object.values(PropertyStatus)
     },
     user: {
         type: Schema.Types.ObjectId,
@@ -82,45 +138,35 @@ const dockSchema: Schema<IDock, IDockModel> = new Schema<IDock, IDockModel>({
         },
     ],
 });
-interface IDockListDataResponse {
-    items: IDock[];
-    status: number;
-    error: any;
-    msg: string;
 
-}
-dockSchema.statics.listData = async function (query, { page, itemsPerPage }): Promise<IDockListDataResponse> {
+dockSchema.statics.listData = async function (query: FilterQuery<IDock>, { page, itemsPerPage }): Promise<FetchResult<IDockView>> {
     try {
-        const resource = await this.find(query, {comments: 0, validations: 0})
-            .sort({ name: 1 })
-            .skip(page * itemsPerPage)
-            .limit(itemsPerPage)
-            .populate("user", "name _id")
-            .populate("region", "name type")
-            .exec();
-
-        if (!resource) {
-            return {
-                items: [],
-                status: 404,
-                error: null,
-                msg: "Resource not found.",
-            };
-        }
-
+        const skip: number = page * itemsPerPage;
+        const files = await this.find(query)
+            .select({ comments: 0, validations: 0, pictures: 0 })
+            .populate({
+                path: "region",
+                model: "WaterBody",
+                select: "_id name type"
+            })
+            .populate({
+                path: "user",
+                model: "User",
+                select: "_id name username"
+            })
+            .skip(skip)
+            .limit(itemsPerPage);
         return {
-            items: resource,
+            data: files as unknown as IDockView[],
             status: 200,
-            error: null,
-            msg: "OK",
+            error: null
         };
     } catch (err) {
-        console.log(err);
+        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
         return {
-            items: [],
-            status: 500,
-            error: err,
-            msg: "Could not fetch the comments.",
+            error,
+            data: [],
+            status: 500
         };
     }
 };
