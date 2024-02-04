@@ -60,11 +60,11 @@ const getVotes = (id: string, userId: string) => ([
 );
 
 const getValidations = (router: Router, Model: Model<IValidatable>): void => {
-    router.get("/:id/votes", pre.auth, async (req: Request, res: Response): Promise<void> => {
+    router.get("/:id/votes", pre.authenticate(true), async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
 
-            const aggregationResult = await Model.aggregate(getVotes(id, req.user._id));
+            const aggregationResult: any[] = await Model.aggregate(getVotes(id, req.user._id));
 
             if (aggregationResult.length === 0) {
                 res.status(404).json({

@@ -11,6 +11,7 @@ import {IError} from "../interfaces/responses/Error.interfaces";
 import E from "../errors/index";
 import {handlers} from "../errors/handlers";
 import {endpoint} from "../interfaces/types/Endpoint";
+import IUser from "../interfaces/models/IUser";
 dotenv.config();
 /**
  * Cifra un texto con el algoritmo y la clave secreta especificados en el archivo .env
@@ -55,20 +56,39 @@ interface TokenInterface {
 }
 /**
  * Verifica que el usuario esté autenticado
- * @param req
- * @param res
- * @param next
  */
-const authenticate: endpoint = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const authenticate = (continueOnError: boolean = false): endpoint => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+        const defUser: IUser = {
+            _id: "000000000000000000000000",
+            name: "No user",
+            username: "",
+            email: "",
+            bio: "",
+            birth: new Date(),
+            role: 0,
+            password: "",
+            active: false
+        };
+
         const authHeader = req.headers['authorization'];
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            if(continueOnError) {
+                req.user = defUser;
+                next();
+                return;
+            }
             res.status(401).json({error: E.Unauthenticated});
             return;
         }
 
         const token: string = (authHeader as string).split(' ')[1];
         if (!token) {
+            if(continueOnError) {
+                req.user = defUser;
+                next();
+                return;
+            }
             res.status(401).json({error: E.Unauthenticated});
             return;
         }
@@ -78,13 +98,17 @@ const authenticate: endpoint = async (req: Request, res: Response, next: NextFun
         const user = await User.findById(uid).select("-password");
 
         if (!user) {
+            if(continueOnError) {
+                req.user = defUser;
+                next();
+                return;
+            }
             res.status(401).json({error: E.InvalidToken});
             return;
         }
         req.user = user;
         next();
     } catch (err) {
-        console.log(err);
         if(err instanceof jwt.JsonWebTokenError || err instanceof jwt.TokenExpiredError || err instanceof jwt.NotBeforeError) {
             const finalError: IError = handlers.jwtMiddleware(err);
             res.status(401).json({error: finalError});
@@ -93,6 +117,7 @@ const authenticate: endpoint = async (req: Request, res: Response, next: NextFun
         res.status(500).json({error: E.InternalError});
     }
 };
+const auth: endpoint = authenticate(false);
 /**
  * Permite el acceso a los usuarios con un rol mayor o igual al especificado
  * @param role Rol mínimo requerido
@@ -216,5 +241,5 @@ export default {
     normalUsersCanAccess,
     everybodyCanAccess,
     allow,
-    auth: authenticate
+    auth
 };
