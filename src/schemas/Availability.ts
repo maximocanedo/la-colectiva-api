@@ -6,6 +6,17 @@ import {IAvailabilityResponseSample} from "../interfaces/responses/Availability.
 import IAvailability from "../interfaces/models/IAvailability";
 import HistoryEvent from "./HistoryEvent";
 
+export enum AvailabilityCondition {
+    MONDAY = "MONDAY",
+    TUESDAY = "TUESDAY",
+    WEDNESDAY = "WEDNESDAY",
+    THURSDAY = "THURSDAY",
+    FRIDAY = "FRIDAY",
+    SATURDAY = "SATURDAY",
+    SUNDAY = "SUNDAY",
+    HOLIDAY = "HOLIDAY"
+}
+
 // TODO: Agregar endpoint para verificar si un horario está disponible en X condiciones / Condiciones del horario en cuestión.
 /*const conditionOptions: string[] = [
     "MONDAY",
@@ -33,9 +44,7 @@ const AvailabilitySchema: Schema<IAvailability, IAvailabilityModel> = new Schema
     condition: {
         type: String,
         required: true,
-        ref: "Path",
-        minlength: 3,
-        maxlength: 24,
+        enum: Object.values(AvailabilityCondition)
     },
     available: {
         type: Boolean,
@@ -63,6 +72,6 @@ const AvailabilitySchema: Schema<IAvailability, IAvailabilityModel> = new Schema
     },
     validations: [ValidationSchema],
 });
-
+AvailabilitySchema.index({ path: 1, condition: 1 }, { unique: true });
 const Availability: IAvailabilityModel = model<IAvailability, IAvailabilityModel>("Availability", AvailabilitySchema);
 export default Availability;
