@@ -49,8 +49,9 @@ const decrypt = (text: string) => {
 /**
  * Interfaz de token
  */
-interface TokenInterface {
+interface TokenInterface extends jwt.JwtPayload {
     user: string;
+    address: string;
     iat: number;
     exp: number;
 }
@@ -71,7 +72,7 @@ const authenticate = (continueOnError: boolean = false): endpoint => async (req:
             active: false
         };
 
-        const authHeader = req.headers['authorization'];
+        const authHeader: string | undefined = req.headers['authorization'];
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             if(continueOnError) {
                 req.user = defUser;
@@ -93,8 +94,8 @@ const authenticate = (continueOnError: boolean = false): endpoint => async (req:
             return;
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY as string);
-        const uid = (decoded as TokenInterface).user; // Aquí deberías implementar tu lógica de descifrado
+        const decoded: TokenInterface = jwt.verify(token, process.env.JWT_SECRET_KEY as string) as TokenInterface;
+        const uid: string = decoded.user;
         const user = await User.findById(uid).select("-password");
 
         if (!user) {
@@ -122,16 +123,16 @@ const auth: endpoint = authenticate(false);
  * Permite el acceso a los usuarios con un rol mayor o igual al especificado
  * @param role Rol mínimo requerido
  */
-const allowAccessForRole = (role: number) => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const allowAccessForRole = (role: number): endpoint => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const user = req.user;
         if (user.role >= role) {
             next();
             return;
         }
-        res.status(403).json({error: E.AttemptedUnauthorizedOperation});
+        res.status(403).json({ error: E.AttemptedUnauthorizedOperation });
     } catch (err) {
-        res.status(500).json({error: E.InternalError});
+        res.status(500).json({ error: E.InternalError });
     }
 }
 /**
