@@ -99,7 +99,7 @@ const dockSchema: Schema<IDock, IDockModel> = new Schema<IDock, IDockModel>({
         type: Number,
         required: true,
         default: PropertyStatus.PRIVATE,
-        enum: Object.values(PropertyStatus)
+        enum: [ 0, 1, 2, 3, 4, 5 ]
     },
     user: {
         type: Schema.Types.ObjectId,

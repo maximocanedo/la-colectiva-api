@@ -18,8 +18,7 @@ const login = async (req: Request, res: Response): Promise<void>  => {
         query.$or = [{ username }];
     }
     if (email) {
-        if (query.$or) query.$or.push({ email });
-        else query.$or = [{ email }];
+        query.$or = [ ...(query.$or), { email }];
     }
 
     try {

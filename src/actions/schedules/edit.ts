@@ -65,7 +65,7 @@ const edit: endpoint[] = [
             const { path, dock, time } = req.body;
             if(path) reg.path = path;
             if(dock) reg.dock = dock;
-            if(time) reg.time = time;
+            if(time) reg.time = `1990-01-01T${time}:00.000+00:00`;
             reg.history.push({
                 content: "Edición del registro. ",
                 time: Date.now(),

@@ -15,6 +15,7 @@ import defaultHandler from "../../errors/handlers/default.handler";
 import {endpoint} from "../../interfaces/types/Endpoint";
 
 const createOne = (isPathInBody: boolean = true): endpoint[] => [
+    pre.auth,
     pre.expect(isPathInBody ? {
         path: V.availability.path.required(),
         condition: V.availability.condition.required(),

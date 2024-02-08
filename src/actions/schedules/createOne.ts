@@ -11,6 +11,8 @@ import Schedule from "../../schemas/Schedule";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 
+
+
 const createOne = (isPathInBody: boolean = true): endpoint[] => [
     pre.auth,
     pre.allow.moderator,
@@ -49,11 +51,12 @@ const createOne = (isPathInBody: boolean = true): endpoint[] => [
             const { dock, time } = req.body;
             const path = isPathInBody ? req.body.path : req.params.id;
             const userId = req.user._id;
+            const formattedTime: string = `1990-01-01T${time}:00.000+00:00`;
             let reg = await Schedule.create({
                 user: userId,
                 path,
                 dock,
-                time,
+                time: new Date(formattedTime),
                 history: [
                     {
                         content: "Creación del registro. ",
@@ -62,6 +65,7 @@ const createOne = (isPathInBody: boolean = true): endpoint[] => [
                     }
                 ]
             });
+
             res.status(201).json({
                 id: reg._id
             });

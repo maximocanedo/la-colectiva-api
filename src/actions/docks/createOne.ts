@@ -77,6 +77,7 @@ const createOne: endpoint[] = [
                 id: reg._id
             });
         } catch (err) {
+            console.log(err);
             const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
             res.status(500).json({ error });
         }
