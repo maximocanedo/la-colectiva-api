@@ -22,7 +22,6 @@ router.get(
 			const conditions: string[] = req.query.conditions as string[];
 
 			const date: Date = new Date("1990-01-01T" + time + ":00.000+00:00");
-			console.log({ time, date });
 			const algo: any[] = nextBoat(
 				new mongoose.Types.ObjectId(departure as string),
 				new mongoose.Types.ObjectId(arrival as string),
@@ -42,12 +41,6 @@ router.get(
 					let formatted: Date = new Date(rawTime);
 					const hours: number = formatted.getUTCHours();
 					const minutes: number = formatted.getUTCMinutes();
-					console.log({
-						formatted,
-						rawTime,
-						hours,
-						minutes
-					});
 					result[i].schedules[j].time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 				}
 			}
