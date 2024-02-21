@@ -9,15 +9,15 @@ const edit = [
     pre.auth,
     pre.allow.moderator,
     pre.expect({
-        cuit: V.enterprise.cuit.required(),
-        name: V.enterprise.name.required(),
-        description: V.enterprise.description.required(),
-        foundationDate: V.enterprise.foundationDate.required()
+        cuit: V.enterprise.cuit,
+        name: V.enterprise.name,
+        description: V.enterprise.description,
+        foundationDate: V.enterprise.foundationDate
     }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { cuit } = req.body;
         const { id } = req.params;
-        if(!cuit) next();
+        if(cuit === undefined) next();
         else {
             const reg = await Enterprise.findOne({ cuit });
             if(!reg) next();
@@ -47,10 +47,10 @@ const edit = [
             }
             const { cuit, name, description, foundationDate, phones } =
                 req.body;
-            reg.cuit = cuit;
-            reg.name = name;
-            reg.description = description;
-            reg.foundationDate = foundationDate;
+            if(cuit !== undefined) reg.cuit = cuit;
+            if(name !== undefined) reg.name = name;
+            if(description !== undefined) reg.description = description;
+            if(foundationDate !== undefined) reg.foundationDate = foundationDate;
             // reg.phones = phones;
             reg.history.push({
                 content: "Edición completa del recurso. ",

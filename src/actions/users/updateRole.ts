@@ -18,7 +18,7 @@ const updateRole = async (req: Request, res: Response): Promise<void> => {
             limited: 0,
         };
         const role: number = parseInt(req.body.role as string);
-        if (!req.body.role || role > 3 || role < 0) {
+        if (req.body.role === undefined || role > 3 || role < 0) {
             res.status(400).json({
                 error: E.InvalidInputFormatError
             }).end();

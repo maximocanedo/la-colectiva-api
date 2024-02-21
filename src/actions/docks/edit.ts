@@ -17,6 +17,7 @@ const edit: endpoint[] = [
         address: V.dock.address,
         region: V.dock.region,
         notes: V.dock.notes,
+        status: V.dock.status,
         coordinates: V.dock.coordinates
     }),
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -30,7 +31,7 @@ const edit: endpoint[] = [
     },
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { region, address } = req.body;
-        const obj = await WaterBody.findOne({ _id: region, active: true });
+        const obj = await WaterBody.findOne({ _id: region, active: true }, { comments: 0, validations: 0 });
         if (!obj) {
             res.status(400).json({
                 error: E.ResourceNotFound
@@ -53,6 +54,18 @@ const edit: endpoint[] = [
         try {
             const id: string = req.params.id;
             const userId = req.user._id;
+            const {
+                name,
+                address,
+                region,
+                notes,
+                status,
+                coordinates
+            } = req.body;
+            if( !name && address === undefined && !region && !notes && status === undefined && coordinates === undefined ) {
+                res.status(400).json({ error: E.AtLeastOneFieldRequiredError }).end();
+                return;
+            }
             const reg = await Dock.findOne({ _id: id, active: 1 });
             if (!reg) {
                 res.status(404).json({
@@ -69,20 +82,12 @@ const edit: endpoint[] = [
                 }).end();
                 return;
             }
-            const {
-                name,
-                address,
-                region,
-                notes,
-                status,
-                coordinates
-            } = req.body;
             if(name) reg.name = name;
-            if(address) reg.address = address;
+            if(address !== undefined) reg.address = address;
             if(region) reg.region = new ObjectId(region);
             if(notes) reg.notes = notes;
-            if(status) reg.status = status;
-            if(coordinates) reg.coordinates = coordinates;
+            if(status !== undefined) reg.status = status;
+            if(coordinates !== undefined) reg.coordinates = coordinates;
             reg.history.push({
                 content: "Edición parcial del registro. ",
                 time: Date.now(),

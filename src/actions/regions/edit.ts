@@ -18,7 +18,8 @@ const edit: endpoint[] = [
     async (req: Request, res: Response): Promise<void> => {
         try {
             const { name, type } = req.body;
-            if(!name && !type) {
+            console.log({n: name === undefined, t: type === undefined, name, type});
+            if(name === undefined && type === undefined) {
                 res.status(400).json({
                     error: E.AtLeastOneFieldRequiredError
                 }).end();
@@ -26,7 +27,7 @@ const edit: endpoint[] = [
             }
             const id: string = req.params.id;
             const userId = req.user._id;
-            const reg = await WaterBody.findOne({ _id: id, active: 1 });
+            const reg = await WaterBody.findOne({ _id: id, active: 1 }, { user: 1, history: 1, name: 1, type: 1 });
             if (!reg) {
                 res.status(404).json({ error: E.ResourceNotFound});
                 return;
@@ -35,8 +36,8 @@ const edit: endpoint[] = [
                 res.status(403).json({ error: E.UnauthorizedRecordModification});
                 return;
             }
-            if(name) reg.name = name;
-            if(type) reg.type = type;
+            if(name !== undefined) reg.name = name;
+            if(type !== undefined) reg.type = type;
             reg.history.push({
                 content: "Edición parcial del registro. ",
                 time: Date.now(),
@@ -47,6 +48,7 @@ const edit: endpoint[] = [
                 message: "Resource updated. ",
             });
         } catch (err) {
+            console.error(err);
             const error = defaultHandler(err as Error, E.CRUDOperationError);
             res.status(500).json({error});
         }
