@@ -27,12 +27,12 @@ const UserStatics = {
     ],
 };
 
-interface IUserMethods {
+export interface IUserMethods {
     sayHi(): void;
     comparePassword(password: string): Promise<boolean>;
 }
 
-interface UserModel extends Model<IUser, {}, IUserMethods> {
+export interface UserModel extends Model<IUser, {}, IUserMethods> {
     isUsernameAvailable(username: string): Promise<boolean>;
 }
 

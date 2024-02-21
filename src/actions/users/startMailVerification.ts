@@ -25,7 +25,7 @@ const transporter = nodemailer.createTransport({
         pass: process.env.MAIL_SMTP_PASSWORD as string,
     },
 });
-interface ISendCodeResponse {
+export interface ISendCodeResponse {
     validationId: string | Schema.Types.ObjectId | null,
     error: IError | null,
     code: number
