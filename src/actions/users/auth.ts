@@ -44,7 +44,7 @@ const login = async (req: Request, res: Response): Promise<void>  => {
             }).end();
         }
     } catch (e) {
-        const error: IError | null = defaultHandler(e as Error, E.TokenGenerationError);
+        const error: IError = defaultHandler(e as Error, E.TokenGenerationError);
         res.status(500).json({ error });
     }
 };

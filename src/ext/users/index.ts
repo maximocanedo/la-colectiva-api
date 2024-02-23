@@ -2,7 +2,7 @@
 import User from "../../schemas/User";
 import E from "../../errors";
 import {
-    IEmailVerificationDocument,
+    IEmailVerificationDocument, ILoginParams, ILoginResult,
     IStartMailVerificationParams,
     IUserDisableParams,
     IUserDocument,
@@ -16,8 +16,12 @@ import {ISendCodeResponse} from "../../actions/users/startMailVerification";
 import IUser from "../../interfaces/models/IUser";
 import crypto from "crypto";
 import MailVerification from "../../schemas/MailVerification";
-import nodemailer from "nodemailer";
-import {Schema} from "mongoose";
+import nodemailer, {SentMessageInfo} from "nodemailer";
+import {FilterQuery, Schema} from "mongoose";
+import jwt from "jsonwebtoken";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import defaultHandler from "../../errors/handlers/default.handler";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 
 export const isAdmin = (user: IUser): boolean => user.role === 3;
 /**
@@ -45,7 +49,40 @@ export const create = async ({ username, name, email, bio, birth, password }: IU
     const user: IUserDocument = await newUser.save();
     return await sendVerificationCode({ user, email });
 };
-export const auth = (): void => {};
+/**
+ * Crea un token (Inicia sesión) para un usuario.
+ * @param username
+ * @param password
+ * @param email
+ * @param exp
+ */
+export const login = async ({ username, password, email, exp }: ILoginParams): Promise<ILoginResult> => {
+    let query: FilterQuery<IUser> = {
+        active: true,
+    };
+    if (username !== undefined) {
+        query.$or = [{ username }];
+    } else if (email !== undefined) {
+        query.$or = [ ...(query.$or?? []), { email }];
+    } else throw new ColError(E.AuthenticationError);
+
+    const user: IUserDocument = await User.findOne(query)
+    if(!user) throw new ColError(E.InvalidCredentials);
+    const passwordMatches: boolean = await user.comparePassword(password);
+    if(!passwordMatches) throw new ColError(E.InvalidCredentials);
+    const token: string = jwt.sign({
+        user: user._id
+    }, process.env.JWT_SECRET_KEY as string, {
+        expiresIn: exp?? "8h"
+    });
+
+    return {
+        success: true,
+        user,
+        token
+    };
+
+};
 /**
  * Deshabilita un usuario.
  * @param responsible
@@ -102,7 +139,7 @@ export const find = async ({ responsible, username }: IUserFindParams): Promise<
     if(!user) throw new ColError(E.ResourceNotFound);
     return user;
 };
-const transporter = nodemailer.createTransport({
+const transporter: nodemailer.Transporter<SentMessageInfo> = nodemailer.createTransport({
     host: process.env.MAIL_SMTP_SERVER as string,
     port: parseInt(process.env.MAIL_SMTP_PORT as string),
     auth: {

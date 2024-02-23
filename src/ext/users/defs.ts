@@ -46,3 +46,15 @@ export interface IStartMailVerificationParams {
     user: IUser | IUserDocument;
     email: string;
 }
+export type ExpirationDate = "15m" | "8h" | "24h" | "7d" | "14d";
+export interface ILoginParams {
+    email?: string;
+    username?: string;
+    password: string;
+    exp?: ExpirationDate;
+}
+export interface ILoginResult {
+    success: boolean;
+    user: IUser | IUserDocument;
+    token: string;
+}
