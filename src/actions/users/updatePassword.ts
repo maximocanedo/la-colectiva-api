@@ -1,30 +1,25 @@
 'use strict';
 import User from "../../schemas/User";
 import {Request, Response} from "express";
-import {IError} from "../../interfaces/responses/Error.interfaces";
+import {HttpStatusCode, IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
+import * as users from "./../../ext/users";
+import ColError from "../../ext/error/ColError";
 const updatePassword = async (req: Request, res: Response): Promise<void> => {
     try {
-        const userId = req.user._id;
         const { password } = req.body;
-
-        // Buscar el usuario completo por su ID
-        const user = await User.findOne({ _id: userId, active: true });
-
-        if (!user) {
-            res.status(404).json({
-                error: E.ResourceNotFound
-            });
+        const response: boolean = await users.updatePassword({
+            responsible: req.user,
+            password
+        });
+        if(response) {
+            res.status(HttpStatusCode.OK);
             return;
-        }
-
-        user.password = password;
-        const updatedUser = await user.save();
-        res.status(200).end();
+        } else throw new ColError(E.InternalError);
     } catch (err) {
-        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error });
     }
 };
 

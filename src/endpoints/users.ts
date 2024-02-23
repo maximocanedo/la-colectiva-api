@@ -65,6 +65,8 @@ router.post("/", pre.expect({
 	password: V.user.password.required()
 }),  users.signup);
 
+// TODO Actualizar endpoints
+
 router.post("/me/mail", users.startMailVerification);
 router.post("/:username/recover", startPasswordRecovering);
 router.post("/validate/:validationId", users.validateMail);

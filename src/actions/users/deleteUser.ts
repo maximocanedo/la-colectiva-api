@@ -1,26 +1,25 @@
 'use strict';
-import User from "../../schemas/User";
-import { Request, Response, NextFunction } from "express";
-import {IError} from "../../interfaces/responses/Error.interfaces";
+import { Request, Response } from "express";
+import {HttpStatusCode, IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
-import pre from "../../endpoints/pre";
+import {endpoint} from "../../interfaces/types/Endpoint";
+import * as users from "../../ext/users";
+import ColError from "../../ext/error/ColError";
 const deleteUser =
-    (me: boolean = false) =>  [
+    (me: boolean = false): endpoint[] =>  [
         (async (req: Request, res: Response): Promise<void> => {
             try {
                 const { username } = me ? req.user : req.params;
-                let user = await User.findOne({ username, active: true }, { password: 0 });
-                if (!user) {
-                    res.status(404).json({ error: E.ResourceNotFound }).end();
-                    return;
-                }
-                user.active = false;
-                await user.save();
-                res.status(200).end();
+                const response: boolean = await users.disable({
+                    responsible: req.user,
+                    username
+                });
+                if(response) res.status(204).end();
+                else throw new ColError(E.InternalError);
             } catch (err) {
-                const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-                res.status(500).json({ error });
+                const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+                res.status(http?? 500).json({ error });
             }
         })
     ];

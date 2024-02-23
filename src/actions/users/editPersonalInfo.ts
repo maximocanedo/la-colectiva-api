@@ -1,34 +1,20 @@
 'use strict';
-import User from "../../schemas/User";
 import {Request, Response} from "express";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
-const editPersonalInfo = (me = false) => (async (req: Request, res: Response): Promise<void> => {
+import * as users from "./../../ext/users";
+import ColError from "../../ext/error/ColError";
+const editPersonalInfo = (me: boolean = false) => (async (req: Request, res: Response): Promise<void> => {
     try {
         const { username } = me ? req.user : req.params;
-        const { name, bio, email, birth } = req.body;
-
-        const user = await User.findOne({ username, active: true });
-        if (!user) {
-            res.status(404).json({ error: E.ResourceNotFound }).end();
-            return;
-        }
-
-        if(name) user.name = name;
-        if(bio) user.bio = bio;
-        if(email) user.email = email;
-        if(birth) user.birth = birth;
-        if(!name && !bio && !email && !birth) {
-            res.status(400).json({
-                error: E.AtLeastOneFieldRequiredError
-            }).end();
-            return;
-        }
-
-        const updatedUser = await user.save();
-        res.status(200).end();
-
+        const response: boolean = await users.edit({
+            ...(req.body),
+            responsible: req.user,
+            username,
+        });
+        if(response) res.status(200).end();
+        else throw new ColError(E.InternalError);
     } catch (err) {
         const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
         res.status(500).json({ error });

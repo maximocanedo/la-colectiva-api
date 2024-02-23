@@ -1,25 +1,21 @@
 'use strict';
 import {Request, Response} from "express";
-import {IError} from "../../interfaces/responses/Error.interfaces";
+import {HttpStatusCode, IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
-import User from "./../../schemas/User";
 import E from "../../errors";
+import * as users from "../../ext/users";
+import IUser from "../../interfaces/models/IUser";
 
-const getOne = (me = false) => (async (req: Request, res: Response): Promise<void> => {
+const getOne = (me: boolean = false) => (async (req: Request, res: Response): Promise<void> => {
     try {
-        const username = me ? req.user.username : req.params.username;
-        let user = await User.findOne(
-            { username, active: true },
-            { password: 0 }
-        );
-        if (!user) {
-            res.status(404).json({ error: E.ResourceNotFound }).end();
-            return;
-        }
-        res.status(200).json(user);
+        const response: IUser = await users.find({
+            responsible: req.user,
+            username: me ? "me" : req.params.username
+        });
+        res.status(HttpStatusCode.OK).json(response);
     } catch (e) {
-        const error: IError | null = defaultHandler(e as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        const { http, ...error }: IError = defaultHandler(e as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error });
     }
 });
 export default getOne;

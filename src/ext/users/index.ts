@@ -135,7 +135,7 @@ export const edit = async ({ responsible, username, name, bio, birth }: IUserEdi
  */
 export const find = async ({ responsible, username }: IUserFindParams): Promise<IUser> => {
     const query: any = !responsible ? { active: true } : {};
-    const user: IUserDocument = await User.findOne({ ...query, username });
+    const user: IUserDocument = await User.findOne({ ...query, username }, { password: 0 });
     if(!user) throw new ColError(E.ResourceNotFound);
     return user;
 };
