@@ -19,9 +19,6 @@ import MailVerification from "../../schemas/MailVerification";
 import nodemailer, {SentMessageInfo} from "nodemailer";
 import {FilterQuery, Schema} from "mongoose";
 import jwt from "jsonwebtoken";
-import {IError} from "../../interfaces/responses/Error.interfaces";
-import defaultHandler from "../../errors/handlers/default.handler";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
 
 export const isAdmin = (user: IUser): boolean => user.role === 3;
 /**
@@ -66,7 +63,7 @@ export const login = async ({ username, password, email, exp }: ILoginParams): P
         query.$or = [ ...(query.$or?? []), { email }];
     } else throw new ColError(E.AuthenticationError);
 
-    const user: IUserDocument = await User.findOne(query)
+    const user: IUserDocument = await User.findOne(query);
     if(!user) throw new ColError(E.InvalidCredentials);
     const passwordMatches: boolean = await user.comparePassword(password);
     if(!passwordMatches) throw new ColError(E.InvalidCredentials);
