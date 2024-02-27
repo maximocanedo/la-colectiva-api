@@ -16,7 +16,6 @@ router.use(express.json());
 /* Listados */
 router.get("/@:lat,:lng,:radio", docks.explore); // Listar recursos
 router.get("/", docks.list); // Listar recursos
-
 /* Acciones básicas */
 router.post("/", docks.createOne); // Crear un registro
 router.get("/:id([0-9a-fA-F]{24})", docks.getOne); // Ver recurso

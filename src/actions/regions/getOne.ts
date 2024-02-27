@@ -1,30 +1,26 @@
 'use strict';
-
 import {endpoint} from "../../interfaces/types/Endpoint";
 import {Request, Response} from "express";
-import WaterBody, {IRegionView} from "../../schemas/WaterBody";
 import E from "../../errors";
 import defaultHandler from "../../errors/handlers/default.handler";
-import FetchResult from "../../interfaces/responses/FetchResult";
+import pre from "../../endpoints/pre";
+import * as regions from "../../ext/regions";
+import {GetRegionResult} from "../../ext/regions/defs";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import IUser from "../../interfaces/models/IUser";
 
 const getOne: endpoint[] = [
+    pre.authenticate(true),
     async (req: Request, res: Response): Promise<void> => {
         try {
             const id: string = req.params.id;
-            const { status, ...result }: FetchResult<IRegionView> = await WaterBody.listData({
-                _id: id,
-                active: true
-            }, { page: 0, itemsPerPage: 1 });
-            if(result.data.length === 0) {
-                res.status(404).json({ data: [], error: E.ResourceNotFound }).end();
-                return;
-            }
-            res.status(status).json(result).end();
+            const user: IUser | undefined = req.user;
+            const response: GetRegionResult = await regions.get({ id, responsible: user });
+            res.status(200).json(response).end();
         } catch (err) {
-            const error = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({ data: [], error }).end();
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({ data: [], error }).end();
         }
     }
 ];
-
 export default getOne;

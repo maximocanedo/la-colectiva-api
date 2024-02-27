@@ -4,9 +4,11 @@ import {endpoint} from "../../interfaces/types/Endpoint";
 import pre from "../../endpoints/pre";
 import V from "../../validators";
 import {Request, Response} from "express";
-import WaterBody from "../../schemas/WaterBody";
 import E from "../../errors";
 import defaultHandler from "../../errors/handlers/default.handler";
+import * as regions from "../../ext/regions";
+import {ICreateRegionResponse} from "../../ext/regions/defs";
+import {IError} from "../../interfaces/responses/Error.interfaces";
 
 const createOne: endpoint[] = [
     pre.auth,
@@ -17,26 +19,11 @@ const createOne: endpoint[] = [
     }),
     async (req: Request, res: Response): Promise<void> => {
         try {
-            const { name, type } = req.body;
-            const userId = req.user._id;
-            let reg = await WaterBody.create({
-                user: userId,
-                name,
-                type,
-                history: [
-                    {
-                        content: "Creación del registro. ",
-                        time: Date.now(),
-                        user: req.user._id
-                    }
-                ]
-            });
-            res.status(201).json({
-                id: reg._id
-            });
+            const { _id }: ICreateRegionResponse = await regions.create({ ...req.body, responsible: req.user });
+            res.status(200).json({ _id }).end();
         } catch (err) {
-            const error = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({error});
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({ error });
         }
     }
 ];

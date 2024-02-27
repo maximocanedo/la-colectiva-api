@@ -6,7 +6,7 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "files": ["src/custom.d.ts", "src/index.ts"],
+  "files": ["src/types.d.ts", "src/index.ts"],
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }
