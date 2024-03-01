@@ -6,7 +6,9 @@ import V from "./../../validators";
 import E from "../../errors";
 import {endpoint} from "../../interfaces/types/Endpoint";
 import defaultHandler from "../../errors/handlers/default.handler";
-import HistoryEvent from "../../schemas/HistoryEvent";
+import * as enterprises from "../../ext/enterprises";
+import {IEnterpriseCreateResponse} from "../../ext/enterprises/defs";
+import {IError} from "../../interfaces/responses/Error.interfaces";
 
 const createOne: endpoint[] = [
     pre.auth,
@@ -18,54 +20,15 @@ const createOne: endpoint[] = [
         foundationDate: V.enterprise.foundationDate,
         phones: V.enterprise.phones
     }),
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { cuit } = req.body;
-        if(!cuit) next();
-        else {
-            const reg = await Enterprise.findOne({ cuit });
-            if(!reg) next();
-            else {
-                res.status(409).json({ error: E.DuplicationError }).end();
-            }
-        }
-        return;
-    },
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { cuit } = req.body;
-        const obj = await Enterprise.findOne({ cuit });
-        if(!obj) next();
-        else {
-            res.status(400).json({
-                error: E.DuplicationError
-            }).end();
-        }
-    },
     async (req: Request, res: Response): Promise<void> => {
         try {
-            const { cuit, name, description, foundationDate, phones } =
-                req.body;
-            const userId = req.user._id;
-            let reg = await Enterprise.create({
-                user: userId,
-                cuit,
-                name,
-                description,
-                foundationDate,
-                phones,
-                history: [
-                    {
-                        content: "Creación del registro",
-                        user: userId,
-                        time: Date.now()
-                    }
-                ]
-            });
+            const { _id }: IEnterpriseCreateResponse = await enterprises.create({ ...req.body, responsible: req.user })
             res.status(201).json({
-                id: reg._id
-            });
+                id: _id
+            }).end();
         } catch (err) {
-            const error = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({error});
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({error});
         }
     }
 ];
