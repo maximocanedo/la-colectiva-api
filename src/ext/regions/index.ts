@@ -59,7 +59,7 @@ const canEdit = (responsible: IUser, author: Schema.Types.ObjectId | string): bo
     } else return responsible.role === 3;
 };
 export const del = async ({ id, responsible }: IUpdateRegionProps): Promise<void> => {
-    const resource: IRegionDocument | null = await WaterBody.findById(id);
+    const resource: IRegionDocument | null = await WaterBody.findById(id, { active: 1, _id: 1, user: 1, history: 1 });
     if(resource === null) throw new ColError(E.ResourceNotFound);
     const canDelete: boolean = canEdit(responsible, resource.user);
     if(!canDelete) throw new ColError(E.AttemptedUnauthorizedOperation);

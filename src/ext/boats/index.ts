@@ -18,11 +18,11 @@ export const canCreate = (responsible: IUser) => {
 };
 export const canUpdate = (responsible: IUser, file: BoatDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible)._id && (<IUser>responsible).active);
 export const exists = async (id: OID): Promise<boolean> => {
-    const file: BoatDocument = await Boat.findOne({ _id: id });
+    const file: BoatDocument = await Boat.findOne({ _id: id }, { _id: 1 });
     return file !== null;
 };
 export const existsByMat = async (mat: string): Promise<boolean> => {
-    const file: BoatDocument = await Boat.findOne({ mat });
+    const file: BoatDocument = await Boat.findOne({ mat }, { _id: 1, mat: 1 });
     return file !== null;
 };
 export const create = async ({ responsible, mat, name, enterprise, status }: IBoatCreateRequiredProps)
@@ -41,23 +41,25 @@ export const create = async ({ responsible, mat, name, enterprise, status }: IBo
     return { _id: file._id };
 };
 export const disable = async ({ id: _id, responsible }: ISensibleAction): Promise<void> => {
-    const file: BoatDocument = await Boat.findOne({ _id, active: true });
+    const file: BoatDocument = await Boat.findOne({ _id, active: true }, { history: 1, user: 1, active: 1, _id: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = false;
+    file.history.push({ content: "Deshabilitación del recurso. ", time: Date.now(), user: responsible._id as string });
     await file.save();
     return;
 };
 export const enable = async ({ id: _id, responsible }: ISensibleAction): Promise<void> => {
-    const file: BoatDocument = await Boat.findOne({ _id, active: false });
+    const file: BoatDocument = await Boat.findOne({ _id, active: false }, { history: 1, user: 1, active: 1, _id: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = true;
+    file.history.push({ content: "Habilitación del recurso. ", time: Date.now(), user: responsible._id as string });
     await file.save();
     return;
 };
 export const edit = async ({ id: _id, responsible, mat, name, status, enterprise }: IBoatEditRequest): Promise<void> => {
-    const file: BoatDocument = await Boat.findOne({ _id, active: true });
+    const file: BoatDocument = await Boat.findOne({ _id, active: true }, { mat: 1, name: 1, status: 1, enterprise: 1, history: 1, user: 1, active: 1, _id: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     const t = (content: string): number => file.history.push({ content, time: Date.now(), user: responsible._id as string });

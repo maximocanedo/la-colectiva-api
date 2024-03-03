@@ -47,23 +47,25 @@ export const create = async ({ boat, title, description, notes, responsible }: I
     return { _id: file._id };
 };
 export const disable = async ({ id: _id, responsible }: ISensibleAction): Promise<void> => {
-    const file: PathDocument = await Path.findOne({ _id, active: true });
+    const file: PathDocument = await Path.findOne({ _id, active: true }, { _id: 1, user: 1, active: 1, history: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = false;
+    file.history.push({ content: "Deshabilitar registro. ", time: Date.now(), user: responsible._id as string });
     await file.save();
     return;
 };
 export const enable = async ({ id: _id, responsible }: ISensibleAction): Promise<void> => {
-    const file: PathDocument = await Path.findOne({ _id, active: false });
+    const file: PathDocument = await Path.findOne({ _id, active: false }, { _id: 1, user: 1, active: 1, history: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = true;
+    file.history.push({ content: "Deshabilitar registro. ", time: Date.now(), user: responsible._id as string });
     await file.save();
     return;
 };
 export const edit = async ({ id: _id, responsible, boat, title, description, notes }: IPathEditRequest): Promise<void> => {
-    const file: PathDocument = await Path.findOne({ _id, active: true });
+    const file: PathDocument = await Path.findOne({ _id, active: true }, { _id: 1, user: 1, history: 1, boat: 1, title: 1, description: 1, notes: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     const reg = (content: string) => file.history.push({ content, time: Date.now(), user: responsible._id as string });
@@ -130,7 +132,7 @@ export const addAvailability = async ({id, available, responsible, condition}: I
     };
 };
 export const deleteAvailability = async (id: OID | string, responsible: IUser): Promise<void> => {
-    const file: AvailabilityDocument = await Availability.findOne({ _id: id, active: true });
+    const file: AvailabilityDocument = await Availability.findOne({ _id: id, active: true }, { _id: 1, active: 1, history: 1, user: 1, path: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdateAvailability(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = false;

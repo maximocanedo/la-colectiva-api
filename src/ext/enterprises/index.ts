@@ -52,7 +52,7 @@ export const create = async ({ cuit, name, description, foundationDate, phones, 
     return { _id };
 };
 export const disable = async ({ id, responsible }: IEnterpriseDeleteProps): Promise<void> => {
-    const file: EnterpriseDocument = await Enterprise.findOne({ _id: id, active: true });
+    const file: EnterpriseDocument = await Enterprise.findOne({ _id: id, active: true }, { active: 1, history: 1, user: 1, _id: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = false;
@@ -65,7 +65,7 @@ export const disable = async ({ id, responsible }: IEnterpriseDeleteProps): Prom
     return;
 };
 export const enable = async ({ id, responsible }: IEnterpriseDeleteProps): Promise<void> => {
-    const file: EnterpriseDocument = await Enterprise.findOne({ _id: id, active: false });
+    const file: EnterpriseDocument = await Enterprise.findOne({ _id: id, active: false }, { active: 1, history: 1, _id: 1, user: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = true;
@@ -78,7 +78,7 @@ export const enable = async ({ id, responsible }: IEnterpriseDeleteProps): Promi
     return;
 };
 export const edit = async ({ id: _id, responsible, cuit, name, description, foundationDate}: IEnterpriseEditProps): Promise<void> => {
-    const file: EnterpriseDocument = await Enterprise.findOne({ _id, active: true });
+    const file: EnterpriseDocument = await Enterprise.findOne({ _id, active: true }, { _id: 1, active: 1, cuit: 1, name: 1, description: 1, foundationDate: 1, history: 1, user: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.UnauthorizedRecordModification);
     const reg = (content: string): number => file.history.push({ content, time: Date.now(), user: responsible._id as string });
@@ -130,7 +130,7 @@ export const find = async ({ q, paginator: { page, size: itemsPerPage } }: IEnte
     return [ ...data ];
 };
 export const addPhone = async ({ id, responsible, phone }: IEnterpriseUpdatePhoneProps): Promise<string[]> => {
-    const file = await Enterprise.findOne({ _id: id, active: true }, { phones: 1 });
+    const file = await Enterprise.findOne({ _id: id, active: true }, { phones: 1, history: 1, user: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.UnauthorizedRecordModification);
     const { error, phones } = await file.addPhone(phone, responsible._id as string);
@@ -138,7 +138,7 @@ export const addPhone = async ({ id, responsible, phone }: IEnterpriseUpdatePhon
     return phones;
 };
 export const deletePhone = async ({ id, responsible, phone }: IEnterpriseUpdatePhoneProps): Promise<string[]> => {
-    const file = await Enterprise.findOne({ _id: id, active: true }, { phones: 1});
+    const file = await Enterprise.findOne({ _id: id, active: true }, { phones: 1, history: 1, user: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.UnauthorizedRecordModification);
     const { error, phones } = await file.deletePhone(phone, responsible._id as string);
@@ -146,7 +146,7 @@ export const deletePhone = async ({ id, responsible, phone }: IEnterpriseUpdateP
     return phones;
 };
 export const listPhones = async (id: string | Schema.Types.ObjectId): Promise<string[]> => {
-    const file = await Enterprise.findOne({ _id: id, active: true }, { phones: 1 });
+    const file = await Enterprise.findOne({ _id: id, active: true }, { phones: 1, history: 1, user: 1  });
     if(!file) throw new ColError(E.ResourceNotFound);
     return file.phones;
 };

@@ -22,7 +22,7 @@ export const canCreate = (responsible: IUser) => {
 };
 export const canUpdate = (responsible: IUser, file: DockDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible)._id && (<IUser>responsible).active);
 export const existsByAddress = async (region: OID, address: number): Promise<boolean> => {
-    const file: DockDocument = await Dock.findOne({ region, address });
+    const file: DockDocument = await Dock.findOne({ region, address }, { region: 1, address: 1 });
     return file !== null;
 }
 export const create = async ({ responsible, region, address, name, status, coordinates, notes }: IDockCreateRequest): Promise<IDockCreateResponse> => {
@@ -43,23 +43,25 @@ export const create = async ({ responsible, region, address, name, status, coord
     return { _id: file._id as string };
 };
 export const disable = async ({ id: _id, responsible }: ISensibleAction): Promise<void> => {
-    const file: DockDocument = await Dock.findOne({ _id, active: true });
+    const file: DockDocument = await Dock.findOne({ _id, active: true }, { user: 1, history: 1, active: 1, _id: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = false;
+    file.history.push({ content: "Deshabilitación del recurso. ", time: Date.now(), user: responsible._id as string });
     await file.save();
     return;
 };
 export const enable = async ({ id: _id, responsible }: ISensibleAction): Promise<void> => {
-    const file: DockDocument = await Dock.findOne({ _id, active: false });
+    const file: DockDocument = await Dock.findOne({ _id, active: false }, { user: 1, history: 1, active: 1, _id: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     file.active = true;
+    file.history.push({ content: "Habilitación del recurso. ", time: Date.now(), user: responsible._id as string });
     await file.save();
     return;
 };
 export const edit = async ({ name, address, region, status, coordinates, notes, id: _id, responsible }: IDockEditRequest): Promise<void> => {
-    const file: DockDocument = await Dock.findOne({ _id, active: true });
+    const file: DockDocument = await Dock.findOne({ _id, active: true }, { name: 1, address: 1, region: 1, status: 1, coordinates: 1, notes: 1, _id: 1, user: 1, history: 1, active: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
     let hasAddressChanged: boolean = false;
