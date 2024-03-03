@@ -6,14 +6,13 @@ import {
     ISensibleAction,
     OID
 } from "./defs";
-import IUser from "../../interfaces/models/IUser";
 import ColError from "../error/ColError";
 import E from "../../errors";
 import * as enterprises from "../enterprises";
 import Boat, {IBoatView} from "../../schemas/Boat";
 import FetchResult from "../../interfaces/responses/FetchResult";
-import {IPaginator} from "../../endpoints/pre";
-export const canCreate = (responsible: IUser) => {
+import IUser from "../../interfaces/models/IUser";
+export const canCreate = (responsible: IUser | { role: number, active: boolean }): boolean => {
     return responsible.role >= 2 && responsible.active;
 };
 export const canUpdate = (responsible: IUser, file: BoatDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible)._id && (<IUser>responsible).active);
@@ -25,8 +24,8 @@ export const existsByMat = async (mat: string): Promise<boolean> => {
     const file: BoatDocument = await Boat.findOne({ mat }, { _id: 1, mat: 1 });
     return file !== null;
 };
-export const create = async ({ responsible, mat, name, enterprise, status }: IBoatCreateRequiredProps)
-    : Promise<IBoatCreateResponse> => {
+export const create = async (props: IBoatCreateRequiredProps): Promise<IBoatCreateResponse> => {
+    const { responsible, mat, name, enterprise, status }: IBoatCreateRequiredProps = props;
     if(!canCreate) throw new ColError(E.AttemptedUnauthorizedOperation);
     if(!(await enterprises.existsByOID(enterprise))) throw new ColError(E.ResourceNotFound);
     if(await existsByMat(mat)) throw new ColError(E.DuplicationError);
@@ -109,6 +108,6 @@ export const find = async ({ q, paginator, enterprise }: IFindBoatRequest): Prom
             ...(enterprise !== undefined ? [{ enterprise }] : [])
         ],
     }, paginator);
-    if(!!error) throw new ColError(error);
+    if(!!error) throw error; // new ColError(error);
     return data;
 };

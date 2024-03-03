@@ -6,13 +6,14 @@ import E from "../../errors";
 import {endpoint} from "../../interfaces/types/Endpoint";
 import * as users from "../../ext/users";
 import ColError from "../../ext/error/ColError";
+import IUser from "../../interfaces/models/IUser";
 const deleteUser =
     (me: boolean = false): endpoint[] =>  [
         (async (req: Request, res: Response): Promise<void> => {
             try {
-                const { username } = me ? req.user : req.params;
+                const { username } = me ? <IUser>req.user : req.params;
                 const response: boolean = await users.disable({
-                    responsible: req.user,
+                    responsible: req.user as IUser,
                     username
                 });
                 if(response) res.status(204).end();

@@ -9,7 +9,7 @@ import IUser from "../../interfaces/models/IUser";
 import {Role} from "../../ext/users/defs";
 const updateRole = async (req: Request, res: Response): Promise<void> => {
     try {
-        const responsible: IUser = req.user;
+        const responsible: IUser = req.user as IUser;
         const username: string = req.params.username;
         const role: Role = req.body.role;
         const response: boolean = await users.updateRole({ responsible, username, role });

@@ -6,11 +6,12 @@ import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 import * as users from "./../../ext/users";
 import ColError from "../../ext/error/ColError";
+import IUser from "../../interfaces/models/IUser";
 const updatePassword = async (req: Request, res: Response): Promise<void> => {
     try {
         const { password } = req.body;
         const response: boolean = await users.updatePassword({
-            responsible: req.user,
+            responsible: req.user as IUser,
             password
         });
         if(response) {

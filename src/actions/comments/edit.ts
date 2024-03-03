@@ -7,6 +7,7 @@ import Comment from "../../schemas/Comment";
 import E from "../../errors";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
+import IUser from "../../interfaces/models/IUser";
 
 const edit: endpoint[] = [
     pre.expect({
@@ -25,7 +26,7 @@ const edit: endpoint[] = [
                 }).end();
                 return;
             }
-            if(comment.user.toString() !== req.user._id.toString()) {
+            if(comment.user.toString() !== (<IUser>req.user)._id.toString()) {
                 res.status(403).json({
                     error: E.UnauthorizedRecordModification
                 }).end();

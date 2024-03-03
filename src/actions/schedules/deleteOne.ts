@@ -7,13 +7,14 @@ import Schedule from "../../schemas/Schedule";
 import E from "../../errors";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
+import IUser from "../../interfaces/models/IUser";
 
 const deleteOne: endpoint[] = [pre.auth, async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
         const resource = await Schedule.findById(id);
-        const username = req.user._id;
-        const isAdmin = req.user.role >= 3;
+        const username = (<IUser>req.user)._id;
+        const isAdmin = (<IUser>req.user).role >= 3;
         if (!resource) {
             res.status(404).json({error: E.ResourceNotFound});
             return;
@@ -26,7 +27,7 @@ const deleteOne: endpoint[] = [pre.auth, async (req: Request, res: Response): Pr
         resource.history.push({
             content: "Deshabilitación del registro. ",
             time: Date.now(),
-            user: req.user._id
+            user: (<IUser>req.user)._id as string
         });
         const status = await resource.save();
         res.status(200).json({
