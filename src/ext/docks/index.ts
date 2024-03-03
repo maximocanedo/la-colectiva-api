@@ -20,7 +20,7 @@ import {coordinates} from "../../validators/dock.v";
 export const canCreate = (responsible: IUser) => {
     return responsible.role >= 2 && responsible.active;
 };
-export const canUpdate = (responsible: IUser, file: DockDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible).username && (<IUser>responsible).active);
+export const canUpdate = (responsible: IUser, file: DockDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible)._id && (<IUser>responsible).active);
 export const existsByAddress = async (region: OID, address: number): Promise<boolean> => {
     const file: DockDocument = await Dock.findOne({ region, address });
     return file !== null;

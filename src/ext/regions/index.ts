@@ -54,7 +54,7 @@ export const find = async ({ q, paginator: { page, size } }: IFindRegionsProps):
     }, { page, itemsPerPage: size });
 };
 const canEdit = (responsible: IUser, author: Schema.Types.ObjectId | string): boolean => {
-    if(responsible.username === author) {
+    if(responsible._id === author) {
         return responsible.role >= 2;
     } else return responsible.role === 3;
 };

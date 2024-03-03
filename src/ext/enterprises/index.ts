@@ -26,7 +26,7 @@ export const existsByOID = async (id: string | Schema.Types.ObjectId): Promise<b
 export const canCreate = (responsible: IUser) => {
     return responsible.role >= 2 && responsible.active;
 };
-export const canUpdate = (responsible: IUser, file: EnterpriseDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible).username && (<IUser>responsible).active);
+export const canUpdate = (responsible: IUser, file: EnterpriseDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible)._id && (<IUser>responsible).active);
 export const create = async ({ cuit, name, description, foundationDate, phones, responsible }: IEnterpriseCreateProps): Promise<IEnterpriseCreateResponse> => {
     const alreadyExists: boolean = await exists(cuit);
     if(alreadyExists) throw new ColError(E.DuplicationError);

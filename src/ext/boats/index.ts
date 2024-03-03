@@ -16,7 +16,7 @@ import {IPaginator} from "../../endpoints/pre";
 export const canCreate = (responsible: IUser) => {
     return responsible.role >= 2 && responsible.active;
 };
-export const canUpdate = (responsible: IUser, file: BoatDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible).username && (<IUser>responsible).active);
+export const canUpdate = (responsible: IUser, file: BoatDocument): boolean =>  (<IUser>responsible).role === 3 || ((<IUser>responsible).role === 2 && file !== null && file.user === (<IUser>responsible)._id && (<IUser>responsible).active);
 export const exists = async (id: OID): Promise<boolean> => {
     const file: BoatDocument = await Boat.findOne({ _id: id });
     return file !== null;

@@ -8,6 +8,9 @@ import E from "../../errors";
 import V from "../../validators";
 import {IHistoryEvent} from "../../schemas/HistoryEvent";
 import {endpoint} from "../../interfaces/types/Endpoint";
+import * as paths from "../../ext/paths";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import IUser from "../../interfaces/models/IUser";
 
 
 const edit: endpoint[] = [
@@ -19,52 +22,14 @@ const edit: endpoint[] = [
         description: V.path.description,
         notes: V.path.notes
     }),
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { boat } = req.body;
-        if(!boat) next();
-        else {
-            const obj = await Boat.findById(boat);
-            if (!obj) res.status(404).json({
-                error: E.ResourceNotFound
-            }); else next();
-        }
-    },
     async (req: Request, res: Response): Promise<void> => {
         try {
             const id: string = req.params.id;
-            const userId = req.user._id;
-            const reg: any = await Path.findOne({ _id: id, active: 1 });
-            if (!reg) {
-                res.status(404).json({
-                    error: E.ResourceNotFound
-                });
-                return;
-            }
-            if (reg.user.toString() !== userId.toString()) {
-                res.status(403).json({
-                    error: E.UnauthorizedRecordModification
-                });
-                return;
-            }
-            let event: IHistoryEvent = {
-                content: "Edición parcial del recurso. ",
-                time: Date.now(),
-                user: req.user._id
-            };
-            const { boat, title, description, notes, } =
-                req.body;
-            if(boat) reg.boat = boat;
-            if(title) reg.title = title;
-            if(description) reg.description = description;
-            if(notes) reg.notes = notes;
-            reg.history.push(event);
-            await reg.save();
-            res.status(200).json({
-                message: "Resource updated. "
-            });
+            await paths.edit({ ...req.body, id, responsible: req.user as IUser });
+            res.status(204).end();
         } catch (err) {
-            const error = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({error});
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({error});
         }
     }
 ];

@@ -11,29 +11,18 @@ import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handl
 import defaultHandler from "../../errors/handlers/default.handler";
 import {endpoint} from "../../interfaces/types/Endpoint";
 import Path from "../../schemas/Path";
+import * as paths from "../../ext/paths";
+import IUser from "../../interfaces/models/IUser";
 
 const deleteOne: endpoint[] = [
     async (req: Request, res: Response): Promise<void> => {
         try {
             const { avid } = req.params;
-            const resource = await Availability.findOne({ _id: avid });
-            if (!resource) {
-                res.status(404).json({error: E.ResourceNotFound}).end();
-                return;
-            }
-            resource.active = false;
-            resource.history.push({
-                content: "Deshabilitación del registro. ",
-                time: Date.now(),
-                user: req.user._id
-            });
-            await resource.save();
-            res.status(200).json({
-                message: "Deleted",
-            }).end();
+            await paths.deleteAvailability(avid, req.user as IUser);
+            res.status(204).end();
         } catch (err) {
-            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({ error });
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({error});
         }
     }
 ];
