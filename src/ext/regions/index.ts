@@ -13,11 +13,15 @@ import E from "../../errors";
 import FetchResult from "../../interfaces/responses/FetchResult";
 import {Schema} from "mongoose";
 import {IHistoryEvent} from "../../schemas/HistoryEvent";
+import {OID} from "../boats/defs";
 
 const canCreate = (responsible: IUser): boolean => {
     return responsible.role >= 2;
 }
-
+export const exists = async (id: OID, lookForDisabled: boolean): Promise<boolean> => {
+    const file = await WaterBody.findOne({ _id: id, ...(lookForDisabled ? {} : { active: true }) });
+    return file !== null;
+}
 export const create = async ({ name, type, responsible }: ICreateRegionProps): Promise<ICreateRegionResponse> => {
     if(!canCreate(responsible)) throw new ColError(E.AttemptedUnauthorizedOperation);
     const { _id }: IRegionDocument = await WaterBody.create({

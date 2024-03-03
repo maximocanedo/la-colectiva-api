@@ -19,6 +19,10 @@ export const exists = async (cuit: CUIT): Promise<boolean> => {
     const file: EnterpriseDocument = await Enterprise.findOne({ cuit });
     return file !== null;
 }
+export const existsByOID = async (id: string | Schema.Types.ObjectId): Promise<boolean> =>  {
+    const file: EnterpriseDocument = await Enterprise.findOne({ _id: id });
+    return file !== null;
+}
 export const canCreate = (responsible: IUser) => {
     return responsible.role >= 2 && responsible.active;
 };

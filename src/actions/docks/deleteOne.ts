@@ -8,37 +8,16 @@ import {mongoErrorMiddleware} from "../../errors/handlers/MongoError.handler";
 import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import defaultHandler from "../../errors/handlers/default.handler";
-const deleteOne = async (req: Request, res: Response) => {
+import * as docks from "../../ext/docks";
+import IUser from "../../interfaces/models/IUser";
+import {endpoint} from "../../interfaces/types/Endpoint";
+const deleteOne: endpoint = async (req: Request, res: Response): Promise<void> => {
     try {
-        const id = req.params.id;
-        const resource = await Dock.findById(id);
-        const username = req.user.username;
-        const isAdmin = req.user.role >= 3;
-        if (!resource) {
-            res.status(404).json({
-                error: E.ResourceNotFound
-            }).end();
-            return;
-        }
-        if (resource.user !== req.user._id && !isAdmin) {
-            res.status(403).json({
-                error: E.AttemptedUnauthorizedOperation
-            });
-            return;
-        }
-        resource.active = false;
-        resource.history.push({
-            content: "Deshabilitar registro. ",
-            time: Date.now(),
-            user: req.user._id
-        });
-        const status = await resource.save();
-        res.status(200).json({
-            message: "Data was disabled. ",
-        });
+        const id: string = req.params.id;
+        await docks.disable({ id, responsible: req.user as IUser });
     } catch (err) {
-        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error });
     }
 };
 

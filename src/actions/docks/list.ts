@@ -9,38 +9,19 @@ import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handl
 import E from "../../errors";
 import defaultHandler from "../../errors/handlers/default.handler";
 import FetchResult from "../../interfaces/responses/FetchResult";
-const list = async (req: Request, res: Response): Promise<void> => {
+import * as docks from "../../ext/docks";
+import pre, {IPaginator} from "../../endpoints/pre";
+import {endpoint} from "../../interfaces/types/Endpoint";
+import {DockPropertyStatus} from "../../interfaces/models/IDock";
+const list: endpoint[] = [pre.paginate, async (req: Request, res: Response): Promise<void> => {
     try {
         const prefer: number = parseInt(req.query.prefer as string || "-1");
         const q: string = req.query.q as string || "";
-        const page: number = parseInt((req.query.p?? 0) as string) || 0;
-        const itemsPerPage: number = parseInt((req.query.itemsPerPage?? 10) as string) || 10;
-        let preferObj: any = {
-            status: prefer || -1,
-        };
-        if (prefer === -1) {
-            preferObj = {
-                // @ts-ignore
-                status: { $gt: -1 },
-            };
-        }
-        preferObj = {
-            ...preferObj,
-            active: true
-        }
-        const query = {
-            $and: [
-                preferObj,
-                {
-                    name: { $regex: q || "", $options: "i" },
-                },
-            ],
-        };
-        const { status, ...result }: FetchResult<IDockView> = await Dock.listData(query, { page, itemsPerPage });
-        res.status(status).json(result);
+        const response: IDockView[] = await docks.find({ q, paginator: req.paginator as IPaginator, prefer: prefer as DockPropertyStatus });
+        res.status(200).json({ data: response }).end();
     } catch (err) {
-        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error });
     }
-};
+}];
 export default list;
