@@ -52,7 +52,6 @@ const decrypt = (text: string) => {
  */
 interface TokenInterface extends jwt.JwtPayload {
     user: string;
-    address: string;
     iat: number;
     exp: number;
 }

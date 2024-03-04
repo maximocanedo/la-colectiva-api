@@ -8,9 +8,13 @@ import IUser from "../../interfaces/models/IUser";
 
 const getOne = (me: boolean = false) => (async (req: Request, res: Response): Promise<void> => {
     try {
+        let e: string = req.params.username;
+        if(me && req.user !== undefined) {
+            e = (<IUser>req.user).username;
+        }
         const response: IUser = await users.find({
             responsible: req.user,
-            username: me ? "me" : req.params.username
+            username: e
         });
         res.status(HttpStatusCode.OK).json(response);
     } catch (e) {
