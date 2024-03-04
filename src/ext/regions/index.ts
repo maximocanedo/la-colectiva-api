@@ -58,14 +58,28 @@ const canEdit = (responsible: IUser, author: Schema.Types.ObjectId | string): bo
         return responsible.role >= 2;
     } else return responsible.role === 3;
 };
-export const del = async ({ id, responsible }: IUpdateRegionProps): Promise<void> => {
-    const resource: IRegionDocument | null = await WaterBody.findById(id, { active: 1, _id: 1, user: 1, history: 1 });
+export const del = async ({ id: _id, responsible }: IUpdateRegionProps): Promise<void> => {
+    const resource: IRegionDocument | null = await WaterBody.findById({ _id, active: true }, { active: 1, _id: 1, user: 1, history: 1 });
     if(resource === null) throw new ColError(E.ResourceNotFound);
     const canDelete: boolean = canEdit(responsible, resource.user);
     if(!canDelete) throw new ColError(E.AttemptedUnauthorizedOperation);
     resource.active = false;
     resource.history.push({
         content: "Deshabilitación del registro. ",
+        time: Date.now(),
+        user: responsible._id as string
+    });
+    await resource.save();
+};
+
+export const enable = async ({ id: _id, responsible }: IUpdateRegionProps): Promise<void> => {
+    const resource: IRegionDocument | null = await WaterBody.findOne({_id, active: false}, { active: 1, _id: 1, user: 1, history: 1 });
+    if(resource === null) throw new ColError(E.ResourceNotFound);
+    const canDelete: boolean = canEdit(responsible, resource.user);
+    if(!canDelete) throw new ColError(E.AttemptedUnauthorizedOperation);
+    resource.active = true;
+    resource.history.push({
+        content: "Rehabilitación del registro. ",
         time: Date.now(),
         user: responsible._id as string
     });

@@ -8,12 +8,17 @@ import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 import FetchResult from "../../interfaces/responses/FetchResult";
 import IScheduleView from "../../interfaces/views/IScheduleView";
+import pre from "../../endpoints/pre";
+import IUser from "../../interfaces/models/IUser";
 
 const getOne: endpoint[] = [
+    pre.authenticate(true),
     async (req: Request, res: Response): Promise<void> => {
         try {
             const id: string = req.params.id;
-            let resource: FetchResult<IScheduleView> = await Schedule.findFormatted({ _id: id, active: true }, {q: "", p: 0, itemsPerPage: 1});
+            const user: IUser | undefined = req.user;
+            const isAdmin: boolean = user !== undefined && user.role === 3;
+            let resource: FetchResult<IScheduleView> = await Schedule.findFormatted({ _id: id, ...(isAdmin ? {} : { active: true }) }, {q: "", p: 0, itemsPerPage: 1});
             if (resource.data.length === 0) {
                 res.status(404).json({error: E.ResourceNotFound});
                 return;

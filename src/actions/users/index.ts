@@ -1,5 +1,6 @@
 'use strict';
 import getOne from "./getOne";
+import enable from "./enable";
 import updatePassword from "./updatePassword";
 import updateRole from "./updateRole";
 import editPersonalInfo from "./editPersonalInfo";
@@ -18,6 +19,7 @@ const users = {
     login,
     logout,
     startMailVerification,
-    validateMail
+    validateMail,
+    enable
 };
 export default users;

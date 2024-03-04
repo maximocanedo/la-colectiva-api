@@ -38,7 +38,7 @@ export interface IBoatView {
     __v: number;
 }
 
-interface IBoatModel extends Model<IBoat> {
+export interface IBoatModel extends Model<IBoat> {
     listData(query: FilterQuery<IBoat>, { page, size }: {page: number, size: number}): Promise<FetchResult<IBoatView>>;
     linkPhoto(resId: string, picId: string): Promise<{status: number}>;
 }
