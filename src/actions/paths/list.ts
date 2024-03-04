@@ -4,29 +4,20 @@ import { Request, Response } from "express";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 import FetchResult from "../../interfaces/responses/FetchResult";
-const list = [
+import * as paths from "../../ext/paths";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import pre, {IPaginator} from "../../endpoints/pre";
+import {endpoint} from "../../interfaces/types/Endpoint";
+const list: endpoint[] = [
+    pre.paginate,
     async (req: Request, res: Response): Promise<void> => {
         try {
             const q: string = req.query.q as string || "";
-            const page: number = parseInt(req.query.p as string) || 0;
-            const size: number = parseInt(req.query.itemsPerPage as string) || 10;
-            const query = {
-                $and: [
-                    { active: true },
-                    {
-                        $or: [
-                            { title: { $regex: q, $options: "i" } },
-                            { description: { $regex: q, $options: "i"} },
-                            { notes: { $regex: q, $options: "i" } }
-                        ]
-                    }
-                ]
-            };
-            const { status, ...result }: FetchResult<IPathView> = await Path.listData(query, { page, size });
-            res.status(status).json(result).end();
+            const response: IPathView[] = await paths.list({ q, paginator: req.paginator as IPaginator });
+            res.status(200).json({ data: response }).end();
         } catch (err) {
-            const error = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({ data: [], error });
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({error});
         }
     }
 ];

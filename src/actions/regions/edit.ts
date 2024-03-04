@@ -7,6 +7,9 @@ import {Request, Response} from "express";
 import E from "../../errors";
 import WaterBody from "../../schemas/WaterBody";
 import defaultHandler from "../../errors/handlers/default.handler";
+import * as regions from "../../ext/regions";
+import IUser from "../../interfaces/models/IUser";
+import {IError} from "../../interfaces/responses/Error.interfaces";
 
 const edit: endpoint[] = [
     pre.auth,
@@ -18,39 +21,13 @@ const edit: endpoint[] = [
     async (req: Request, res: Response): Promise<void> => {
         try {
             const { name, type } = req.body;
-            console.log({n: name === undefined, t: type === undefined, name, type});
-            if(name === undefined && type === undefined) {
-                res.status(400).json({
-                    error: E.AtLeastOneFieldRequiredError
-                }).end();
-                return;
-            }
+            const responsible: IUser = req.user as IUser;
             const id: string = req.params.id;
-            const userId = req.user._id;
-            const reg = await WaterBody.findOne({ _id: id, active: 1 }, { user: 1, history: 1, name: 1, type: 1 });
-            if (!reg) {
-                res.status(404).json({ error: E.ResourceNotFound});
-                return;
-            }
-            if (reg.user.toString() != userId.toString()) {
-                res.status(403).json({ error: E.UnauthorizedRecordModification});
-                return;
-            }
-            if(name !== undefined) reg.name = name;
-            if(type !== undefined) reg.type = type;
-            reg.history.push({
-                content: "Edición parcial del registro. ",
-                time: Date.now(),
-                user: req.user._id
-            });
-            await reg.save();
-            res.status(200).json({
-                message: "Resource updated. ",
-            });
+            await regions.edit({ responsible, id }, { name, type });
+            res.status(204).end();
         } catch (err) {
-            console.error(err);
-            const error = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({error});
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({ error }).end();
         }
     }
 ];

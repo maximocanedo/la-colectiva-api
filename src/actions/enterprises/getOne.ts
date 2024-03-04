@@ -1,23 +1,20 @@
-'use strict';
+ 'use strict';
 
 import {Request, Response} from "express";
-import Enterprise, {IEnterpriseView} from "../../schemas/Enterprise";
+import * as enterprises from "../../ext/enterprises";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
-import FetchResult from "../../interfaces/responses/FetchResult";
+ import IUser from "../../interfaces/models/IUser";
+ import {IEnterpriseView} from "../../schemas/Enterprise";
+ import {IError} from "../../interfaces/responses/Error.interfaces";
 const getOne = async (req: Request, res: Response) => {
     try {
-        const { status, ...result }: FetchResult<IEnterpriseView> = await Enterprise.listData(
-            { active: true, _id: req.params.id }
-        , { page: 0, itemsPerPage: 1 });
-        if(result.data.length === 0) {
-            res.status(404).json({ error: E.ResourceNotFound, data: [] }).end();
-            return;
-        }
-        res.status(status).json(result);
+        const id: string = req.params.id;
+        const response: IEnterpriseView = await enterprises.get({ id, responsible: req.user as IUser });
+        res.status(200).json({ data: [response] }).end();
     } catch (err) {
-        const error = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({error});
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({error});
     }
 };
 export default getOne;

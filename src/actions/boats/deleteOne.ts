@@ -11,35 +11,17 @@ import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import {endpoint} from "../../interfaces/types/Endpoint";
 import defaultHandler from "../../errors/handlers/default.handler";
+import * as boats from "../../ext/boats";
+import IUser from "../../interfaces/models/IUser";
 
 const deleteOne: endpoint[] = [pre.auth, pre.allow.moderator, async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
-        const resource = await Boat.findById(id);
-        const isAdmin: boolean = req.user.role >= 3;
-        if (!resource) {
-            res.status(404).json({
-                error: E.ResourceNotFound
-            });
-            return;
-        }
-        if (resource.user !== req.user._id && !isAdmin) {
-            res.status(403).json({
-                error: E.AttemptedUnauthorizedOperation
-            }).end();
-            return;
-        }
-        resource.active = false;
-        resource.history.push({
-            content: "Deshabilitación del recurso. ",
-            time: Date.now(),
-            user: req.user._id
-        });
-        await resource.save();
+        await boats.disable({ id, responsible: req.user as IUser });
         res.status(204).end();
     } catch (err) {
-        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error });
     }
 }];
 

@@ -2,6 +2,7 @@
 
 import patchEdit from "./patchEdit";
 import edit from "./edit";
+import enable from "./enable";
 import getOne from "./getOne";
 import list from "./list";
 import deleteOne from "./deleteOne";
@@ -15,6 +16,7 @@ export default {
     list,
     getOne,
     edit,
+    enable,
     patchEdit,
     phones: {
         createOne: createOnePhone,

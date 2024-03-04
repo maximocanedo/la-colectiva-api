@@ -10,6 +10,7 @@ import Dock from "../../schemas/Dock";
 import Schedule from "../../schemas/Schedule";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
+import IUser from "../../interfaces/models/IUser";
 
 
 
@@ -50,7 +51,7 @@ const createOne = (isPathInBody: boolean = true): endpoint[] => [
         try {
             const { dock, time } = req.body;
             const path = isPathInBody ? req.body.path : req.params.id;
-            const userId = req.user._id;
+            const userId = (<IUser>req.user)._id;
             const formattedTime: string = `1990-01-01T${time}:00.000+00:00`;
             let reg = await Schedule.create({
                 user: userId,
@@ -61,7 +62,7 @@ const createOne = (isPathInBody: boolean = true): endpoint[] => [
                     {
                         content: "Creación del registro. ",
                         time: Date.now(),
-                        user: req.user._id
+                        user: (<IUser>req.user)._id as string
                     }
                 ]
             });

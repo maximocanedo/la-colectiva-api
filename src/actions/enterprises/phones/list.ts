@@ -3,24 +3,16 @@ import Enterprise from '../../../schemas/Enterprise';
 import {Request, Response} from "express";
 import defaultHandler from "../../../errors/handlers/default.handler";
 import E from "../../../errors";
+import * as enterprises from "../../../ext/enterprises"
+import {IError} from "../../../interfaces/responses/Error.interfaces";
 const list = async (req: Request, res: Response): Promise<void> => {
     try {
-        const id = req.params.id;
-        const resource = await Enterprise.findOne({ _id: id, active: true }, { phones: 1 });
-
-        if (!resource) {
-            res.status(404).json({
-                error: E.ResourceNotFound
-            });
-            return;
-        }
-
-        const phones: string[] = resource.phones;
+        const id: string = req.params.id;
+        const phones: string[] = await enterprises.listPhones(id);
         res.status(200).json({ phones });
-
     } catch (err) {
-        const error = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({error});
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({error});
     }
 };
 export default list;

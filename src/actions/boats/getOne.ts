@@ -13,23 +13,17 @@ import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handl
 import defaultHandler from "../../errors/handlers/default.handler";
 import Fetch from "../comments/fetch";
 import FetchResult from "../../interfaces/responses/FetchResult";
-const getOne: endpoint = async (req: Request, res: Response): Promise<void> => {
+import pre from "../../endpoints/pre";
+import * as boats from "../../ext/boats";
+
+const getOne: endpoint[] = [pre.authenticate(true), async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
-        const { status, ...result }: FetchResult<IBoatView> = await Boat.listData(
-            { active: true, _id: id },
-            { page: 0, size: 1 }
-        );
-        if (result.data.length === 0) {
-            res.status(404).json({
-                error: E.ResourceNotFound
-            }).end();
-            return;
-        }
-        res.status(status).json(result).end();
+        const response: IBoatView = await boats.get(id, req.user);
+        res.status(200).json({ data: response }).end();
     } catch (err) {
-        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error, data: [] });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error });
     }
-};
+}];
 export default getOne;

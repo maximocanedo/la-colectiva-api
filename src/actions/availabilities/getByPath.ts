@@ -8,6 +8,7 @@ import Availability from "../../schemas/Availability";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 
+// TODO
 const getByPath: endpoint[] = [
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { id } = req.params;

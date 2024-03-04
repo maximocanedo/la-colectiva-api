@@ -67,6 +67,7 @@ export interface IDockView {
     uploadDate: Date | string;
     active: boolean;
     __v: number;
+    coordinates: [number, number];
 }
 
 interface IDockModel extends Model<IDock> {

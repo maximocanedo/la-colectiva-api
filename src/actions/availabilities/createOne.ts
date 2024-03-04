@@ -13,6 +13,9 @@ import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handl
 import Mongoose from "mongoose";
 import defaultHandler from "../../errors/handlers/default.handler";
 import {endpoint} from "../../interfaces/types/Endpoint";
+import * as paths from "../../ext/paths";
+import IUser from "../../interfaces/models/IUser";
+import {IPathAvailabilityCreateResponse} from "../../ext/paths/defs";
 
 const createOne = (isPathInBody: boolean = true): endpoint[] => [
     pre.auth,
@@ -24,37 +27,15 @@ const createOne = (isPathInBody: boolean = true): endpoint[] => [
         condition: V.availability.condition.required(),
         available: V.availability.available.required().default(true)
     }),
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const pathId = isPathInBody ? req.body.path : req.params.id;
-        const resource = Path.findOne({ _id: pathId, active: true });
-        if (!resource)
-            res.status(404).json({error: E.ResourceNotFound}).end();
-        else next();
-    },
     async (req: Request, res: Response): Promise<void> => {
         try {
             const { condition, available } = req.body;
             const path = isPathInBody ? req.body.path : req.params.id;
-            const user = req.user._id;
-            const reg = await Availability.create({
-                path,
-                condition,
-                available,
-                user,
-                history: [
-                    {
-                        content: "Creación del registro. ",
-                        time: Date.now(),
-                        user: req.user._id
-                    }
-                ]
-            });
-            res.status(201).json({
-                id: reg._id
-            }).end();
-        } catch (err: Error | any) {
-            const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({ error });
+            const response: IPathAvailabilityCreateResponse = await paths.addAvailability({ id: path, responsible: req.user as IUser, condition, available });
+            res.status(201).json(response).end();
+        } catch (err) {
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({error});
         }
     }
 ];

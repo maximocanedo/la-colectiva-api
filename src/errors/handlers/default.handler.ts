@@ -6,9 +6,12 @@ import {mongooseErrorMiddleware} from "./MongooseError.handler";
 import E from "../index";
 import {JsonWebTokenError, NotBeforeError, TokenExpiredError} from "jsonwebtoken";
 import {jwtMiddleware} from "./JsonWebTokenError.handler";
+import ColError from "../../ext/error/ColError";
 
-const defaultHandler = (err: Error, def: IError | null = null ): IError | null => {
-    if(err instanceof MongoError) {
+const defaultHandler = (err: Error, def: IError = E.InternalError): IError => {
+    if(err instanceof ColError) {
+        return err.simplify();
+    } else if(err instanceof MongoError) {
         return mongoErrorMiddleware(err as MongoError);
     } else if(err instanceof mongoose.Error) {
         return mongooseErrorMiddleware(err as mongoose.Error);

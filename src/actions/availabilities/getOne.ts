@@ -10,7 +10,7 @@ import mongoose from "mongoose";
 import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handler";
 import Mongoose from "mongoose";
 import defaultHandler from "../../errors/handlers/default.handler";
-
+// TODO
 const getOne = async (req: Request, res: Response): Promise<void> => {
     try {
         let { id } = req.params;

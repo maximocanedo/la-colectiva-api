@@ -1,34 +1,23 @@
 'use strict';
-import User from "../../schemas/User";
 import {Request, Response} from "express";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
+import * as users from "./../../ext/users";
+import ColError from "../../ext/error/ColError";
+import IUser from "../../interfaces/models/IUser";
+import {Role} from "../../ext/users/defs";
 const updateRole = async (req: Request, res: Response): Promise<void> => {
     try {
-        const user = await User.findOne({ username: req.params.username, active: true });
-        if (!user) {
-            res.status(404).json({ error: E.ResourceNotFound}).end();
-            return;
-        }
-        const roles: any = {
-            admin: 3,
-            moderator: 2,
-            normal: 1,
-            limited: 0,
-        };
-        const role: number = parseInt(req.body.role as string);
-        if (req.body.role === undefined || role > 3 || role < 0) {
-            res.status(400).json({
-                error: E.InvalidInputFormatError
-            }).end();
-        }
-        user.role = role;
-        user.save();
-        res.status(200).end();
+        const responsible: IUser = req.user as IUser;
+        const username: string = req.params.username;
+        const role: Role = req.body.role;
+        const response: boolean = await users.updateRole({ responsible, username, role });
+        if(response) res.status(200).end();
+        else throw new ColError(E.InternalError);
     } catch (err) {
-        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error });
     }
 };
 export default updateRole;

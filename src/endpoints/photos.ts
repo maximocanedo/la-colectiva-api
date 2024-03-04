@@ -10,6 +10,7 @@ import { handleComments } from "../utils/Comment.utils";
 import { handleVotes } from "../utils/Validation.utils";
 import E from "../errors";
 import V from "../validators";
+import IUser from "../interfaces/models/IUser";
 
 
 dotenv.config();
@@ -29,7 +30,7 @@ router.post(
 			const archivo = req.file;
 			console.log({ file: req.file });
 			const { description } = req.body;
-			const userId = req.user._id;
+			const userId = (<IUser>req.user)._id;
 			const photoId = await Photo.saveUploaded(
 				archivo,
 				userId,
@@ -88,13 +89,13 @@ router.patch(
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const id: string = req.params.id;
-			const username: string = req.user.username;
+			const username: string = (<IUser>req.user).username;
 			const pic = await Photo.findOne({ _id: id, active: 1 });
 			if (!pic) {
 				res.status(404).json({error: E.ResourceNotFound});
 				return;
 			}
-			if (pic.user != req.user._id) {
+			if (pic.user != (<IUser>req.user)._id) {
 				res.status(403).json({error: E.UnauthorizedRecordModification});
 				return;
 			}
@@ -117,13 +118,13 @@ router.delete("/:id", pre.auth, async (req: Request, res: Response): Promise<voi
 	try {
 		const id = req.params.id;
 		const pic = await Photo.findById(id);
-		const username = req.user.username;
-		const isAdmin = req.user.role >= 3;
+		const username = (<IUser>req.user).username;
+		const isAdmin = (<IUser>req.user).role >= 3;
 		if (!pic) {
 			res.status(404).json({error: E.ResourceNotFound});
 			return;
 		}
-		if (pic.user != req.user._id && !isAdmin) {
+		if (pic.user != (<IUser>req.user)._id && !isAdmin) {
 			res.status(403).json({error: E.AttemptedUnauthorizedOperation});
 			return;
 		}

@@ -6,6 +6,7 @@ import IValidation from "../interfaces/models/IValidation";
 import IValidatable from "../interfaces/models/IValidatable";
 import defaultHandler from "../errors/handlers/default.handler";
 import E from "../errors";
+import IUser from "../interfaces/models/IUser";
 
 const getVotes = (id: string, userId: string) => ([
         { $match: { _id: new mongoose.Types.ObjectId(id) } },
@@ -64,7 +65,7 @@ const getValidations = (router: Router, Model: Model<IValidatable>): void => {
         try {
             const { id } = req.params;
 
-            const aggregationResult: any[] = await Model.aggregate(getVotes(id, req.user._id));
+            const aggregationResult: any[] = await Model.aggregate(getVotes(id, (<IUser>req.user)._id as string));
 
             if (aggregationResult.length === 0) {
                 res.status(404).json({
@@ -86,7 +87,7 @@ const getValidations = (router: Router, Model: Model<IValidatable>): void => {
 const voteHandler = (validates: boolean, Model: Model<IValidatable>): (req: Request, res: Response) => Promise<void> => async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
-        const userId: string = req.user._id;
+        const userId: string = (<IUser>req.user)._id as string;
 
         const resource = await Model.findById(id);
         if(!resource) {
@@ -121,7 +122,7 @@ const voteHandler = (validates: boolean, Model: Model<IValidatable>): (req: Requ
 
 
 
-        const aggregationResult = await Model.aggregate(getVotes(id, req.user._id));
+        const aggregationResult = await Model.aggregate(getVotes(id, (<IUser>req.user)._id as string));
 
         if (aggregationResult.length === 0) {
             res.status(404).json({
@@ -159,7 +160,7 @@ const unvote = (router: Router, Model: Model<IValidatable>) => {
     router.delete("/:id/votes", pre.auth, pre.allow.normal, async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
-            const userId = req.user._id;
+            const userId = (<IUser>req.user)._id as string;
             const resource = await Model.findOne({_id:id,active:true});
             if(!resource) {
                 res.status(404).json({
@@ -176,7 +177,7 @@ const unvote = (router: Router, Model: Model<IValidatable>) => {
 
 
 
-            const aggregationResult = await Model.aggregate(getVotes(id, req.user._id));
+            const aggregationResult = await Model.aggregate(getVotes(id, (<IUser>req.user)._id as string));
 
             if (aggregationResult.length === 0) {
                 res.status(404).json({

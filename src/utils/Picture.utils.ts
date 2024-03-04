@@ -7,6 +7,7 @@ import IPictureable from "../interfaces/models/IPictureable";
 import {IError} from "../interfaces/responses/Error.interfaces";
 import defaultHandler from "../errors/handlers/default.handler";
 import E from "../errors";
+import IUser from "../interfaces/models/IUser";
 
 
 
@@ -55,7 +56,7 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
             try {
                 const archivo = req.file;
                 const { description } = req.body;
-                const userId = req.user._id;
+                const userId = (<IUser>req.user)._id as string;
                 const { id } = req.params;
                 const dock = await model.findById(id);
                 if (!dock) {
@@ -74,7 +75,7 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
                         history: {
                             content: "Vincular imagen. ",
                             time: Date.now(),
-                            user: req.user._id
+                            user: (<IUser>req.user)._id as string
                         }
                     }
                 });
@@ -108,7 +109,7 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
                         history: {
                             content: "Desvincular imagen. ",
                             time: Date.now(),
-                            user: req.user._id
+                            user: (<IUser>req.user)._id as string
                         }
                     }
                 });
