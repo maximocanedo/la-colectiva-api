@@ -12,6 +12,7 @@ import users from './actions/users';
 import * as Joi from 'joi';
 import * as x from './validators/index';
 import V from "./validators/index";
+import rateLimit from "express-rate-limit";
 
 const useSSL: boolean = false;
 
@@ -29,6 +30,10 @@ const app: Express = express();
 app.use(express.json());
 
 app.use(cors());
+app.use(rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hora
+    limit: 1000
+}));
 
 app.set('json spaces', 4);
 
