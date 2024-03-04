@@ -13,7 +13,7 @@ import * as Joi from 'joi';
 import * as x from './validators/index';
 import V from "./validators/index";
 
-const useSSL: boolean = false;
+const useSSL: boolean = true;
 
 // Cargar los certificados SSL
 let options: any = {};
