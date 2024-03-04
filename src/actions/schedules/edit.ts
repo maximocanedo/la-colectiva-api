@@ -10,6 +10,7 @@ import Dock from "../../schemas/Dock";
 import V from "../../validators";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
+import IUser from "../../interfaces/models/IUser";
 
 const edit: endpoint[] = [
     pre.auth,
@@ -48,7 +49,7 @@ const edit: endpoint[] = [
     async (req: Request, res: Response): Promise<void> => {
         try {
             const id: string = req.params.id;
-            const userId = req.user._id;
+            const userId = (<IUser>req.user)._id as string;
             const reg = await Schedule.findOne({ _id: id, active: 1 });
             if (!reg) {
                 res.status(404).json({
@@ -69,7 +70,7 @@ const edit: endpoint[] = [
             reg.history.push({
                 content: "Edición del registro. ",
                 time: Date.now(),
-                user: req.user._id
+                user: (<IUser>req.user)._id as string
             });
             await reg.save();
             res.status(200).json({

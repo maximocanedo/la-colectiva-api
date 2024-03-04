@@ -10,6 +10,7 @@ import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 import IComment from "../../interfaces/models/IComment";
+import IUser from "../../interfaces/models/IUser";
 
 interface CommentCreationResponse {
     comment: IComment[],
@@ -78,7 +79,7 @@ const post = (model: Model<any> | any): endpoint[] => [
         try {
             const { id } = req.params;
             const { content } = req.body;
-            const userId: string = req.user._id;
+            const userId: string = (<IUser>req.user)._id as string;
             const { comment, error, status }: CommentCreationResponse = await addCommentForModel(model, id, content, userId);
             res.status(status).json({ comment, error }).end();
         } catch (err) {

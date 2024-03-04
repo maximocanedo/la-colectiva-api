@@ -53,6 +53,7 @@ router.put("/:username", pre.auth, pre.allow.admin, users.editPersonalInfo(false
 /* Eliminar un usuario. */
 router.delete("/me", pre.auth, users.deleteUser(true));
 router.delete("/:username", pre.auth, pre.allow.admin, users.deleteUser(false));
+router.post("/:username", pre.auth, pre.allow.admin, users.enable(false));
 
 
 /* Crear un usuario. */
@@ -64,6 +65,9 @@ router.post("/", pre.expect({
 	birth: V.user.birth.required(),
 	password: V.user.password.required()
 }),  users.signup);
+
+
+// TODO Actualizar endpoints
 
 router.post("/me/mail", users.startMailVerification);
 router.post("/:username/recover", startPasswordRecovering);

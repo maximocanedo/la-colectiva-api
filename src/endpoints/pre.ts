@@ -1,7 +1,7 @@
 "use strict";
 import crypto, {Decipher} from "crypto";
 import dotenv from "dotenv";
-import { Request, Response, NextFunction } from "express";
+import {NextFunction, Request, Response} from "express";
 import multer, {Multer, StorageEngine} from "multer";
 import path from "path";
 import User from "../schemas/User";
@@ -12,6 +12,7 @@ import E from "../errors/index";
 import {handlers} from "../errors/handlers";
 import {endpoint} from "../interfaces/types/Endpoint";
 import IUser from "../interfaces/models/IUser";
+
 dotenv.config();
 /**
  * Cifra un texto con el algoritmo y la clave secreta especificados en el archivo .env
@@ -60,22 +61,10 @@ interface TokenInterface extends jwt.JwtPayload {
  */
 const authenticate = (continueOnError: boolean = false): endpoint => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const defUser: IUser = {
-            _id: "000000000000000000000000",
-            name: "No user",
-            username: "",
-            email: "",
-            bio: "",
-            birth: new Date(),
-            role: 0,
-            password: "",
-            active: false
-        };
-
         const authHeader: string | undefined = req.headers['authorization'];
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             if(continueOnError) {
-                req.user = defUser;
+                req.user = undefined;
                 next();
                 return;
             }
@@ -86,7 +75,7 @@ const authenticate = (continueOnError: boolean = false): endpoint => async (req:
         const token: string = (authHeader as string).split(' ')[1];
         if (!token) {
             if(continueOnError) {
-                req.user = defUser;
+                req.user = undefined;
                 next();
                 return;
             }
@@ -100,7 +89,7 @@ const authenticate = (continueOnError: boolean = false): endpoint => async (req:
 
         if (!user) {
             if(continueOnError) {
-                req.user = defUser;
+                req.user = undefined;
                 next();
                 return;
             }
@@ -119,13 +108,30 @@ const authenticate = (continueOnError: boolean = false): endpoint => async (req:
     }
 };
 const auth: endpoint = authenticate(false);
+export interface IPaginator {
+    page: number,
+    size: number
+}
+const paginate: endpoint = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const defaultPaginator: IPaginator = { page: 0, size: 10 };
+    const rawPage: string = req.query.page ? (req.query.page as string) : (req.query.p as string);
+    const rawSize: string = req.query.size ? (req.query.size as string) : (req.query.itemsPerPage as string);
+    const parsedPage: number = parseInt(rawPage);
+    const parsedSize: number = parseInt(rawSize);
+    const page: number = isNaN(parsedPage) ? defaultPaginator.page : parsedPage;
+    const size: number = isNaN(parsedSize) ? defaultPaginator.size : parsedSize;
+    req.paginator = {
+        page, size
+    };
+    next();
+};
 /**
  * Permite el acceso a los usuarios con un rol mayor o igual al especificado
  * @param role Rol mínimo requerido
  */
 const allowAccessForRole = (role: number): endpoint => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const user = req.user;
+        const user = req.user as IUser;
         if (user.role >= role) {
             next();
             return;
@@ -176,7 +182,7 @@ const storage: StorageEngine = multer.diskStorage({
         // Generamos un nombre único para el archivo
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         const fileExtension = file.originalname.split(".").pop();
-        const user = req.user._id;
+        const user = (req.user as IUser)._id;
         const finalFileName = `${user}-${uniqueSuffix}.${fileExtension}`;
         cb(null, finalFileName);
     },
@@ -242,5 +248,6 @@ export default {
     normalUsersCanAccess,
     everybodyCanAccess,
     allow,
-    auth
+    auth,
+    paginate
 };

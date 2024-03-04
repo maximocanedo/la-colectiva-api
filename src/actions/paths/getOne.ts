@@ -4,19 +4,16 @@ import {Request, Response} from "express";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 import FetchResult from "../../interfaces/responses/FetchResult";
+import * as paths from "../../ext/paths";
+import {IError} from "../../interfaces/responses/Error.interfaces";
 const getOne = [async (req: Request, res: Response): Promise<void> => {
     try {
-        const _id: string = req.params.id;
-        const query = { active: true, _id };
-        const { status, ...result }: FetchResult<IPathView> = await Path.listData(query, { page: 0, size: 1 });
-        if(result.data.length === 0) {
-            res.status(404).json({ data: [], error: E.ResourceNotFound }).end();
-            return;
-        }
-        res.status(status).json(result).end();
+        const id: string = req.params.id;
+        const response: IPathView = await paths.get({ id, responsible: req.user });
+        res.status(200).json({ data: response });
     } catch (err) {
-        const error = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ data: [], error });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({error});
     }
 }];
 export default getOne;

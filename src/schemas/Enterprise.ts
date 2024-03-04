@@ -10,7 +10,7 @@ import FetchResult from "../interfaces/responses/FetchResult";
 import defaultHandler from "../errors/handlers/default.handler";
 import E from "../errors";
 
-interface IEnterpriseMethods {
+export interface IEnterpriseMethods {
     addPhone(phoneNumber: string, user: string): Promise<IEnterpriseAddPhoneResponse>;
     deletePhone(phoneNumber: string, user: string): Promise<IEnterpriseAddPhoneResponse>;
 }

@@ -27,12 +27,12 @@ const UserStatics = {
     ],
 };
 
-interface IUserMethods {
+export interface IUserMethods {
     sayHi(): void;
     comparePassword(password: string): Promise<boolean>;
 }
 
-interface UserModel extends Model<IUser, {}, IUserMethods> {
+export interface UserModel extends Model<IUser, {}, IUserMethods> {
     isUsernameAvailable(username: string): Promise<boolean>;
 }
 
@@ -93,7 +93,7 @@ userSchema.pre("save", async function (next: mongoose.CallbackWithoutResultAndOp
     }
     try {
         const saltRounds: number = 10;
-        this.password = await bcrypt.hash(this.password, saltRounds);
+        this.password = await bcrypt.hash(this.password as string, saltRounds);
         next(); // No usar await acá.
     } catch (error: mongoose.CallbackError | any) {
         return next(error);
@@ -117,7 +117,7 @@ userSchema.statics.isUsernameAvailable = async function (username: string): Prom
  */
 userSchema.methods.comparePassword = async function (password: string): Promise<boolean> {
     try {
-        return await bcrypt.compare(password, this.password);
+        return await bcrypt.compare(password, this.password as string);
     } catch (error: Error | undefined | any) {
         return false;
     }

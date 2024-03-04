@@ -9,8 +9,14 @@ import {mongooseErrorMiddleware} from "../../errors/handlers/MongooseError.handl
 import E from "../../errors";
 import defaultHandler from "../../errors/handlers/default.handler";
 import FetchResult from "../../interfaces/responses/FetchResult";
-import IDock from "../../interfaces/models/IDock";
-const explore = async (req: Request, res: Response): Promise<void> => {
+import IDock, {DockPropertyStatus} from "../../interfaces/models/IDock";
+import * as docks from "../../ext/docks";
+import {endpoint} from "../../interfaces/types/Endpoint";
+import pre, {IPaginator} from "../../endpoints/pre";
+
+
+
+const explore: endpoint[] = [pre.paginate, async (req: Request, res: Response): Promise<void> => {
     try {
         const lat: number = parseFloat(req.params.lat as string);
         const lng: number = parseFloat(req.params.lng as string);
@@ -21,49 +27,13 @@ const explore = async (req: Request, res: Response): Promise<void> => {
             }).end();
             return;
         }
-        const prefer: number = parseInt(req.query.prefer as string || "-1");
+        const prefer = parseInt(req.query.prefer as string || "-1");
         const q: string = req.query.q as string || "";
-        let coordinates: number[] = [lat, lng];
-        const page: number = parseInt(req.query.p as string) || 0;
-        const itemsPerPage: number = parseInt(req.query.itemsPerPage as string) || 10;
-        let preferObj: any = {
-            status: prefer,
-            name: { $regex: q || "", $options: "i" },
-        };
-        if (prefer === -1) {
-            preferObj = {
-                status: { $gt: -1 },
-                name: { $regex: q || "", $options: "i" },
-            };
-        }
-        preferObj = {
-            ...preferObj,
-            active: true
-        }
-        const query: FilterQuery<IDock> = {
-            $and: [
-                {
-                    coordinates: {
-                        $near: {
-                            $geometry: {
-                                type: "Point",
-                                coordinates: [...coordinates], // [longitud, latitud]
-                            },
-                            $maxDistance: radio,
-                        },
-                    },
-                },
-                preferObj,
-            ],
-        };
-        const { status, ...result }: FetchResult<IDockView> = await Dock.listData(query, {
-            page,
-            itemsPerPage,
-        });
-        res.status(status).json(result).end();
+        const response: IDockView[] = await docks.explore({ q, paginator: req.paginator as IPaginator, coordinates: [lat, lng], radio, prefer: <DockPropertyStatus | -1>prefer });
+        res.status(200).json({ data: response }).end();
     } catch (err) {
-        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error, data: [] });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error });
     }
-};
+}];
 export default explore;

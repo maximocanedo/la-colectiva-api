@@ -8,6 +8,6 @@ export default interface IUser {
     bio: string;
     birth: Date;
     role: number;
-    password: string;
+    password?: string;
     active: boolean;
 }

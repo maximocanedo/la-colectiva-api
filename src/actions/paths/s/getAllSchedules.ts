@@ -11,7 +11,7 @@ import defaultHandler from "../../../errors/handlers/default.handler";
 import {ObjectId} from "mongodb";
 import FetchResult from "../../../interfaces/responses/FetchResult";
 import IScheduleView from "../../../interfaces/views/IScheduleView";
-
+// TODO Optimize it
 const getAllSchedules: endpoint[] = [
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { id } = req.params;

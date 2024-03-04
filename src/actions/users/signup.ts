@@ -1,34 +1,17 @@
 'use strict';
-import User from "../../schemas/User";
 import {Request, Response} from "express";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
-import {sendCode} from "./startMailVerification";
+import * as users from "../../ext/users";
+import {ISendCodeResponse} from "./startMailVerification";
 const signup = async (req: Request, res: Response): Promise<void> => {
     try {
-        let { username, name, email, bio, birth, password } = req.body;
-        const usernameIsAvailable: boolean = await User.isUsernameAvailable(
-            username
-        );
-        if (!usernameIsAvailable) {
-            res.status(409).json({ error: E.DuplicationError }).end();
-            return;
-        }
-        const _u = await User.findOne({email: email});
-        if(_u) {
-            res.status(409).json({ error: E.DuplicationError }).end();
-            return;
-        }
-        // Validar datos.
-        const newUser = new User({ username, name, bio, birth, email: `${username}@colectiva.com.ar`, password });
-        // Guardar.
-        const savedStatus = await newUser.save();
-        const mailSend = await sendCode(savedStatus, email);
-        res.status(201).json(mailSend).end();
+        const { code, ...response }: ISendCodeResponse = await users.create(req.body);
+        res.status(201).json(response).end();
     } catch (err) {
-        const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({ error });
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({ error }).end();
     }
 };
 

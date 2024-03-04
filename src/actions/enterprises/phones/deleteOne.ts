@@ -4,30 +4,19 @@ import {Request, Response} from "express";
 import {IEnterpriseAddPhoneResponse} from "../../../interfaces/responses/Enterprise.interfaces";
 import E from "../../../errors";
 import defaultHandler from "../../../errors/handlers/default.handler";
+import IUser from "../../../interfaces/models/IUser";
+import * as enterprises from "../../../ext/enterprises"
+import {IError} from "../../../interfaces/responses/Error.interfaces";
 const deleteOne = async (req: Request, res: Response): Promise<void> => {
     try {
-        const id = req.params.id;
+        const id: string = req.params.id;
         const { phone } = req.body;
-        // Utiliza findOne para buscar un registro con ID y active: true
-        let resource = await Enterprise.findOne({ _id: id, active: true }, { phones: 1 });
-
-        if (!resource) {
-            res.status(404).json({
-                error: E.ResourceNotFound
-            });
-            return;
-        }
-        const canAddAPhoneNumber: boolean = req.user.role >= 3 || (req.user._id === resource.user);
-        if(!canAddAPhoneNumber) {
-            res.status(403).json({ error: E.UnauthorizedRecordModification });
-            return;
-        }
-        const result: IEnterpriseAddPhoneResponse = await resource.deletePhone(phone, req.user._id);
-        res.status(result.status).json({msg: result.msg});
+        const phones: string[] = await enterprises.deletePhone({ id, responsible: req.user as IUser, phone });
+        res.status(200).json({ phones });
 
     } catch (err) {
-        const error = defaultHandler(err as Error, E.CRUDOperationError);
-        res.status(500).json({error});
+        const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+        res.status(http?? 500).json({error});
     }
 };
 export default deleteOne;

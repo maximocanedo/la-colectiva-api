@@ -1,11 +1,14 @@
 'use strict';
 import pre from "../../endpoints/pre";
-import Path from "../../schemas/Path";
-import Boat from "../../schemas/Boat";
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 import defaultHandler from "../../errors/handlers/default.handler";
 import E from "../../errors";
 import V from "../../validators";
+
+import * as paths from "../../ext/paths";
+import {IPathCreateResponse} from "../../ext/paths/defs";
+import {IError} from "../../interfaces/responses/Error.interfaces";
+import IUser from "../../interfaces/models/IUser";
 
 const createOne = [
     pre.auth,
@@ -16,37 +19,14 @@ const createOne = [
         description: V.path.description.required(),
         notes: V.path.notes.required()
     }),
-    async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { boat } = req.body;
-        const obj = await Boat.findById(boat);
-        if(!obj) res.status(404).json({
-            error: E.ResourceNotFound
-        }); else next();
-    },
     async (req: Request, res: Response): Promise<void> => {
         try {
             const { boat, title, description, notes } = req.body;
-            const userId = req.user._id;
-            let reg = await Path.create({
-                boat,
-                user: userId,
-                title,
-                description,
-                notes,
-                history: [
-                    {
-                        content: "Creación del recurso. ",
-                        time: Date.now(),
-                        user: req.user._id
-                    }
-                ]
-            });
-            res.status(201).json({
-                id: reg._id
-            });
+            const response: IPathCreateResponse = await paths.create({boat, title, description, notes, responsible: req.user as IUser});
+            res.status(201).json(response);
         } catch (err) {
-            const error = defaultHandler(err as Error, E.CRUDOperationError);
-            res.status(500).json({error});
+            const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
+            res.status(http?? 500).json({error});
         }
     }
 ];

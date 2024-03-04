@@ -24,7 +24,7 @@ export enum RegionType {
     GULF = 12, // Golfo
     SEA = 13, // Mar
     OCEAN = 14 // Océano
-};
+}
 
 export interface IRegionView {
     _id: Schema.Types.ObjectId | string;
@@ -59,7 +59,7 @@ const waterBodySchema: Schema<IWaterBody, IWaterBodyModel> = new Schema<IWaterBo
     type: {
         type: Number,
         required: true,
-        enum: Object.values(RegionType)
+        enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
         // Validar alcance
     },
     uploadDate: {
