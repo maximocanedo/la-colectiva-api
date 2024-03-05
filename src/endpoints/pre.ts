@@ -98,6 +98,11 @@ const authenticate = (continueOnError: boolean = false): endpoint => async (req:
         req.user = user;
         next();
     } catch (err) {
+        if(continueOnError) {
+            req.user = undefined;
+            next();
+            return;
+        }
         if(err instanceof jwt.JsonWebTokenError || err instanceof jwt.TokenExpiredError || err instanceof jwt.NotBeforeError) {
             const finalError: IError = handlers.jwtMiddleware(err);
             res.status(401).json({error: finalError});
