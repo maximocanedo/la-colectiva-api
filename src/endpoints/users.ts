@@ -28,15 +28,15 @@ router.patch("/:username", pre.auth, pre.allow.admin, pre.expect({
 	role: V.user.role
 }), async (req: Request, res: Response): Promise<void> => {
 	const { password, role } = req.body;
-	if (password) {
+	if (password !== undefined) {
 		await users.updatePassword(req, res);
 		return;
 	}
-	if (role) {
+	if (role !== undefined) {
 		await users.updateRole(req, res);
 		return;
 	}
-	if (!password && !role) {
+	if ([password, role].every(x => x === undefined)) {
 		res.status(400).json({ error: E.AtLeastOneFieldRequiredError }).end();
 		return;
 	}

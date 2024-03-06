@@ -12,7 +12,6 @@ router
 		res.status(405).end();
 	})
 	.get("/:id", comments.getOne)
-	.put("/:id", comments.edit)
-	.delete("/:id", comments.del);
+	.put("/:id", comments.edit);
 
 export default router;

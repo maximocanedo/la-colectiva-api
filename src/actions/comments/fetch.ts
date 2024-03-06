@@ -30,7 +30,7 @@ const listCommentsForModel = async (
                     select: "name username",
                 },
                 options: {
-                    sort: { uploadDate: 1 },
+                    sort: { uploadDate: -1 },
                     skip: page * itemsPerPage,
                     limit: itemsPerPage,
                 },
