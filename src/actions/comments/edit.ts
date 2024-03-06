@@ -10,6 +10,7 @@ import defaultHandler from "../../errors/handlers/default.handler";
 import IUser from "../../interfaces/models/IUser";
 
 const edit: endpoint[] = [
+    pre.auth,
     pre.expect({
         content: V.comment.content.required()
     }),
@@ -26,7 +27,7 @@ const edit: endpoint[] = [
                 }).end();
                 return;
             }
-            if(comment.user.toString() !== (<IUser>req.user)._id.toString()) {
+            if(comment.user.toString() !== (<IUser>req.user)._id as string) {
                 res.status(403).json({
                     error: E.UnauthorizedRecordModification
                 }).end();
