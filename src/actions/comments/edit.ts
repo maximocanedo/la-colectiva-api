@@ -27,6 +27,7 @@ const edit: endpoint[] = [
                 }).end();
                 return;
             }
+            console.log({user: req.user, uid: (<IUser>req.user)._id, author: comment.user.toString() })
             if(comment.user.toString() !== (<IUser>req.user)._id as string) {
                 res.status(403).json({
                     error: E.UnauthorizedRecordModification
