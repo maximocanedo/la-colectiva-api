@@ -36,4 +36,4 @@ export const birth: DateSchema<Date> = Joi.date();
 /**
  * Rol de usuario.
  */
-export const role: NumberSchema<number> = Joi.number().min(0).max(3);
+export const role: NumberSchema<number> = Joi.number().integer().min(0).max(3);

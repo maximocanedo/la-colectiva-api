@@ -42,7 +42,7 @@ app.set('json spaces', 4);
     await connectToDB((): void => {
         if (useSSL) https.createServer(options, app).listen(5050, (): void => {
             console.log("App listening...");
-        }); else app.listen(80, (): void => {
+        }); else app.listen(5050, (): void => {
             console.log("App listening on local server...");
         });
     });
