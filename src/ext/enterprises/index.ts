@@ -4,7 +4,11 @@ import {
     IEnterpriseCreateProps,
     IEnterpriseCreateResponse,
     IEnterpriseDeleteProps,
-    IEnterpriseEditProps, IEnterpriseFindProps, IEnterpriseUpdatePhoneProps, IEnterpriseUpdateRequiredProps
+    IEnterpriseEditProps,
+    IEnterpriseFindProps,
+    IEnterpriseGetProps,
+    IEnterpriseUpdatePhoneProps,
+    IEnterpriseUpdateRequiredProps
 } from "./defs";
 import Enterprise, {IEnterpriseView} from "../../schemas/Enterprise";
 import ColError from "../error/ColError";
@@ -106,9 +110,9 @@ export const edit = async ({ id: _id, responsible, cuit, name, description, foun
     await file.save();
     return;
 };
-export const get = async ({ id: _id, responsible }: IEnterpriseUpdateRequiredProps): Promise<IEnterpriseView> => {
+export const get = async ({ id: _id, responsible }: IEnterpriseGetProps): Promise<IEnterpriseView> => {
     const { data, error }: FetchResult<IEnterpriseView> = await Enterprise.listData(
-        { _id, ...(responsible.role === 3 ? { active: true } : {}) }
+        { _id, ...(responsible === undefined || responsible.role !== 3 ? { active: true } : {}) }
         , { page: 0, itemsPerPage: 1 });
     if(data.length === 0) throw new ColError(E.ResourceNotFound);
     if(error !== null && error !== undefined) throw new ColError(error as IError);
