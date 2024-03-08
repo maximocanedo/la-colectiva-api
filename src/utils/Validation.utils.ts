@@ -8,7 +8,7 @@ import defaultHandler from "../errors/handlers/default.handler";
 import E from "../errors";
 import IUser from "../interfaces/models/IUser";
 
-const getVotes = (id: string, userId: string) => ([
+const getVotes = (id: string, userId: string | undefined) => ([
         { $match: { _id: new mongoose.Types.ObjectId(id) } },
         {
             $project: {
@@ -18,7 +18,7 @@ const getVotes = (id: string, userId: string) => ([
                         input: "$validations",
                         as: "validation",
                         cond: {
-                            $eq: ["$$validation.user", new mongoose.Types.ObjectId(userId)],
+                            $eq: ["$$validation.user", userId !== undefined ? new mongoose.Types.ObjectId(userId): ""],
                         },
                     },
                 },
@@ -64,8 +64,8 @@ const getValidations = (router: Router, Model: Model<IValidatable>): void => {
     router.get("/:id/votes", pre.authenticate(true), async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
-
-            const aggregationResult: any[] = await Model.aggregate(getVotes(id, (<IUser>req.user)._id as string));
+            const userId: string | undefined = req.user === undefined ? undefined : (req.user as IUser)._id as string;
+            const aggregationResult: any[] = await Model.aggregate(getVotes(id, userId));
 
             if (aggregationResult.length === 0) {
                 res.status(404).json({

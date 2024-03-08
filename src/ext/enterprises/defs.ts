@@ -22,6 +22,10 @@ export interface IEnterpriseUpdateRequiredProps {
     id: string | Schema.Types.ObjectId;
     responsible: IUser;
 }
+export interface IEnterpriseGetProps {
+    id: string | Schema.Types.ObjectId;
+    responsible?: IUser;
+}
 export interface IEnterpriseDeleteProps extends IEnterpriseUpdateRequiredProps {}
 export interface IEnterpriseEditProps extends IEnterpriseUpdateRequiredProps {
     cuit?: CUIT;
