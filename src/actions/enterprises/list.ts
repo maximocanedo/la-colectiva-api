@@ -11,7 +11,7 @@ import {endpoint} from "../../interfaces/types/Endpoint";
 const list: endpoint[] = [ pre.paginate, async (req: Request, res: Response): Promise<void> => {
     try {
         const data: IEnterpriseView[] = await enterprises.find(
-            { q: req.body.q?? "", paginator: req.paginator as IPaginator }
+            { q: (req.query.q as string)?? "", paginator: req.paginator as IPaginator }
         );
         res.status(200).json({ data });
     } catch (err) {
