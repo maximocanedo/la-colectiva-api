@@ -1,5 +1,5 @@
 'use strict';
-import pre from "../endpoints/pre";
+import pre, {IPaginator} from "../endpoints/pre";
 import Photo from "../schemas/Photo";
 import {Router, Response, Request, NextFunction} from "express";
 import { Model } from "mongoose";
@@ -13,15 +13,21 @@ import IUser from "../interfaces/models/IUser";
 
 
 const handlePictures = (router: Router, model: Model<IPictureable> | any): void => {
-    router.get("/:id/pictures/", async (req: Request, res: Response): Promise<void> => {
+    router.get("/:id/pictures/", pre.paginate, async (req: Request, res: Response): Promise<void> => {
         try {
             const id = req.params.id;
+            const { page, size }: IPaginator = req.paginator as IPaginator;
             const resource = await model.findById(id)
                 .select("pictures")
                 .populate({
                     path: "pictures",
                     model: "Photo",
                     select: "_id user description uploadDate",
+                    options: {
+                        sort: { uploadDate: -1 },
+                        skip: page * size,
+                        limit: size,
+                    },
                     populate: {
                         path: "user",
                         model: "User",
