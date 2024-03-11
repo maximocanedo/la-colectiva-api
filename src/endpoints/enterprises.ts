@@ -42,7 +42,7 @@ router.delete("/:id", enterprises.deleteOne); // Eliminar registro
 router.post("/:id", enterprises.enable); // Eliminar registro
 
 /* Acciones con teléfonos */
-router.get("/:id/phones", pre.auth, enterprises.phones.list); // Listar números de teléfono
+router.get("/:id/phones", enterprises.phones.list); // Listar números de teléfono
 router.post("/:id/phones", pre.auth, pre.allow.moderator, enterprises.phones.createOne); // Agregar un número de teléfono
 router.delete("/:id/phones", pre.auth, pre.allow.moderator, enterprises.phones.deleteOne); // Eliminar un número de teléfono
 

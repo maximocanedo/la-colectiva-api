@@ -25,7 +25,7 @@ const handlePictures = (router: Router, model: Model<IPictureable> | any): void 
                     populate: {
                         path: "user",
                         model: "User",
-                        select: "_id name",
+                        select: "_id name username",
                     },
                 })
                 .exec();
