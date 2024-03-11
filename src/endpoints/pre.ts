@@ -176,7 +176,7 @@ const verifyInput = (requiredProps: string[]) => (req: Request, res: Response, n
     }
     next(); // Si todo está bien, pasa al siguiente middleware o al controlador
 };
-const imageFileTypes: string[] = ["image/jpeg", "image/png", "image/gif"]; // Tipos de archivos de imagen permitidos
+const imageFileTypes: string[] = ["image/jpeg", "image/png", "image/png", "image/gif"]; // Tipos de archivos de imagen permitidos
 const storage: StorageEngine = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb) => {
         const destinationPath = path.join(__dirname, "../.." + process.env.PIC_ROOT_FOLDER);
@@ -204,11 +204,12 @@ const storage: StorageEngine = multer.diskStorage({
 const upload: Multer = multer({
     storage: storage,
     limits: {
-        fileSize: 5 * 1024 * 1024, // 5 MB en bytes
+        fileSize: 15 * 1024 * 1024, // 5 MB en bytes
     },
 });
 const uploadPhoto = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     upload.single("file")(req, res, function (err): void {
+        console.log({ file: req.file });
         if(err) console.log(err);
         if(err instanceof multer.MulterError) {
             const finalError: IError = handlers.multerErrorMiddleware(err);
