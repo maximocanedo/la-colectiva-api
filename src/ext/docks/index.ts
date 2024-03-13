@@ -60,7 +60,8 @@ export const enable = async ({ id: _id, responsible }: ISensibleAction): Promise
     await file.save();
     return;
 };
-export const edit = async ({ name, address, region, status, coordinates, notes, id: _id, responsible }: IDockEditRequest): Promise<void> => {
+export const edit = async (props: IDockEditRequest): Promise<void> => {
+    const { name, address, region, status, coordinates, notes, id: _id, responsible }: IDockEditRequest = props;
     const file: DockDocument = await Dock.findOne({ _id, active: true }, { name: 1, address: 1, region: 1, status: 1, coordinates: 1, notes: 1, _id: 1, user: 1, history: 1, active: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdate(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
@@ -98,6 +99,7 @@ export const edit = async ({ name, address, region, status, coordinates, notes, 
     if([name, address, region, status, coordinates, notes].every((x: any): boolean => x === undefined)) {
         throw new ColError(E.AtLeastOneFieldRequiredError);
     }
+    await file.save();
     return;
 
 };
