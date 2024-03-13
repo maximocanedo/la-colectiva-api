@@ -15,6 +15,7 @@ const deleteOne: endpoint = async (req: Request, res: Response): Promise<void> =
     try {
         const id: string = req.params.id;
         await docks.disable({ id, responsible: req.user as IUser });
+        res.status(204).end();
     } catch (err) {
         const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
         res.status(http?? 500).json({ error });
