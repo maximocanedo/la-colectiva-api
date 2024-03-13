@@ -85,10 +85,11 @@ export const edit = async ({ id: _id, responsible, mat, name, status, enterprise
     await file.save();
 };
 
-export const get = async (id: OID, responsible: IUser | undefined | null): Promise<IBoatView> => {
+export const get = async (id: OID | string, responsible: IUser | undefined | null): Promise<IBoatView> => {
+    const treatAsMat: boolean = (id + "").length <= 16 && (id + "").length >= 2;
     const isAdmin: boolean = responsible !== undefined && responsible !== null && responsible.role === 3;
     const { data, error }: FetchResult<IBoatView> = await Boat.listData(
-        { _id: id, ...(isAdmin ? {} : { active: true })  },
+        { ...(treatAsMat ? { mat: id } : { _id: id }), ...(isAdmin ? {} : { active: true })  },
         { page: 0, size: 1 }
     );
     if (data.length === 0) throw new ColError(E.ResourceNotFound);
