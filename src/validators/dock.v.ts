@@ -22,7 +22,7 @@ export const notes: StringSchema = Joi.string().max(128);
 /**
  * Propiedad del muelle (Público, privado, de un negocio, etc.)
  */
-export const status: NumberSchema = Joi.number().valid(...[0, 1, 2]);
+export const status: NumberSchema = Joi.number().valid(...[0, 1, 2, 3, 4, 5]);
 /**
  * ID del usuario que registró el muelle.
  */
