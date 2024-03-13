@@ -26,6 +26,7 @@ const edit: endpoint[] = [
         try {
             const id: string = req.params.id;
             await docks.edit({ ...req.body, id, responsible: req.user as IUser });
+            res.status(204).end();
         } catch (err) {
             const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
             res.status(http?? 500).json({ error });
