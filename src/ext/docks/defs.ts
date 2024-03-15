@@ -34,6 +34,7 @@ export interface IDockExploreRequest {
     prefer: DockPropertyStatus | -1;
     q: string;
     paginator: IPaginator;
+    light: boolean;
 }
 export interface IDockFindRequest {
     q: string;

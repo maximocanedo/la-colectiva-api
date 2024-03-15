@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 import ValidationSchema from "./Validation";
 import IValidation from "../interfaces/models/IValidation";
 import Photo from "./Photo";
-import IDock from "../interfaces/models/IDock";
+import IDock, {DockPropertyStatus} from "../interfaces/models/IDock";
 import HistoryEvent from "./HistoryEvent";
 import FetchResult from "../interfaces/responses/FetchResult";
 import {RegionType} from "./WaterBody";
@@ -70,8 +70,14 @@ export interface IDockView {
     coordinates: [number, number];
 }
 
+export interface IDockMinimal {
+    _id: OID | string;
+    name: string;
+    status: DockPropertyStatus;
+    coords: [ number, number ];
+}
 interface IDockModel extends Model<IDock> {
-    listData(query: FilterQuery<IDock>, {page, itemsPerPage}: {page: number, itemsPerPage: number}): Promise<FetchResult<IDockView>>;
+    listData(query: FilterQuery<IDock>, {page, itemsPerPage}: {page: number, itemsPerPage: number}, light?: boolean): Promise<FetchResult<IDockView | IDockMinimal>>;
     linkPhoto(resId: string, picId: string): Promise<any>;
 }
 
@@ -140,28 +146,37 @@ const dockSchema: Schema<IDock, IDockModel> = new Schema<IDock, IDockModel>({
     ],
 });
 
-dockSchema.statics.listData = async function (query: FilterQuery<IDock>, { page, itemsPerPage }): Promise<FetchResult<IDockView>> {
+dockSchema.statics.listData = async function (query: FilterQuery<IDock>, { page, itemsPerPage }, light: boolean = false): Promise<FetchResult<IDockView | IDockMinimal>> {
     try {
         const skip: number = page * itemsPerPage;
-        const files = await this.find(query)
-            .select({ comments: 0, validations: 0, pictures: 0 })
-            .populate({
-                path: "region",
-                model: "WaterBody",
-                select: "_id name type"
-            })
-            .populate({
-                path: "user",
-                model: "User",
-                select: "_id name username"
-            })
-            .skip(skip)
-            .limit(itemsPerPage);
-        return {
-            data: files as unknown as IDockView[],
-            status: 200,
-            error: null
-        };
+        if(light) {
+            const files = await this.find(query)
+                .select({ _id: 1, name: 1, status: 1, coordinates: 1})
+                .skip(skip)
+                .limit(itemsPerPage);
+            return { data: files as unknown as IDockMinimal[], status: 200, error: null };
+        } else {
+            const files = await this.find(query)
+                .select({ comments: 0, validations: 0, pictures: 0 })
+                .populate({
+                    path: "region",
+                    model: "WaterBody",
+                    select: "_id name type"
+                })
+                .populate({
+                    path: "user",
+                    model: "User",
+                    select: "_id name username"
+                })
+                .skip(skip)
+                .limit(itemsPerPage);
+            return {
+                data: files as unknown as IDockView[],
+                status: 200,
+                error: null
+            };
+
+        }
     } catch (err) {
         const error: IError | null = defaultHandler(err as Error, E.CRUDOperationError);
         return {

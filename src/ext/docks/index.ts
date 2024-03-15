@@ -1,4 +1,4 @@
-import Dock, {IDockView} from "../../schemas/Dock";
+import Dock, {IDockMinimal, IDockView} from "../../schemas/Dock";
 import IDock from "../../interfaces/models/IDock";
 import IUser from "../../interfaces/models/IUser";
 import {BoatDocument, OID} from "../boats/defs";
@@ -103,7 +103,7 @@ export const edit = async (props: IDockEditRequest): Promise<void> => {
     return;
 
 };
-export const explore = async ({ q, paginator, coordinates, radio, prefer }: IDockExploreRequest): Promise<IDockView[]> => {
+export const explore = async ({ q, paginator, coordinates, radio, prefer, light }: IDockExploreRequest): Promise<(IDockView | IDockMinimal)[]> => {
     let preferObj: any = {
         status: prefer,
         name: { $regex: q || "", $options: "i" },
@@ -134,10 +134,10 @@ export const explore = async ({ q, paginator, coordinates, radio, prefer }: IDoc
             preferObj,
         ],
     };
-    const { data, error }: FetchResult<IDockView> = await Dock.listData(query, {
+    const { data, error }: FetchResult<IDockView | IDockMinimal> = await Dock.listData(query, {
         page: paginator.page,
         itemsPerPage: paginator.size,
-    });
+    }, light);
     if(error) throw new ColError(error);
     return data;
 };
@@ -145,7 +145,7 @@ export const get = async ({ id: _id, responsible }: ISensibleAction): Promise<ID
     const isAdmin: boolean = responsible !== undefined && responsible !== null && responsible.role === 3;
     const { data: [file], error }: FetchResult<IDockView> = await Dock.listData({
         _id, ...(isAdmin ? {} : { active: true })
-    }, { page: 0, itemsPerPage: 1 });
+    }, { page: 0, itemsPerPage: 1 }) as FetchResult<IDockView>;
     if(error) throw new ColError(error);
     if(file === undefined) throw new ColError(E.ResourceNotFound);
     return file;
@@ -160,7 +160,7 @@ export const find = async ({ q, paginator: { page, size: itemsPerPage }, prefer 
                 name: { $regex: q || "", $options: "i" },
         }]
     };
-    const { data, error }: FetchResult<IDockView> = await Dock.listData(query, { page, itemsPerPage });
+    const { data, error }: FetchResult<IDockView> = await Dock.listData(query, { page, itemsPerPage }) as FetchResult<IDockView>;
     if(error) throw new ColError(error);
     return data;
 };

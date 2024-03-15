@@ -1,5 +1,5 @@
 'use strict';
-import Dock, {IDockView} from "../../schemas/Dock";
+import Dock, {IDockMinimal, IDockView} from "../../schemas/Dock";
 import { Request, Response } from "express";
 import {MongoError} from "mongodb";
 import {IError} from "../../interfaces/responses/Error.interfaces";
@@ -28,8 +28,9 @@ const explore: endpoint[] = [pre.paginate, async (req: Request, res: Response): 
             return;
         }
         const prefer = parseInt(req.query.prefer as string || "-1");
+        const light: boolean = req.query.light !== undefined;
         const q: string = req.query.q as string || "";
-        const response: IDockView[] = await docks.explore({ q, paginator: req.paginator as IPaginator, coordinates: [lat, lng], radio, prefer: <DockPropertyStatus | -1>prefer });
+        const response: (IDockView | IDockMinimal)[] = await docks.explore({ q, paginator: req.paginator as IPaginator, coordinates: [lat, lng], radio, prefer: <DockPropertyStatus | -1>prefer, light });
         res.status(200).json({ data: response }).end();
     } catch (err) {
         const { http, ...error }: IError = defaultHandler(err as Error, E.CRUDOperationError);
