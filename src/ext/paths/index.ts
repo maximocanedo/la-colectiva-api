@@ -135,7 +135,6 @@ export const deleteAvailability = async (id: OID | string, responsible: IUser): 
     const file: AvailabilityDocument = await Availability.findOne({ _id: id, active: true }, { _id: 1, active: 1, history: 1, user: 1, path: 1 });
     if(!file) throw new ColError(E.ResourceNotFound);
     if(!canUpdateAvailability(responsible, file)) throw new ColError(E.AttemptedUnauthorizedOperation);
-    file.active = false;
-    file.history.push({ content: "Deshabilitación del recurso. ", time: Date.now(), user: responsible._id as string });
-    await file.save();
+    const e = await Availability.deleteOne({ _id: id });
+    if(!e) throw new ColError(E.ResourceNotFound);
 };
