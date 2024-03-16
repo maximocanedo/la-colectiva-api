@@ -6,7 +6,8 @@ import E from "../../errors";
 import FetchResult from "../../interfaces/responses/FetchResult";
 import * as paths from "../../ext/paths";
 import {IError} from "../../interfaces/responses/Error.interfaces";
-const getOne = [async (req: Request, res: Response): Promise<void> => {
+import pre from "../../endpoints/pre";
+const getOne = [ pre.authenticate(false), async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
         const response: IPathView = await paths.get({ id, responsible: req.user });
