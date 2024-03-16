@@ -23,7 +23,8 @@ const getByPath: endpoint[] = [
     async (req: Request, res: Response): Promise<void> => {
         try {
             const path: string = req.params.id;
-            const files = await Availability.find({path, active: true,}, {validations: 0});
+            const files = await Availability.find({path, active: true,}, {validations: 0})
+                .populate("user", "_id username name");
             res.status(200).json({
                 data: files,
                 error: null

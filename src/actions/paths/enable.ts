@@ -8,7 +8,7 @@ import * as paths from "../../ext/paths";
 import {IError} from "../../interfaces/responses/Error.interfaces";
 import IUser from "../../interfaces/models/IUser";
 import {endpoint} from "../../interfaces/types/Endpoint";
-const deleteOne: endpoint[] = [pre.auth, pre.allow.moderator, async (req: Request, res: Response): Promise<void> => {
+const deleteOne: endpoint[] = [pre.auth, pre.allow.admin, async (req: Request, res: Response): Promise<void> => {
     try {
         const id: string = req.params.id;
         await paths.enable({ id, responsible: req.user as IUser });
