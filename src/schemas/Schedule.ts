@@ -154,10 +154,12 @@ scheduleSchema.statics.findFormatted = async function(query: FilterQuery<ISchedu
             .exec();
         const data: IScheduleView[] = [];
         found.forEach(resource => {
+            const hours: string = new Date(resource.time).getUTCHours().toString().padStart(2, '0');
+            const minutes: string = new Date(resource.time).getUTCMinutes().toString().padStart(2, '0');
             const { _id, path, dock, user, uploadDate, active } = resource;
             data.push({
                 _id, path, dock, user, uploadDate, active,
-                time: new Date(resource.time).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false }),
+                time: `${hours}:${minutes}`,
             } as IScheduleView);
         });
         return {
