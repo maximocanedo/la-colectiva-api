@@ -50,7 +50,15 @@ const edit: endpoint[] = [
         try {
             const id: string = req.params.id;
             const userId = (<IUser>req.user)._id as string;
-            const reg = await Schedule.findOne({ _id: id, active: 1 });
+            const reg = await Schedule.findOne({ _id: id, active: 1 }, {
+                time: 1,
+                path: 1,
+                _id: 1,
+                active: 1,
+                dock: 1,
+                history: 1,
+                user: 1
+            });
             if (!reg) {
                 res.status(404).json({
                     error: E.ResourceNotFound
@@ -77,6 +85,7 @@ const edit: endpoint[] = [
                 message: "Resource updated. ",
             });
         } catch (e) {
+            console.error(e);
             const error: IError | null = defaultHandler(e as Error, E.CRUDOperationError);
             res.status(500).json({ error });
         }
