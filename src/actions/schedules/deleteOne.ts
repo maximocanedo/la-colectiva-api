@@ -13,13 +13,13 @@ const deleteOne: endpoint[] = [pre.auth, async (req: Request, res: Response): Pr
     try {
         const id: string = req.params.id;
         const resource = await Schedule.findById(id);
-        const username = (<IUser>req.user)._id;
+        const username = (<IUser>req.user)._id + "";
         const isAdmin = (<IUser>req.user).role >= 3;
         if (!resource) {
             res.status(404).json({error: E.ResourceNotFound});
             return;
         }
-        if (resource.user != username && !isAdmin) {
+        if (resource.user + "" != username && !isAdmin) {
             res.status(403).json({error: E.AttemptedUnauthorizedOperation});
             return;
         }
