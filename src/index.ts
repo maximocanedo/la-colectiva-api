@@ -14,7 +14,7 @@ import * as x from './validators/index';
 import V from "./validators/index";
 import rateLimit from "express-rate-limit";
 
-const useSSL: boolean = false;
+const useSSL: boolean = true;
 
 // Cargar los certificados SSL
 let options: any = {};
