@@ -231,7 +231,7 @@ const expect = (keys: any) => async (req: Request, res: Response, next: NextFunc
             ...E.ValidationError,
             details: (result.error as Joi.ValidationError).message
         };
-        res.status(400).json({error});
+        res.status(400).json({ error });
         return;
     } else next();
 };

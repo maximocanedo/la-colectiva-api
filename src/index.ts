@@ -70,5 +70,3 @@ app.use("/availabilities", routes.availabilities);
 app.use("/schedules", routes.schedules);
 app.use("/query", routes.query);
 app.use("/reports", routes.reports);
-
-

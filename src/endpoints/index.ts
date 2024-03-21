@@ -9,6 +9,7 @@ import paths from "./paths";
 import availabilities from "./availabilities";
 import schedules from "./schedules";
 import query from "./query";
+import reports from "./reports";
 
 export default {
 	users,
@@ -22,4 +23,5 @@ export default {
 	availabilities,
 	schedules,
 	query,
+	reports
 };

@@ -6,6 +6,9 @@ import Schedule from "../schemas/Schedule";
 import E from "../errors";
 import mongoose from "mongoose";
 import nextBoat, {NextBoatResponse, NextSchedule} from "../algo/next/nextBoat.2.0";
+import {logNextQuery} from "../schemas/NextQueryData";
+import pre from "./pre";
+import {AvailabilityCondition} from "../schemas/Availability";
 
 dotenv.config();
 const router: Router = express.Router();
@@ -14,6 +17,7 @@ router.use(express.json());
 
 router.get(
 	"/next",
+	pre.authenticate(true),
 	async (req: Request, res: Response): Promise<void> => {
 		try {
 			const departure: string = req.query.departure as string;
@@ -44,6 +48,13 @@ router.get(
 					result[i].schedules[j].time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 				}
 			}
+			const did: string = (req.headers['x-forwarded-for'] as (string | undefined)?? (req.socket.remoteAddress?? "unknown"));
+			const uid: string = req.user === undefined ? "visitor" : req.user._id + "";
+
+			logNextQuery((did + "$" + uid), departure, arrival, [ ...(conditions as AvailabilityCondition[]) ], time, req.user === undefined ? undefined : req.user._id + "")
+				.then((): void => {})
+				.catch((err): void => console.error(err));
+
 			res.status(200).json({ data: [ ...result ], error: null });
 		} catch (err) {
 			console.error(err);
